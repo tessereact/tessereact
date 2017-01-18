@@ -1,0 +1,195 @@
+<!doctype html>
+<head>
+	<title>Testshot</title>
+</head>
+<body>
+	<div id="app"></div>
+  <style>
+* {
+    padding:0;
+    margin:0;
+}
+
+html{
+    font:14px normal Arial, sans-serif;
+    color:#626771;
+    background-color:#fff;
+}
+
+body{
+    padding:60px;
+    text-align: center;
+}
+
+h1{
+    font-size:18px;
+    margin-bottom:20px;
+}
+
+#services{
+    list-style: none;
+    display: inline-block;
+    width: 340px;
+    text-align: left;
+}
+
+#services p{
+    display: block;
+    padding: 15px 20px;
+    background-color: #F8F8F8;
+    color: #7B8585;
+    margin-bottom: 3px;
+    position: relative;
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+#services p b{
+    position: absolute;
+    right: 28px;
+    line-height: 16px;
+    width: 100px;
+    color: #808787;
+    text-align: right;
+}
+
+#services p:hover{
+    background-color:#d8f2f1;
+}
+
+#services p.active{
+    color:#fff;
+    background-color:#41c7c2;
+}
+
+#services p.active b{
+    color: #fff;
+}
+
+#total{
+    background: none !important;
+    cursor: default !important;
+    padding-top: 10px !important;
+}
+
+  </style>
+
+  <!-- TODO: Move it to testshot component -->
+  <style>
+.Testshot-button {
+  display: inline-block;
+  background: #33C3F0;
+  border-radius: 4px;
+  padding: 5px 10px;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 11px;
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+}
+
+.Testshot-green {
+  background: #d8ffd8
+}
+
+.Testshot-red {
+  background: #ffb0b0
+}
+
+.Testshot {
+  display: none;
+  min-height: 100vh;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: #f3f4f5;
+}
+
+.Testshot-header {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  text-align: center;
+  font-size: 24.5px;
+  color: #34495e;
+  font-weight: bold;
+  margin-bottom: 15px;
+  margin-top: 5px;
+}
+
+.Testshot-componentHeader {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  text-align: center;
+  font-size: 24.5px;
+  color: #1abc9c;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 5px;
+}
+
+.Testshot.show {
+  display: flex;
+}
+
+.Testshot-sidebar {
+  flex-basis: 15%;
+  padding: 10px;
+  color: #333;
+  text-align: left;
+}
+
+.Testshot-btn {
+  display: block;
+  text-align: left;
+  cursor: pointer;
+  padding: 7px 20px;
+}
+
+.Testshot-btn.btn-success {
+  color: #1abc9c;
+}
+
+.Testshot-btn.btn-danger {
+  color: #e74c3c;
+}
+
+.Testshot-btn.active {
+  background: #e6e6e6;
+  margin-left: -10px;
+  margin-right: -10px;
+  padding-left: 30px;
+}
+
+.Testshot-sidebar.right {
+  flex-basis: 35%;
+}
+
+.Testshot-content {
+  position: relative;
+  flex-basis: 60%;
+  padding: 10px;
+  background: white;
+}
+
+.Testshot-acceptButton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: #1abc9c;
+  color: #fff;
+  padding: 10px 15px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 0;
+  line-height: 1.4;
+  cursor: pointer;
+}
+  </style>
+	<script src="common.js"></script>
+	<script src="bundle.js"></script>
+	<script src="example.js"></script>
+	<script src="snapshots.js"></script>
+
+</body>
