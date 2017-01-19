@@ -3,60 +3,34 @@ const lodash = require('lodash')
 // const enzyme = require('enzyme')
 const ReactTestRenderer = require('react-test-renderer')
 const classnames = require('classnames')
-const jsondiffpatch = require('jsondiffpatch').create({})
-const jsondiffpatchHtmlFormatter = require('jsondiffpatch/src/formatters/html')
 const ReactDOMServer = require('react-dom/server')
 const HtmlDiffer = require("html-differ").HtmlDiffer
 const logger = require('html-differ/lib/logger');
-var escape = require('escape-html');
+const escape = require('escape-html');
+const Formatter = require('./Formatter').Formatter
+const htmlDiffer = new HtmlDiffer({});
+const minify = require('html-minifier').minify;
 
-console.log(jsondiffpatchHtmlFormatter)
-
-var data = [];
+var names = []
+var data = []
 
 // TODO: Do it properly
 export function context(callback) {
   callback()
 }
 
-var Formatter = React.createClass({
-  render() {
-    const nodes = this.props.nodes.map((n, i) => {
-      return n.value.replace(/\>\</g, '>+++<').split('+++').map((el) => {
-        return {
-          value: el,
-          added: n.added,
-          removed: n.removed,
-          tag: !!el.match('>')
-        }
-      })
-    })
-
-    console.log(lodash.flatten(nodes))
-
-    return <pre>
-      {lodash.flatten(nodes).map((n, i) => {
-        return <span key={i} className={classnames({'Testshot-green': n.added, 'Testshot-red': n.removed})}>
-          {n.value}
-          {n.tag && <br />}
-        </span>
-      })}
-    </pre>
-  }
-})
-
-
 // TODO: Delay this function execution
-// TODO: Validate name uniqueness
 // TODO: Add simulations from prev implementation
 export function scenario(testName, componentBuilder) {
+  if (names.indexOf(testName) > -1) {
+    throw new Error('Scenario with name "' + testName + '" already exists');
+  }
+  names.push(testName)
   const json = ReactTestRenderer.create(componentBuilder()).toJSON()
   return data.push({
     name: testName,
     component: componentBuilder(),
-    // TODO: Remove this hack
-    // snapshot: JSON.parse(JSON.stringify(json))
-    snapshot: ReactDOMServer.renderToStaticMarkup(componentBuilder())
+    snapshot: minify(ReactDOMServer.renderToStaticMarkup(componentBuilder()), {removeEmptyAttributes: true})
   })
 }
 
@@ -169,9 +143,7 @@ var Testshot = React.createClass({
   },
 
   computeDiff() {
-    const delta = jsondiffpatch.diff(this.state.selectedSnapshot.previousSnapshot, this.state.selectedSnapshot.snapshot);
-    const data = jsondiffpatchHtmlFormatter.format(delta, this.state.selectedSnapshot.previousSnapshot)
-    var htmlDiffer = new HtmlDiffer({});
+    console.log(Formatter)
     var diff = htmlDiffer.diffHtml(this.state.selectedSnapshot.previousSnapshot, this.state.selectedSnapshot.snapshot)
     return <Formatter nodes={diff} />
   },
