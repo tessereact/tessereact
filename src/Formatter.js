@@ -2,6 +2,8 @@ const React = require('react')
 const lodash = require('lodash')
 const classnames = require('classnames')
 
+import HighligthedDiff from './styled/HighligthedDiff'
+
 // TODO: Change to smth reasonable
 const DELIMETER = '+++'
 
@@ -10,10 +12,10 @@ export const Formatter = React.createClass({
   render() {
     return <pre>
       {lodash.flatten(this._nodes()).map((n, i) => {
-        return <span key={i} className={classnames({'Testshot-green': n.added, 'Testshot-red': n.removed})}>
+        return <HighligthedDiff key={i} added={n.added} removed={n.removed}>
           {(n.tag ? lodash.pad('', n.indent) : '') + n.value}
           {n.tag && <br />}
-        </span>
+        </HighligthedDiff>
       })}
     </pre>
   },

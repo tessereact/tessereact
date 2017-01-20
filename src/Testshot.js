@@ -11,6 +11,15 @@ const Formatter = require('./Formatter').Formatter
 const htmlDiffer = new HtmlDiffer({});
 const minify = require('html-minifier').minify;
 
+// styled components
+import TestshotContainer from './styled/TestshotContainer'
+import Link from './styled/Link'
+import Header from './styled/Header'
+import Sidebar from './styled/Sidebar'
+import AcceptButton from './styled/AcceptButton'
+import TestshotContent from './styled/TestshotContent'
+import ScenarioLink from './styled/ScenarioLink'
+
 var names = []
 var data = []
 
@@ -43,11 +52,6 @@ var Testshot = React.createClass({
     }
   },
 
-  // Simulation tricks
-  // componentDidMount () {
-  //   eval('('+this.state.selectedSnapshot.simulate+')($(".Testshot-component"))')
-  // },
-
   // TODO: Pass URL from config
   componentWillMount () {
     fetch('//localhost:3001/snapshots-list', {
@@ -74,36 +78,41 @@ var Testshot = React.createClass({
 
   render() {
     return (
-      <div className='Testshot show'>
-        <div className="Testshot-sidebar">
-          <h3 className="Testshot-header">Scenarios</h3>
+      <TestshotContainer>
+        <Sidebar>
+          <Header>Scenarios</Header>
           <ul>
           {lodash.map(this.state.snapshots, (value, i) => {
             return (<li key={i}>
-              <a onClick={this.handleSelect.bind(this, value.name)} key={value.name} className={classnames('Testshot-btn', {active: this.state.selectedSnapshot.name === value.name, 'btn-success': this.noDiff(value), 'btn-danger': !this.noDiff(value)})}>
+              <ScenarioLink
+                noDiff={this.noDiff(value)}
+                onClick={this.handleSelect.bind(this, value.name)}
+                key={value.name}
+                active={this.state.selectedSnapshot.name === value.name}
+              >
                 {value.name}
-              </a>
+              </ScenarioLink>
             </li>)
           })}
           </ul>
-        </div>
-        <div className="Testshot-content">
-          <h3 className="Testshot-componentHeader">{this.state.selectedSnapshot.name}</h3>
-          <div className="Testshot-component">
-            {this.state.selectedSnapshot.component}
-          </div>
-          {!lodash.isEqual(this.state.selectedSnapshot.snapshot, this.state.selectedSnapshot.previousSnapshot) && <button className="Testshot-acceptButton" type="button" onClick={this.acceptSnapshot.bind(this)} >Accept</button> }
-        </div>
-        <div className="Testshot-sidebar right">
-          <h3 className="Testshot-header">Diff</h3>
+        </Sidebar>
+        <TestshotContent>
+          <Header>{this.state.selectedSnapshot.name}</Header>
+          {this.state.selectedSnapshot.component}
+          {!lodash.isEqual(this.state.selectedSnapshot.snapshot, this.state.selectedSnapshot.previousSnapshot) &&
+            <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
+        </TestshotContent>
+        <Sidebar right>
+          <Header>Diff</Header>
           {this.renderDiff()}
-        </div>
-      </div>
+        </Sidebar>
+      </TestshotContainer>
     );
   },
 
+
+  // TODO: Extract requests to a different module
   acceptSnapshot () {
-    console.log('acceptSnapshot')
     fetch('//localhost:3001/snapshots', {
       method: 'post',
       headers: {
@@ -114,9 +123,9 @@ var Testshot = React.createClass({
         name: this.state.selectedSnapshot.name,
         snapshot: this.state.selectedSnapshot.snapshot
     })}).then(function() {
-      console.log('previousSnapshot accepted', this.state.selectedSnapshot.snapshot)
+      // TODO: Remove page reloading
       window.location.href = '/'
-    }.bind(this))
+    })
   },
 
   pickNextFailingScenario () {
@@ -134,7 +143,7 @@ var Testshot = React.createClass({
 
   renderDiff() {
     if (this.noDiff(this.state.selectedSnapshot)) {
-      return <div className="alert alert-success" role="alert">Snapshots are identical!</div>
+      return <p>Snapshots are identical!</p>
     } else {
       return <div>
       <pre>{this.computeDiff()}</pre>
@@ -175,7 +184,7 @@ export const TestshotWrapper = React.createClass({
     return <div>
       {this.props.children}
       {this.state.show && <Testshot snapshots={data} />}
-      <a onClick={this.toggleTestshot.bind(this)} className="Testshot-button" href="#">Testshot</a>
+      <Link onClick={this.toggleTestshot.bind(this)} href="#">Testshot</Link>
     </div>
   },
 
