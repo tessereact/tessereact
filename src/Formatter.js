@@ -1,6 +1,6 @@
-const React = require('react')
-const lodash = require('lodash')
-const classnames = require('classnames')
+import React from 'react'
+import lodash from 'lodash'
+import classnames from 'classnames'
 
 import HighligthedDiff from './styled/HighligthedDiff'
 
@@ -9,7 +9,7 @@ const DELIMETER = '+++'
 
 
 // TODO: Rewrite it properly
-export const Formatter = React.createClass({
+const Formatter = React.createClass({
 
   render() {
     return <pre>
@@ -44,4 +44,6 @@ export const Formatter = React.createClass({
     })
   }
 })
+
+export default Formatter
 

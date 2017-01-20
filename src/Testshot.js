@@ -1,15 +1,14 @@
 const React = require('react')
-const lodash = require('lodash')
+import lodash from 'lodash'
 // const enzyme = require('enzyme')
-const ReactTestRenderer = require('react-test-renderer')
-const classnames = require('classnames')
-const ReactDOMServer = require('react-dom/server')
-const HtmlDiffer = require("html-differ").HtmlDiffer
-const logger = require('html-differ/lib/logger');
-const escape = require('escape-html');
-const Formatter = require('./Formatter').Formatter
-const htmlDiffer = new HtmlDiffer({});
-const minify = require('html-minifier').minify;
+import ReactTestRenderer from 'react-test-renderer'
+import classnames from 'classnames'
+import ReactDOMServer from 'react-dom/server'
+import {HtmlDiffer} from "html-differ"
+import logger from 'html-differ/lib/logger'
+import escape from 'escape-html'
+import Formatter from './Formatter'
+import {minify} from 'html-minifier'
 
 // styled components
 import TestshotContainer from './styled/TestshotContainer'
@@ -20,6 +19,7 @@ import AcceptButton from './styled/AcceptButton'
 import TestshotContent from './styled/TestshotContent'
 import ScenarioLink from './styled/ScenarioLink'
 
+const htmlDiffer = new HtmlDiffer({});
 var names = []
 var data = []
 
