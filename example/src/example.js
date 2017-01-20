@@ -67,7 +67,7 @@ var App = React.createClass({
     console.log(TestshotWrapper)
 
 		return (
-			<TestshotWrapper>
+			<TestshotWrapper server={{host: 'localhost', port: '3001'}}>
         <Cart items={services} />
       </TestshotWrapper>
 		)
@@ -81,7 +81,7 @@ scenario('Service: Basic', () => {
 
 scenario('Cart: With a service', () => {
   const services = [
-    { name: 'Web Development', price: 300, selected: true },
+    { name: 'Web Development', price: 300, selected: false },
     { name: 'Design', price: 400 },
     { name: 'Integration', price: 250 },
     { name: 'New service', price: 123 }

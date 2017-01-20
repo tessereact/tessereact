@@ -7,6 +7,8 @@ import HighligthedDiff from './styled/HighligthedDiff'
 // TODO: Change to smth reasonable
 const DELIMETER = '+++'
 
+
+// TODO: Rewrite it properly
 export const Formatter = React.createClass({
 
   render() {

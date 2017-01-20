@@ -54,7 +54,9 @@ var Testshot = React.createClass({
 
   // TODO: Pass URL from config
   componentWillMount () {
-    fetch('//localhost:3001/snapshots-list', {
+    if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.')
+    const url = `//${this.props.host}:${this.props.port}/snapshots-list`
+    fetch(url, {
       method: 'post',
       mode: 'cors',
       headers: {
@@ -113,7 +115,8 @@ var Testshot = React.createClass({
 
   // TODO: Extract requests to a different module
   acceptSnapshot () {
-    fetch('//localhost:3001/snapshots', {
+    const url = '//${this.props.host}:${this.props.port}/snapshots'
+    fetch(url, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json'
@@ -183,7 +186,7 @@ export const TestshotWrapper = React.createClass({
   render () {
     return <div>
       {this.props.children}
-      {this.state.show && <Testshot snapshots={data} />}
+      {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} snapshots={data} />}
       <Link onClick={this.toggleTestshot.bind(this)} href="#">Testshot</Link>
     </div>
   },
