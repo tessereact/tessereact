@@ -115,7 +115,7 @@ var Testshot = React.createClass({
 
   // TODO: Extract requests to a different module
   acceptSnapshot () {
-    const url = '//${this.props.host}:${this.props.port}/snapshots'
+    const url = `//${this.props.host}:${this.props.port}/snapshots`
     fetch(url, {
       method: 'post',
       headers: {
