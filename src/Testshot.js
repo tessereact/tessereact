@@ -9,6 +9,7 @@ import logger from 'html-differ/lib/logger'
 import escape from 'escape-html'
 import Formatter from './Formatter'
 import {minify} from 'html-minifier'
+import {postJSON} from './fetch'
 
 // styled components
 import TestshotContainer from './styled/TestshotContainer'
@@ -56,26 +57,19 @@ var Testshot = React.createClass({
   componentWillMount () {
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.')
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
-    fetch(url, {
-      method: 'post',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        data: this.state.snapshots
-      })})
-      .then((response) => {
-        response.json().then((json) => {
-          const newData = this.state.snapshots.map((s) => {
-            s.previousSnapshot = lodash.find(json, {name: s.name}).previousSnapshot
-            return s
-          })
-          // TODO: Avoid setting states few times in a row
-          this.setState({snapshots: newData})
-          this.pickNextFailingScenario()
+    postJSON(url, {
+      data: this.state.snapshots
+    }).then((response) => {
+      response.json().then((json) => {
+        const newData = this.state.snapshots.map((s) => {
+          s.previousSnapshot = lodash.find(json, {name: s.name}).previousSnapshot
+          return s
         })
+        // TODO: Avoid setting states few times in a row
+        this.setState({snapshots: newData})
+        this.pickNextFailingScenario()
       })
+    })
   },
 
   render() {
@@ -116,16 +110,10 @@ var Testshot = React.createClass({
   // TODO: Extract requests to a different module
   acceptSnapshot () {
     const url = `//${this.props.host}:${this.props.port}/snapshots`
-    fetch(url, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      mode: 'cors',
-      body: JSON.stringify({
-        name: this.state.selectedSnapshot.name,
-        snapshot: this.state.selectedSnapshot.snapshot
-    })}).then(function() {
+    postJSON(url, {
+      name: this.state.selectedSnapshot.name,
+      snapshot: this.state.selectedSnapshot.snapshot
+    }).then(function() {
       // TODO: Remove page reloading
       window.location.href = '/'
     })

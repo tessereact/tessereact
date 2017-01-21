@@ -84,7 +84,7 @@ scenario('Cart: With a service', () => {
     { name: 'Web Development', price: 300, selected: false },
     { name: 'Design', price: 400 },
     { name: 'Integration', price: 250 },
-    { name: 'New service', price: 123 }
+    { name: 'New service', price: 120 }
   ]
 
   return <Cart items={services}/>
