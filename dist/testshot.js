@@ -98570,6 +98570,25 @@ function extend() {
 }
 
 },{}],475:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports.postJSON = postJSON;
+
+function postJSON(url, body) {
+  return fetch(url, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    mode: 'cors',
+    body: JSON.stringify(body)
+  });
+}
+
+},{}],476:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -98579,30 +98598,39 @@ Object.defineProperty(exports, '__esModule', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _react = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
 var _styledHighligthedDiff = require('./styled/HighligthedDiff');
 
 var _styledHighligthedDiff2 = _interopRequireDefault(_styledHighligthedDiff);
 
 // TODO: Change to smth reasonable
-var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null);
-var lodash = require('lodash');
-var classnames = require('classnames');
-
 var DELIMETER = '+++';
 
-var Formatter = React.createClass({
+// TODO: Rewrite it properly
+var Formatter = _react2['default'].createClass({
   displayName: 'Formatter',
 
   render: function render() {
-    return React.createElement(
+    return _react2['default'].createElement(
       'pre',
       null,
-      lodash.flatten(this._nodes()).map(function (n, i) {
-        return React.createElement(
+      _lodash2['default'].flatten(this._nodes()).map(function (n, i) {
+        return _react2['default'].createElement(
           _styledHighligthedDiff2['default'],
           { key: i, added: n.added, removed: n.removed },
-          (n.tag ? lodash.pad('', n.indent) : '') + n.value,
-          n.tag && React.createElement('br', null)
+          (n.tag ? _lodash2['default'].pad('', n.indent) : '') + n.value,
+          n.tag && _react2['default'].createElement('br', null)
         );
       })
     );
@@ -98630,10 +98658,12 @@ var Formatter = React.createClass({
     });
   }
 });
-exports.Formatter = Formatter;
+
+exports['default'] = Formatter;
+module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./styled/HighligthedDiff":479,"classnames":undefined,"lodash":158}],476:[function(require,module,exports){
+},{"./styled/HighligthedDiff":480,"classnames":undefined,"lodash":158}],477:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -98643,10 +98673,43 @@ Object.defineProperty(exports, '__esModule', {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-exports.context = context;
-exports.scenario = scenario;
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+// const enzyme = require('enzyme')
+
+var _reactTestRenderer = require('react-test-renderer');
+
+var _reactTestRenderer2 = _interopRequireDefault(_reactTestRenderer);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _reactDomServer = require('react-dom/server');
+
+var _reactDomServer2 = _interopRequireDefault(_reactDomServer);
+
+var _htmlDiffer = require("html-differ");
+
+var _htmlDifferLibLogger = require('html-differ/lib/logger');
+
+var _htmlDifferLibLogger2 = _interopRequireDefault(_htmlDifferLibLogger);
+
+var _escapeHtml = require('escape-html');
+
+var _escapeHtml2 = _interopRequireDefault(_escapeHtml);
+
+var _Formatter = require('./Formatter');
+
+var _Formatter2 = _interopRequireDefault(_Formatter);
+
+var _htmlMinifier = require('html-minifier');
+
+var _Fetch = require('./Fetch');
 
 // styled components
 
@@ -98679,43 +98742,33 @@ var _styledScenarioLink = require('./styled/ScenarioLink');
 var _styledScenarioLink2 = _interopRequireDefault(_styledScenarioLink);
 
 var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null);
-var lodash = require('lodash');
-// const enzyme = require('enzyme')
-var ReactTestRenderer = require('react-test-renderer');
-var classnames = require('classnames');
-var ReactDOMServer = require('react-dom/server');
-var HtmlDiffer = require("html-differ").HtmlDiffer;
-var logger = require('html-differ/lib/logger');
-var escape = require('escape-html');
-var Formatter = require('./Formatter').Formatter;
-var htmlDiffer = new HtmlDiffer({});
-var minify = require('html-minifier').minify;
 
+var htmlDiffer = new _htmlDiffer.HtmlDiffer({});
 var names = [];
 var data = [];
 
 // TODO: Do it properly
-
-function context(callback) {
+var context = function context(callback) {
   callback();
-}
+};
 
+exports.context = context;
 // TODO: Delay this function execution
 // TODO: Add simulations from prev implementation
-
-function scenario(testName, componentBuilder) {
+var scenario = function scenario(testName, componentBuilder) {
   if (names.indexOf(testName) > -1) {
     throw new Error('Scenario with name "' + testName + '" already exists');
   }
   names.push(testName);
-  var json = ReactTestRenderer.create(componentBuilder()).toJSON();
+  var json = _reactTestRenderer2['default'].create(componentBuilder()).toJSON();
   return data.push({
     name: testName,
     component: componentBuilder(),
-    snapshot: minify(ReactDOMServer.renderToStaticMarkup(componentBuilder()), { removeEmptyAttributes: true })
+    snapshot: (0, _htmlMinifier.minify)(_reactDomServer2['default'].renderToStaticMarkup(componentBuilder()), { removeEmptyAttributes: true })
   });
-}
+};
 
+exports.scenario = scenario;
 var Testshot = React.createClass({
   displayName: 'Testshot',
 
@@ -98730,18 +98783,14 @@ var Testshot = React.createClass({
   componentWillMount: function componentWillMount() {
     var _this = this;
 
-    fetch('//localhost:3001/snapshots-list', {
-      method: 'post',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        data: this.state.snapshots
-      }) }).then(function (response) {
+    if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.');
+    var url = '//' + this.props.host + ':' + this.props.port + '/snapshots-list';
+    (0, _Fetch.postJSON)(url, {
+      data: this.state.snapshots
+    }).then(function (response) {
       response.json().then(function (json) {
         var newData = _this.state.snapshots.map(function (s) {
-          s.previousSnapshot = lodash.find(json, { name: s.name }).previousSnapshot;
+          s.previousSnapshot = _lodash2['default'].find(json, { name: s.name }).previousSnapshot;
           return s;
         });
         // TODO: Avoid setting states few times in a row
@@ -98768,7 +98817,7 @@ var Testshot = React.createClass({
         React.createElement(
           'ul',
           null,
-          lodash.map(this.state.snapshots, function (value, i) {
+          _lodash2['default'].map(this.state.snapshots, function (value, i) {
             return React.createElement(
               'li',
               { key: i },
@@ -98795,7 +98844,7 @@ var Testshot = React.createClass({
           this.state.selectedSnapshot.name
         ),
         this.state.selectedSnapshot.component,
-        !lodash.isEqual(this.state.selectedSnapshot.snapshot, this.state.selectedSnapshot.previousSnapshot) && React.createElement(
+        !_lodash2['default'].isEqual(this.state.selectedSnapshot.snapshot, this.state.selectedSnapshot.previousSnapshot) && React.createElement(
           _styledAcceptButton2['default'],
           { onClick: this.acceptSnapshot.bind(this) },
           'Accept'
@@ -98816,24 +98865,19 @@ var Testshot = React.createClass({
 
   // TODO: Extract requests to a different module
   acceptSnapshot: function acceptSnapshot() {
-    fetch('//localhost:3001/snapshots', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      mode: 'cors',
-      body: JSON.stringify({
-        name: this.state.selectedSnapshot.name,
-        snapshot: this.state.selectedSnapshot.snapshot
-      }) }).then(function () {
+    var url = '//' + this.props.host + ':' + this.props.port + '/snapshots';
+    (0, _Fetch.postJSON)(url, {
+      name: this.state.selectedSnapshot.name,
+      snapshot: this.state.selectedSnapshot.snapshot
+    }).then(function () {
       // TODO: Remove page reloading
       window.location.href = '/';
     });
   },
 
   pickNextFailingScenario: function pickNextFailingScenario() {
-    var failingScenario = lodash.find(this.state.snapshots, function (s) {
-      return !lodash.isEqual(s.snapshot, s.previousSnapshot);
+    var failingScenario = _lodash2['default'].find(this.state.snapshots, function (s) {
+      return !_lodash2['default'].isEqual(s.snapshot, s.previousSnapshot);
     });
     if (failingScenario) {
       var newState = _extends({}, this.state);
@@ -98843,7 +98887,7 @@ var Testshot = React.createClass({
   },
 
   noDiff: function noDiff(scenario) {
-    return lodash.isEqual(scenario.snapshot, scenario.previousSnapshot);
+    return _lodash2['default'].isEqual(scenario.snapshot, scenario.previousSnapshot);
   },
 
   renderDiff: function renderDiff() {
@@ -98867,9 +98911,9 @@ var Testshot = React.createClass({
   },
 
   computeDiff: function computeDiff() {
-    console.log(Formatter);
+    console.log(_Formatter2['default']);
     var diff = htmlDiffer.diffHtml(this.state.selectedSnapshot.previousSnapshot, this.state.selectedSnapshot.snapshot);
-    return React.createElement(Formatter, { nodes: diff });
+    return React.createElement(_Formatter2['default'], { nodes: diff });
   },
 
   renderPreviousSnapshot: function renderPreviousSnapshot() {
@@ -98896,7 +98940,7 @@ var Testshot = React.createClass({
   },
 
   handleSelect: function handleSelect(key) {
-    this.setState({ selectedSnapshot: lodash.find(this.state.snapshots, ['name', key]) });
+    this.setState({ selectedSnapshot: _lodash2['default'].find(this.state.snapshots, ['name', key]) });
   }
 
 });
@@ -98916,7 +98960,7 @@ var TestshotWrapper = React.createClass({
       'div',
       null,
       this.props.children,
-      this.state.show && React.createElement(Testshot, { snapshots: data }),
+      this.state.show && React.createElement(Testshot, { host: this.props.server.host, port: this.props.server.port, snapshots: data }),
       React.createElement(
         _styledLink2['default'],
         { onClick: this.toggleTestshot.bind(this), href: '#' },
@@ -98930,10 +98974,11 @@ var TestshotWrapper = React.createClass({
     this.setState({ show: !this.state.show });
   }
 });
-exports.TestshotWrapper = TestshotWrapper;
+
+exports['default'] = TestshotWrapper;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Formatter":475,"./styled/AcceptButton":477,"./styled/Header":478,"./styled/Link":480,"./styled/ScenarioLink":481,"./styled/Sidebar":482,"./styled/TestshotContainer":483,"./styled/TestshotContent":484,"classnames":undefined,"escape-html":83,"html-differ":114,"html-differ/lib/logger":115,"html-minifier":127,"lodash":158,"react-dom/server":307,"react-test-renderer":308}],477:[function(require,module,exports){
+},{"./Fetch":475,"./Formatter":476,"./styled/AcceptButton":478,"./styled/Header":479,"./styled/Link":481,"./styled/ScenarioLink":482,"./styled/Sidebar":483,"./styled/TestshotContainer":484,"./styled/TestshotContent":485,"classnames":undefined,"escape-html":83,"html-differ":114,"html-differ/lib/logger":115,"html-minifier":127,"lodash":158,"react-dom/server":307,"react-test-renderer":308}],478:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -98960,7 +99005,7 @@ var AcceptButton = _styledComponents2['default'].button(_templateObject);
 exports['default'] = (0, _mixinsDefault2['default'])(AcceptButton);
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],478:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],479:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -98986,14 +99031,14 @@ var Header = _styledComponents2['default'].div(_templateObject);
 exports['default'] = (0, _mixinsDefault2['default'])(Header);
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],479:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],480:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _templateObject = _taggedTemplateLiteral(['\n  background: ', '\n  background: ', '\n'], ['\n  background: ', '\n  background: ', '\n']);
+var _templateObject = _taggedTemplateLiteral(['\n  background: ', '\n'], ['\n  background: ', '\n']);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -99008,15 +99053,13 @@ var _mixinsDefault = require('./mixins/default');
 var _mixinsDefault2 = _interopRequireDefault(_mixinsDefault);
 
 var HighligthedDiff = _styledComponents2['default'].span(_templateObject, function (props) {
-  return props.added && '#d8ffd8';
-}, function (props) {
-  return props.removed && '#ffb0b0';
+  return props.added ? '#d8ffd8' : props.removed && '#ffb0b0';
 });
 
-exports['default'] = (0, _mixinsDefault2['default'])(HighligthedDiff);
+exports['default'] = HighligthedDiff;
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],480:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],481:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -99042,7 +99085,7 @@ var Link = _styledComponents2['default'].a(_templateObject);
 exports['default'] = (0, _mixinsDefault2['default'])(Link);
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],481:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],482:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -99073,7 +99116,7 @@ var ScenarioLink = _styledComponents2['default'].a(_templateObject, function (pr
 exports['default'] = (0, _mixinsDefault2['default'])(ScenarioLink);
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],482:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],483:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -99101,7 +99144,7 @@ var Sidebar = _styledComponents2['default'].div(_templateObject, function (props
 exports['default'] = (0, _mixinsDefault2['default'])(Sidebar);
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],483:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],484:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -99123,7 +99166,7 @@ var TestshotContainer = _styledComponents2['default'].div(_templateObject);
 exports['default'] = TestshotContainer;
 module.exports = exports['default'];
 
-},{"styled-components":424}],484:[function(require,module,exports){
+},{"styled-components":424}],485:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -99149,7 +99192,7 @@ var TestshotContent = _styledComponents2['default'].div(_templateObject);
 exports['default'] = (0, _mixinsDefault2['default'])(TestshotContent);
 module.exports = exports['default'];
 
-},{"./mixins/default":485,"styled-components":424}],485:[function(require,module,exports){
+},{"./mixins/default":486,"styled-components":424}],486:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -99175,5 +99218,5 @@ var defaultMixin = (0, _styledMixin2['default'])(_templateObject);
 exports['default'] = defaultMixin;
 module.exports = exports['default'];
 
-},{"styled-components":424,"styled-mixin":466}]},{},[476])(476)
+},{"styled-components":424,"styled-mixin":466}]},{},[477])(477)
 });

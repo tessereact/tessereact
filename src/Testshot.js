@@ -9,7 +9,7 @@ import logger from 'html-differ/lib/logger'
 import escape from 'escape-html'
 import Formatter from './Formatter'
 import {minify} from 'html-minifier'
-import {postJSON} from './fetch'
+import {postJSON} from './Fetch'
 
 // styled components
 import TestshotContainer from './styled/TestshotContainer'
@@ -25,13 +25,13 @@ var names = []
 var data = []
 
 // TODO: Do it properly
-export function context(callback) {
+export const context = function (callback) {
   callback()
 }
 
 // TODO: Delay this function execution
 // TODO: Add simulations from prev implementation
-export function scenario(testName, componentBuilder) {
+export const scenario = function (testName, componentBuilder) {
   if (names.indexOf(testName) > -1) {
     throw new Error('Scenario with name "' + testName + '" already exists');
   }
@@ -44,7 +44,7 @@ export function scenario(testName, componentBuilder) {
   })
 }
 
-var Testshot = React.createClass({
+const Testshot = React.createClass({
 
   getInitialState () {
     return {
@@ -164,7 +164,7 @@ var Testshot = React.createClass({
 })
 
 // TODO: Button and Testshot workspace should be rendered only in Dev environment
-export const TestshotWrapper = React.createClass({
+const TestshotWrapper = React.createClass({
   getInitialState () {
     return {
       show: localStorage.getItem('testing') == 'true'
@@ -184,3 +184,5 @@ export const TestshotWrapper = React.createClass({
     this.setState({show: !this.state.show})
   }
 })
+
+export default TestshotWrapper

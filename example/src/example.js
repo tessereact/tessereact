@@ -1,7 +1,6 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const TestshotWrapper = require('testshot').TestshotWrapper;
-const scenario = require('testshot').scenario;
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TestshotWrapper, {scenario} from 'testshot';
 
 export const Service = React.createClass({
   render () {
@@ -64,12 +63,9 @@ var App = React.createClass({
       { name: 'Integration', price: 250 },
       { name: 'Training', price: 220 }
     ];
-    console.log(TestshotWrapper)
 
 		return (
-			<TestshotWrapper server={{host: 'localhost', port: '3001'}}>
-        <Cart items={services} />
-      </TestshotWrapper>
+      <Cart items={services} />
 		)
 	}
 })
@@ -90,4 +86,8 @@ scenario('Cart: With a service', () => {
   return <Cart items={services}/>
 })
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(
+  <TestshotWrapper server={{host: 'localhost', port: '3001'}}>
+    <App />
+  </TestshotWrapper>,
+  document.getElementById('app'));
