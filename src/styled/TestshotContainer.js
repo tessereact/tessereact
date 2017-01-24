@@ -8,6 +8,7 @@ const TestshotContainer = styled.div`
   top: 0;
   left: 0;
   background: #f3f4f5;
+  z-index: 10000;
 `
 
 export default TestshotContainer
