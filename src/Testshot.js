@@ -8,7 +8,6 @@ import {HtmlDiffer} from "html-differ"
 import logger from 'html-differ/lib/logger'
 import escape from 'escape-html'
 import Formatter from './Formatter'
-import {minify} from 'html-minifier'
 import {postJSON} from './Fetch'
 
 // styled components
@@ -40,7 +39,7 @@ export const scenario = function (testName, componentBuilder) {
   return data.push({
     name: testName,
     component: componentBuilder(),
-    snapshot: minify(ReactDOMServer.renderToStaticMarkup(componentBuilder()), {removeEmptyAttributes: true})
+    snapshot: ReactDOMServer.renderToStaticMarkup(componentBuilder())
   })
 }
 
