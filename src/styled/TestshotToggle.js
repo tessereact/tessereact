@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import defaultMixin from './mixins/default'
 
-const Link = styled.a`
+const TestshotToggle = styled.a`
   display: inline-block;
   background: #33C3F0;
   border-radius: 4px;
@@ -13,6 +13,7 @@ const Link = styled.a`
   position: fixed;
   bottom: 5px;
   right: 5px;
+  z-index: 10001;
 `
 
-export default defaultMixin(Link)
+export default defaultMixin(TestshotToggle)

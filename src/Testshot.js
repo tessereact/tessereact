@@ -12,7 +12,7 @@ import {postJSON} from './Fetch'
 
 // styled components
 import TestshotContainer from './styled/TestshotContainer'
-import Link from './styled/Link'
+import TestshotToggle from './styled/TestshotToggle'
 import Header from './styled/Header'
 import Sidebar from './styled/Sidebar'
 import AcceptButton from './styled/AcceptButton'
@@ -174,7 +174,7 @@ const TestshotWrapper = React.createClass({
     return <div>
       {this.props.children}
       {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} snapshots={data} />}
-      <Link onClick={this.toggleTestshot.bind(this)} href="#">Testshot</Link>
+      <TestshotToggle onClick={this.toggleTestshot.bind(this)} href="#">Testshot</TestshotToggle>
     </div>
   },
 

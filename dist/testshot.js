@@ -64329,9 +64329,9 @@ var _styledTestshotContainer = require('./styled/TestshotContainer');
 
 var _styledTestshotContainer2 = _interopRequireDefault(_styledTestshotContainer);
 
-var _styledLink = require('./styled/Link');
+var _styledTestshotToggle = require('./styled/TestshotToggle');
 
-var _styledLink2 = _interopRequireDefault(_styledLink);
+var _styledTestshotToggle2 = _interopRequireDefault(_styledTestshotToggle);
 
 var _styledHeader = require('./styled/Header');
 
@@ -64574,7 +64574,7 @@ var TestshotWrapper = React.createClass({
       this.props.children,
       this.state.show && React.createElement(Testshot, { host: this.props.server.host, port: this.props.server.port, snapshots: data }),
       React.createElement(
-        _styledLink2['default'],
+        _styledTestshotToggle2['default'],
         { onClick: this.toggleTestshot.bind(this), href: '#' },
         'Testshot'
       )
@@ -64590,7 +64590,7 @@ var TestshotWrapper = React.createClass({
 exports['default'] = TestshotWrapper;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Fetch":337,"./Formatter":338,"./styled/AcceptButton":340,"./styled/Header":341,"./styled/Link":343,"./styled/ScenarioLink":344,"./styled/Sidebar":345,"./styled/TestshotContainer":346,"./styled/TestshotContent":347,"classnames":undefined,"escape-html":3,"html-differ":8,"html-differ/lib/logger":9,"lodash":42,"react-dom/server":204,"react-test-renderer":205}],340:[function(require,module,exports){
+},{"./Fetch":337,"./Formatter":338,"./styled/AcceptButton":340,"./styled/Header":341,"./styled/ScenarioLink":343,"./styled/Sidebar":344,"./styled/TestshotContainer":345,"./styled/TestshotContent":346,"./styled/TestshotToggle":347,"classnames":undefined,"escape-html":3,"html-differ":8,"html-differ/lib/logger":9,"lodash":42,"react-dom/server":204,"react-test-renderer":205}],340:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64678,32 +64678,6 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _templateObject = _taggedTemplateLiteral(['\n  display: inline-block;\n  background: #33C3F0;\n  border-radius: 4px;\n  padding: 5px 10px;\n  color: white;\n  text-decoration: none;\n  text-transform: uppercase;\n  font-size: 11px;\n  position: fixed;\n  bottom: 5px;\n  right: 5px;\n'], ['\n  display: inline-block;\n  background: #33C3F0;\n  border-radius: 4px;\n  padding: 5px 10px;\n  color: white;\n  text-decoration: none;\n  text-transform: uppercase;\n  font-size: 11px;\n  position: fixed;\n  bottom: 5px;\n  right: 5px;\n']);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-var _styledComponents = require('styled-components');
-
-var _styledComponents2 = _interopRequireDefault(_styledComponents);
-
-var _mixinsDefault = require('./mixins/default');
-
-var _mixinsDefault2 = _interopRequireDefault(_mixinsDefault);
-
-var Link = _styledComponents2['default'].a(_templateObject);
-
-exports['default'] = (0, _mixinsDefault2['default'])(Link);
-module.exports = exports['default'];
-
-},{"./mixins/default":348,"styled-components":290}],344:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
 var _templateObject = _taggedTemplateLiteral(['\n  color: ', ';\n  background: ', ';\n  display: block;\n  text-align: left;\n  cursor: pointer;\n  padding: 7px 20px;\n  margin-left: -10px;\n  margin-right: -10px;\n  padding-left: 30px;\n'], ['\n  color: ', ';\n  background: ', ';\n  display: block;\n  text-align: left;\n  cursor: pointer;\n  padding: 7px 20px;\n  margin-left: -10px;\n  margin-right: -10px;\n  padding-left: 30px;\n']);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -64728,7 +64702,7 @@ var ScenarioLink = _styledComponents2['default'].a(_templateObject, function (pr
 exports['default'] = (0, _mixinsDefault2['default'])(ScenarioLink);
 module.exports = exports['default'];
 
-},{"./mixins/default":348,"styled-components":290}],345:[function(require,module,exports){
+},{"./mixins/default":348,"styled-components":290}],344:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64756,7 +64730,7 @@ var Sidebar = _styledComponents2['default'].div(_templateObject, function (props
 exports['default'] = (0, _mixinsDefault2['default'])(Sidebar);
 module.exports = exports['default'];
 
-},{"./mixins/default":348,"styled-components":290}],346:[function(require,module,exports){
+},{"./mixins/default":348,"styled-components":290}],345:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64778,7 +64752,7 @@ var TestshotContainer = _styledComponents2['default'].div(_templateObject);
 exports['default'] = TestshotContainer;
 module.exports = exports['default'];
 
-},{"styled-components":290}],347:[function(require,module,exports){
+},{"styled-components":290}],346:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -64802,6 +64776,32 @@ var _mixinsDefault2 = _interopRequireDefault(_mixinsDefault);
 var TestshotContent = _styledComponents2['default'].div(_templateObject);
 
 exports['default'] = (0, _mixinsDefault2['default'])(TestshotContent);
+module.exports = exports['default'];
+
+},{"./mixins/default":348,"styled-components":290}],347:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _templateObject = _taggedTemplateLiteral(['\n  display: inline-block;\n  background: #33C3F0;\n  border-radius: 4px;\n  padding: 5px 10px;\n  color: white;\n  text-decoration: none;\n  text-transform: uppercase;\n  font-size: 11px;\n  position: fixed;\n  bottom: 5px;\n  right: 5px;\n  z-index: 10001;\n'], ['\n  display: inline-block;\n  background: #33C3F0;\n  border-radius: 4px;\n  padding: 5px 10px;\n  color: white;\n  text-decoration: none;\n  text-transform: uppercase;\n  font-size: 11px;\n  position: fixed;\n  bottom: 5px;\n  right: 5px;\n  z-index: 10001;\n']);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+var _styledComponents = require('styled-components');
+
+var _styledComponents2 = _interopRequireDefault(_styledComponents);
+
+var _mixinsDefault = require('./mixins/default');
+
+var _mixinsDefault2 = _interopRequireDefault(_mixinsDefault);
+
+var TestshotToggle = _styledComponents2['default'].a(_templateObject);
+
+exports['default'] = (0, _mixinsDefault2['default'])(TestshotToggle);
 module.exports = exports['default'];
 
 },{"./mixins/default":348,"styled-components":290}],348:[function(require,module,exports){
