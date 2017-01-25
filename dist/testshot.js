@@ -64495,6 +64495,7 @@ var Testshot = React.createClass({
       var newState = _extends({}, _this3.state);
       newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot;
       _this3.setState(newState);
+      _this3.pickNextFailingScenario();
     });
   },
 
@@ -64719,7 +64720,7 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _templateObject = _taggedTemplateLiteral(['\n  flex-basis: ', ';\n  padding: 10px;\n  color: #333;\n  text-align: left;\n'], ['\n  flex-basis: ', ';\n  padding: 10px;\n  color: #333;\n  text-align: left;\n']);
+var _templateObject = _taggedTemplateLiteral(['\n  flex-basis: ', ';\n  padding: 10px;\n  color: #333;\n  text-align: left;\n  max-height: 100vh;\n  overflow-y: auto;\n'], ['\n  flex-basis: ', ';\n  padding: 10px;\n  color: #333;\n  text-align: left;\n  max-height: 100vh;\n  overflow-y: auto;\n']);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -64769,7 +64770,7 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-var _templateObject = _taggedTemplateLiteral(['\n  position: relative;\n  flex-basis: 60%;\n  padding: 10px;\n  background: white;\n'], ['\n  position: relative;\n  flex-basis: 60%;\n  padding: 10px;\n  background: white;\n']);
+var _templateObject = _taggedTemplateLiteral(['\n  position: relative;\n  flex-basis: 60%;\n  padding: 10px;\n  background: white;\n  max-height: 100vh;\n  overflow-y: auto;\n'], ['\n  position: relative;\n  flex-basis: 60%;\n  padding: 10px;\n  background: white;\n  max-height: 100vh;\n  overflow-y: auto;\n']);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 

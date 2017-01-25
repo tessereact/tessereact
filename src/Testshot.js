@@ -120,6 +120,7 @@ const Testshot = React.createClass({
       const newState = Object.assign({}, this.state)
       newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
       this.setState(newState)
+      this.pickNextFailingScenario()
     })
   },
 

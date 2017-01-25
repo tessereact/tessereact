@@ -6,6 +6,8 @@ const TestshotContent = styled.div`
   flex-basis: 60%;
   padding: 10px;
   background: white;
+  max-height: 100vh;
+  overflow-y: auto;
 `
 
 export default defaultMixin(TestshotContent)

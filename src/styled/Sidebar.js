@@ -6,6 +6,8 @@ const Sidebar = styled.div`
   padding: 10px;
   color: #333;
   text-align: left;
+  max-height: 100vh;
+  overflow-y: auto;
 `
 
 export default defaultMixin(Sidebar)
