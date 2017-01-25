@@ -64386,12 +64386,12 @@ var Testshot = React.createClass({
   displayName: 'Testshot',
 
   getInitialState: function getInitialState() {
-    var snapshots = this.props.data.map(function (f) {
+    var scenarios = this.props.data.map(function (f) {
       return f();
     });
     return {
-      selectedSnapshot: snapshots[0] || {},
-      snapshots: snapshots
+      selectedScenario: scenarios[0] || {},
+      scenarios: scenarios
     };
   },
 
@@ -64399,21 +64399,21 @@ var Testshot = React.createClass({
   componentWillMount: function componentWillMount() {
     var _this = this;
 
-    console.log(this.state.snapshots);
+    console.log(this.state.scenarios);
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.');
     var url = '//' + this.props.host + ':' + this.props.port + '/snapshots-list';
     (0, _Fetch.postJSON)(url, {
-      data: this.state.snapshots.map(function (s) {
+      data: this.state.scenarios.map(function (s) {
         return { name: s.name };
       })
     }).then(function (response) {
       response.json().then(function (json) {
-        var newData = _this.state.snapshots.map(function (s) {
+        var newData = _this.state.scenarios.map(function (s) {
           s.previousSnapshot = _lodash2['default'].find(json, { name: s.name }).previousSnapshot;
           return s;
         });
         // TODO: Avoid setting states few times in a row
-        _this.setState({ snapshots: newData });
+        _this.setState({ scenarios: newData });
         _this.pickNextFailingScenario();
       });
     });
@@ -64436,7 +64436,7 @@ var Testshot = React.createClass({
         React.createElement(
           'ul',
           null,
-          _lodash2['default'].map(this.state.snapshots, function (value, i) {
+          _lodash2['default'].map(this.state.scenarios, function (value, i) {
             return React.createElement(
               'li',
               { key: i },
@@ -64446,7 +64446,7 @@ var Testshot = React.createClass({
                   noDiff: _this2.noDiff(value),
                   onClick: _this2.handleSelect.bind(_this2, value.name),
                   key: value.name,
-                  active: _this2.state.selectedSnapshot.name === value.name
+                  active: _this2.state.selectedScenario.name === value.name
                 },
                 value.name
               )
@@ -64460,10 +64460,10 @@ var Testshot = React.createClass({
         React.createElement(
           _styledHeader2['default'],
           null,
-          this.state.selectedSnapshot.name
+          this.state.selectedScenario.name
         ),
-        this.state.selectedSnapshot.component,
-        !_lodash2['default'].isEqual(this.state.selectedSnapshot.snapshot, this.state.selectedSnapshot.previousSnapshot) && React.createElement(
+        this.state.selectedScenario.component,
+        !_lodash2['default'].isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) && React.createElement(
           _styledAcceptButton2['default'],
           { onClick: this.acceptSnapshot.bind(this) },
           'Accept'
@@ -64486,8 +64486,8 @@ var Testshot = React.createClass({
   acceptSnapshot: function acceptSnapshot() {
     var url = '//' + this.props.host + ':' + this.props.port + '/snapshots';
     (0, _Fetch.postJSON)(url, {
-      name: this.state.selectedSnapshot.name,
-      snapshot: this.state.selectedSnapshot.snapshot
+      name: this.state.selectedScenario.name,
+      snapshot: this.state.selectedScenario.snapshot
     }).then(function () {
       // TODO: Remove page reloading
       window.location.href = '/';
@@ -64495,12 +64495,12 @@ var Testshot = React.createClass({
   },
 
   pickNextFailingScenario: function pickNextFailingScenario() {
-    var failingScenario = _lodash2['default'].find(this.state.snapshots, function (s) {
+    var failingScenario = _lodash2['default'].find(this.state.scenarios, function (s) {
       return !_lodash2['default'].isEqual(s.snapshot, s.previousSnapshot);
     });
     if (failingScenario) {
       var newState = _extends({}, this.state);
-      newState.selectedSnapshot = failingScenario;
+      newState.selectedScenario = failingScenario;
       this.setState(newState);
     }
   },
@@ -64510,7 +64510,7 @@ var Testshot = React.createClass({
   },
 
   renderDiff: function renderDiff() {
-    if (this.noDiff(this.state.selectedSnapshot)) {
+    if (this.noDiff(this.state.selectedScenario)) {
       return React.createElement(
         'p',
         null,
@@ -64531,12 +64531,12 @@ var Testshot = React.createClass({
 
   computeDiff: function computeDiff() {
     console.log(_Formatter2['default']);
-    var diff = htmlDiffer.diffHtml(this.state.selectedSnapshot.previousSnapshot, this.state.selectedSnapshot.snapshot);
+    var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot);
     return React.createElement(_Formatter2['default'], { nodes: diff });
   },
 
   renderPreviousSnapshot: function renderPreviousSnapshot() {
-    if (this.state.selectedSnapshot.previousSnapshot) {
+    if (this.state.selectedScenario.previousSnapshot) {
       return React.createElement(
         'div',
         null,
@@ -64551,7 +64551,7 @@ var Testshot = React.createClass({
           React.createElement(
             'pre',
             null,
-            JSON.stringify(this.state.selectedSnapshot.previousSnapshot, null, 2)
+            JSON.stringify(this.state.selectedScenario.previousSnapshot, null, 2)
           )
         )
       );
@@ -64559,7 +64559,7 @@ var Testshot = React.createClass({
   },
 
   handleSelect: function handleSelect(key) {
-    this.setState({ selectedSnapshot: _lodash2['default'].find(this.state.snapshots, ['name', key]) });
+    this.setState({ selectedScenario: _lodash2['default'].find(this.state.scenarios, ['name', key]) });
   }
 
 });

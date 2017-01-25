@@ -47,28 +47,28 @@ export const scenario = function (testName, componentBuilder) {
 const Testshot = React.createClass({
 
   getInitialState () {
-    const snapshots = this.props.data.map((f) => (f()))
+    const scenarios = this.props.data.map((f) => (f()))
     return {
-      selectedSnapshot: snapshots[0] || {},
-      snapshots: snapshots
+      selectedScenario: scenarios[0] || {},
+      scenarios: scenarios
     }
   },
 
   // TODO: Pass URL from config
   componentWillMount () {
-    console.log(this.state.snapshots)
+    console.log(this.state.scenarios)
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.')
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
     postJSON(url, {
-      data: this.state.snapshots.map((s) => ({name: s.name}))
+      data: this.state.scenarios.map((s) => ({name: s.name}))
     }).then((response) => {
       response.json().then((json) => {
-        const newData = this.state.snapshots.map((s) => {
+        const newData = this.state.scenarios.map((s) => {
           s.previousSnapshot = lodash.find(json, {name: s.name}).previousSnapshot
           return s
         })
         // TODO: Avoid setting states few times in a row
-        this.setState({snapshots: newData})
+        this.setState({scenarios: newData})
         this.pickNextFailingScenario()
       })
     })
@@ -80,13 +80,13 @@ const Testshot = React.createClass({
         <Sidebar>
           <Header>Scenarios</Header>
           <ul>
-          {lodash.map(this.state.snapshots, (value, i) => {
+          {lodash.map(this.state.scenarios, (value, i) => {
             return (<li key={i}>
               <ScenarioLink
                 noDiff={this.noDiff(value)}
                 onClick={this.handleSelect.bind(this, value.name)}
                 key={value.name}
-                active={this.state.selectedSnapshot.name === value.name}
+                active={this.state.selectedScenario.name === value.name}
               >
                 {value.name}
               </ScenarioLink>
@@ -95,9 +95,9 @@ const Testshot = React.createClass({
           </ul>
         </Sidebar>
         <TestshotContent>
-          <Header>{this.state.selectedSnapshot.name}</Header>
-          {this.state.selectedSnapshot.component}
-          {!lodash.isEqual(this.state.selectedSnapshot.snapshot, this.state.selectedSnapshot.previousSnapshot) &&
+          <Header>{this.state.selectedScenario.name}</Header>
+          {this.state.selectedScenario.component}
+          {!lodash.isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
             <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
         </TestshotContent>
         <Sidebar right>
@@ -113,8 +113,8 @@ const Testshot = React.createClass({
   acceptSnapshot () {
     const url = `//${this.props.host}:${this.props.port}/snapshots`
     postJSON(url, {
-      name: this.state.selectedSnapshot.name,
-      snapshot: this.state.selectedSnapshot.snapshot
+      name: this.state.selectedScenario.name,
+      snapshot: this.state.selectedScenario.snapshot
     }).then(function() {
       // TODO: Remove page reloading
       window.location.href = '/'
@@ -122,10 +122,10 @@ const Testshot = React.createClass({
   },
 
   pickNextFailingScenario () {
-    const failingScenario = lodash.find(this.state.snapshots, (s) => !lodash.isEqual(s.snapshot, s.previousSnapshot))
+    const failingScenario = lodash.find(this.state.scenarios, (s) => !lodash.isEqual(s.snapshot, s.previousSnapshot))
     if (failingScenario) {
       const newState = Object.assign({}, this.state)
-      newState.selectedSnapshot = failingScenario
+      newState.selectedScenario = failingScenario
       this.setState(newState)
     }
   },
@@ -135,7 +135,7 @@ const Testshot = React.createClass({
   },
 
   renderDiff() {
-    if (this.noDiff(this.state.selectedSnapshot)) {
+    if (this.noDiff(this.state.selectedScenario)) {
       return <p>Snapshots are identical!</p>
     } else {
       return <div>
@@ -146,21 +146,21 @@ const Testshot = React.createClass({
 
   computeDiff() {
     console.log(Formatter)
-    var diff = htmlDiffer.diffHtml(this.state.selectedSnapshot.previousSnapshot, this.state.selectedSnapshot.snapshot)
+    var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot)
     return <Formatter nodes={diff} />
   },
 
   renderPreviousSnapshot() {
-    if (this.state.selectedSnapshot.previousSnapshot) {
+    if (this.state.selectedScenario.previousSnapshot) {
       return <div>
         <h4>Previous snapshot:</h4>
-        <div><pre>{JSON.stringify(this.state.selectedSnapshot.previousSnapshot, null, 2) }</pre></div>
+        <div><pre>{JSON.stringify(this.state.selectedScenario.previousSnapshot, null, 2) }</pre></div>
       </div>
     }
   },
 
   handleSelect (key) {
-    this.setState({selectedSnapshot: lodash.find(this.state.snapshots, ['name', key])})
+    this.setState({selectedScenario: lodash.find(this.state.scenarios, ['name', key])})
   }
 
 })
