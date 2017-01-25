@@ -1,5 +1,5 @@
 const React = require('react')
-import lodash from 'lodash'
+import {find, map, isEqual} from 'lodash'
 // const enzyme = require('enzyme')
 import ReactTestRenderer from 'react-test-renderer'
 import classnames from 'classnames'
@@ -63,7 +63,7 @@ const Testshot = React.createClass({
     }).then((response) => {
       response.json().then((json) => {
         const newData = this.state.scenarios.map((s) => {
-          s.previousSnapshot = lodash.find(json, {name: s.name}).previousSnapshot
+          s.previousSnapshot = find(json, {name: s.name}).previousSnapshot
           return s
         })
         // TODO: Avoid setting states few times in a row
@@ -81,7 +81,7 @@ const Testshot = React.createClass({
         <Sidebar>
           <Header>Scenarios</Header>
           <ul>
-          {lodash.map(this.state.scenarios, (value, i) => {
+          {map(this.state.scenarios, (value, i) => {
             return (<li key={i}>
               <ScenarioLink
                 noDiff={this.noDiff(value)}
@@ -98,7 +98,7 @@ const Testshot = React.createClass({
         <TestshotContent>
           <Header>{this.state.selectedScenario.name}</Header>
           {this.state.selectedScenario.component}
-          {!lodash.isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
+          {!isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
             <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
         </TestshotContent>
         <Sidebar right>
@@ -124,7 +124,7 @@ const Testshot = React.createClass({
   },
 
   pickNextFailingScenario () {
-    const failingScenario = lodash.find(this.state.scenarios, (s) => !lodash.isEqual(s.snapshot, s.previousSnapshot))
+    const failingScenario = find(this.state.scenarios, (s) => !isEqual(s.snapshot, s.previousSnapshot))
     if (failingScenario) {
       const newState = Object.assign({}, this.state)
       newState.selectedScenario = failingScenario
@@ -133,7 +133,7 @@ const Testshot = React.createClass({
   },
 
   noDiff(scenario) {
-    return lodash.isEqual(scenario.snapshot, scenario.previousSnapshot)
+    return isEqual(scenario.snapshot, scenario.previousSnapshot)
   },
 
   renderDiff() {
@@ -161,7 +161,7 @@ const Testshot = React.createClass({
   },
 
   handleSelect (key) {
-    this.setState({selectedScenario: lodash.find(this.state.scenarios, ['name', key])})
+    this.setState({selectedScenario: find(this.state.snapshots, ['name', key])})
   }
 })
 

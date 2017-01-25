@@ -4,6 +4,7 @@ const autoprefixer = require('autoprefixer')
 
 const env = process.env.NODE_ENV
 const isDevelopment = env === 'development'
+const isProduction = env === 'production'
 
 const entry = {
   app: ['./src/index']
@@ -17,9 +18,18 @@ if (isDevelopment) {
 }
 
 const plugins = []
+
 if (isDevelopment) {
   plugins.push(new webpack.HotModuleReplacementPlugin())
   plugins.push(new webpack.NoErrorsPlugin())
+}
+
+if (isProduction) {
+  plugins.push(new webpack.optimize.DedupePlugin())
+  plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {warnings: false},
+    comments: false
+  }))
 }
 
 module.exports = {
