@@ -56,7 +56,6 @@ const Testshot = React.createClass({
 
   // TODO: Pass URL from config
   componentWillMount () {
-    console.log(this.state.scenarios)
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.')
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
     postJSON(url, {
@@ -117,9 +116,10 @@ const Testshot = React.createClass({
     postJSON(url, {
       name: this.state.selectedScenario.name,
       snapshot: this.state.selectedScenario.snapshot
-    }).then(function() {
-      // TODO: Remove page reloading
-      window.location.href = '/'
+    }).then(() => {
+      const newState = Object.assign({}, this.state)
+      newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
+      this.setState(newState)
     })
   },
 
@@ -147,7 +147,6 @@ const Testshot = React.createClass({
   },
 
   computeDiff() {
-    console.log(Formatter)
     var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot)
     return <Formatter nodes={diff} />
   },

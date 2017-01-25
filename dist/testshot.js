@@ -64399,7 +64399,6 @@ var Testshot = React.createClass({
   componentWillMount: function componentWillMount() {
     var _this = this;
 
-    console.log(this.state.scenarios);
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.');
     var url = '//' + this.props.host + ':' + this.props.port + '/snapshots-list';
     (0, _Fetch.postJSON)(url, {
@@ -64486,13 +64485,16 @@ var Testshot = React.createClass({
 
   // TODO: Extract requests to a different module
   acceptSnapshot: function acceptSnapshot() {
+    var _this3 = this;
+
     var url = '//' + this.props.host + ':' + this.props.port + '/snapshots';
     (0, _Fetch.postJSON)(url, {
       name: this.state.selectedScenario.name,
       snapshot: this.state.selectedScenario.snapshot
     }).then(function () {
-      // TODO: Remove page reloading
-      window.location.href = '/';
+      var newState = _extends({}, _this3.state);
+      newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot;
+      _this3.setState(newState);
     });
   },
 
@@ -64532,7 +64534,6 @@ var Testshot = React.createClass({
   },
 
   computeDiff: function computeDiff() {
-    console.log(_Formatter2['default']);
     var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot);
     return React.createElement(_Formatter2['default'], { nodes: diff });
   },
