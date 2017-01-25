@@ -106,9 +106,8 @@ const Testshot = React.createClass({
           {this.renderDiff()}
         </Sidebar>
       </TestshotContainer>
-    );
+    )
   },
-
 
   // TODO: Extract requests to a different module
   acceptSnapshot () {
@@ -164,7 +163,6 @@ const Testshot = React.createClass({
   handleSelect (key) {
     this.setState({selectedScenario: lodash.find(this.state.scenarios, ['name', key])})
   }
-
 })
 
 // TODO: Button and Testshot workspace should be rendered only in Dev environment
