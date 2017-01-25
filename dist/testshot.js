@@ -64416,6 +64416,8 @@ var Testshot = React.createClass({
         _this.setState({ scenarios: newData });
         _this.pickNextFailingScenario();
       });
+    }, function () {
+      alert('Snapshot server is not available!');
     });
   },
 

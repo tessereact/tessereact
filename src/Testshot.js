@@ -71,6 +71,8 @@ const Testshot = React.createClass({
         this.setState({scenarios: newData})
         this.pickNextFailingScenario()
       })
+    }, () => {
+      alert('Snapshot server is not available!')
     })
   },
 
