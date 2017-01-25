@@ -10,7 +10,7 @@ const config = JSON.parse(fs.readFileSync(process.cwd()+'/'+CONFIG_NAME, 'utf8')
 const cors = require('cors');
 const staticPath = __dirname + '/build';
 const appStaticPath = process.cwd() + '/build';
-const db = new Store(config.db);
+const db = new Store(config.snapshots_path);
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
