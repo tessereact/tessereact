@@ -1,6 +1,6 @@
 'use strict';
 
-const CONFIG_NAME = 'testshot.json';
+const CONFIG_NAME = 'testshot.config.json';
 const express = require('express');
 const fs = require('fs');
 const Store = require("jfs");
