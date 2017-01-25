@@ -21,7 +21,7 @@ app.use(cors({
 app.options('/snapshots-list', cors())
 app.post('/snapshots-list', function (req, res) {
   db.get('snapshots', function(err, obj){
-    console.log('Stored snapshots', Object.keys(obj))
+    console.log('Stored snapshots: ', obj)
     const data = req.body.data
     var snapshots = data.map(s => {
       s.previousSnapshot = obj ? obj[s.name] : null
@@ -48,5 +48,6 @@ app.use('/app', express.static(appStaticPath));
 
 app.listen(config.port, function () {
   console.log('Snapshot server is running on ' + config.port)
+  console.log('Config: ', config)
 })
 

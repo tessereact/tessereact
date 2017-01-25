@@ -28,36 +28,39 @@ export const context = function (callback) {
   callback()
 }
 
-// TODO: Delay this function execution
 // TODO: Add simulations from prev implementation
 export const scenario = function (testName, componentBuilder) {
   if (names.indexOf(testName) > -1) {
     throw new Error('Scenario with name "' + testName + '" already exists');
   }
   names.push(testName)
-  const json = ReactTestRenderer.create(componentBuilder()).toJSON()
-  return data.push({
-    name: testName,
-    component: componentBuilder(),
-    snapshot: ReactDOMServer.renderToStaticMarkup(componentBuilder())
+  data.push(function() {
+    const component = componentBuilder()
+    return {
+      name: testName,
+      component: component,
+      snapshot: ReactDOMServer.renderToStaticMarkup(component)
+    }
   })
 }
 
 const Testshot = React.createClass({
 
   getInitialState () {
+    const snapshots = this.props.data.map((f) => (f()))
     return {
-      selectedSnapshot: this.props.snapshots[0] || {},
-      snapshots: this.props.snapshots
+      selectedSnapshot: snapshots[0] || {},
+      snapshots: snapshots
     }
   },
 
   // TODO: Pass URL from config
   componentWillMount () {
+    console.log(this.state.snapshots)
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.')
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
     postJSON(url, {
-      data: this.state.snapshots
+      data: this.state.snapshots.map((s) => ({name: s.name}))
     }).then((response) => {
       response.json().then((json) => {
         const newData = this.state.snapshots.map((s) => {
@@ -173,7 +176,7 @@ const TestshotWrapper = React.createClass({
   render () {
     return <div>
       {this.props.children}
-      {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} snapshots={data} />}
+      {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} data={data} />}
       <TestshotToggle onClick={this.toggleTestshot.bind(this)} href="#">Testshot</TestshotToggle>
     </div>
   },

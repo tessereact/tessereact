@@ -64365,18 +64365,19 @@ var context = function context(callback) {
 };
 
 exports.context = context;
-// TODO: Delay this function execution
 // TODO: Add simulations from prev implementation
 var scenario = function scenario(testName, componentBuilder) {
   if (names.indexOf(testName) > -1) {
     throw new Error('Scenario with name "' + testName + '" already exists');
   }
   names.push(testName);
-  var json = _reactTestRenderer2['default'].create(componentBuilder()).toJSON();
-  return data.push({
-    name: testName,
-    component: componentBuilder(),
-    snapshot: _reactDomServer2['default'].renderToStaticMarkup(componentBuilder())
+  data.push(function () {
+    var component = componentBuilder();
+    return {
+      name: testName,
+      component: component,
+      snapshot: _reactDomServer2['default'].renderToStaticMarkup(component)
+    };
   });
 };
 
@@ -64385,9 +64386,12 @@ var Testshot = React.createClass({
   displayName: 'Testshot',
 
   getInitialState: function getInitialState() {
+    var snapshots = this.props.data.map(function (f) {
+      return f();
+    });
     return {
-      selectedSnapshot: this.props.snapshots[0] || {},
-      snapshots: this.props.snapshots
+      selectedSnapshot: snapshots[0] || {},
+      snapshots: snapshots
     };
   },
 
@@ -64395,10 +64399,13 @@ var Testshot = React.createClass({
   componentWillMount: function componentWillMount() {
     var _this = this;
 
+    console.log(this.state.snapshots);
     if (!this.props.host || !this.props.port) throw new Error('Configure "host" and "port" please.');
     var url = '//' + this.props.host + ':' + this.props.port + '/snapshots-list';
     (0, _Fetch.postJSON)(url, {
-      data: this.state.snapshots
+      data: this.state.snapshots.map(function (s) {
+        return { name: s.name };
+      })
     }).then(function (response) {
       response.json().then(function (json) {
         var newData = _this.state.snapshots.map(function (s) {
@@ -64572,7 +64579,7 @@ var TestshotWrapper = React.createClass({
       'div',
       null,
       this.props.children,
-      this.state.show && React.createElement(Testshot, { host: this.props.server.host, port: this.props.server.port, snapshots: data }),
+      this.state.show && React.createElement(Testshot, { host: this.props.server.host, port: this.props.server.port, data: data }),
       React.createElement(
         _styledTestshotToggle2['default'],
         { onClick: this.toggleTestshot.bind(this), href: '#' },
