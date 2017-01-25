@@ -6,3 +6,5 @@ console.log('--- WELCOME TO TESTSHOT DEVELOPMENT ---')
 
 init()
 scenario()
+
+if (module.hot) module.hot.accept()

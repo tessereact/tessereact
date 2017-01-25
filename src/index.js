@@ -1,5 +1,6 @@
 // XXX: Main entry point
 // Exposes public methods of the application
+import Testshot from 'src/Testshot'
 
-export const init = () => console.log('INIT')
-export const scenario = () => console.log('SCENARIO')
+export const init = () => {}
+export const scenario = () => {}

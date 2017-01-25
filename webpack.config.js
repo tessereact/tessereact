@@ -10,8 +10,10 @@ const entry = {
 }
 
 if (isDevelopment) {
-  entry.app.push('webpack-hot-middleware/client')
-  entry.dev = './example/index'
+  entry.dev = [
+    './example/index',
+    'webpack-hot-middleware/client'
+  ]
 }
 
 const plugins = []
