@@ -17,4 +17,3 @@ const AcceptButton = styled.button`
 `
 
 export default defaultMixin(AcceptButton)
-

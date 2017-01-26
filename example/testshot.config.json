@@ -1,0 +1,4 @@
+{
+  "port": 5001,
+  "snapshots_path": "example/snapshots"
+}

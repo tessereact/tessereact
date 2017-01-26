@@ -1,4 +1,3 @@
-import styled from 'styled-components'
 import createMixin from 'styled-mixin'
 
 const defaultMixin = createMixin`

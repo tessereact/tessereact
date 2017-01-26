@@ -1,12 +1,8 @@
 const React = require('react')
-import lodash from 'lodash'
+import {find, map, isEqual} from 'lodash'
 // const enzyme = require('enzyme')
-import ReactTestRenderer from 'react-test-renderer'
-import classnames from 'classnames'
 import ReactDOMServer from 'react-dom/server'
-import {HtmlDiffer} from "html-differ"
-import logger from 'html-differ/lib/logger'
-import escape from 'escape-html'
+import {HtmlDiffer} from 'html-differ'
 import Formatter from './Formatter'
 import {postJSON} from './Fetch'
 
@@ -19,7 +15,7 @@ import AcceptButton from './styled/AcceptButton'
 import TestshotContent from './styled/TestshotContent'
 import ScenarioLink from './styled/ScenarioLink'
 
-const htmlDiffer = new HtmlDiffer({});
+const htmlDiffer = new HtmlDiffer({})
 var names = []
 var data = []
 
@@ -31,10 +27,10 @@ export const context = function (callback) {
 // TODO: Add simulations from prev implementation
 export const scenario = function (testName, componentBuilder) {
   if (names.indexOf(testName) > -1) {
-    throw new Error('Scenario with name "' + testName + '" already exists');
+    throw new Error('Scenario with name "' + testName + '" already exists')
   }
   names.push(testName)
-  data.push(function() {
+  data.push(() => {
     const component = componentBuilder()
     return {
       name: testName,
@@ -45,7 +41,6 @@ export const scenario = function (testName, componentBuilder) {
 }
 
 const Testshot = React.createClass({
-
   getInitialState () {
     const scenarios = this.props.data.map((f) => (f()))
     return {
@@ -63,7 +58,7 @@ const Testshot = React.createClass({
     }).then((response) => {
       response.json().then((json) => {
         const newData = this.state.scenarios.map((s) => {
-          s.previousSnapshot = lodash.find(json, {name: s.name}).previousSnapshot
+          s.previousSnapshot = find(json, {name: s.name}).previousSnapshot
           return s
         })
         // TODO: Avoid setting states few times in a row
@@ -71,34 +66,34 @@ const Testshot = React.createClass({
         this.pickNextFailingScenario()
       })
     }, () => {
-      alert('Snapshot server is not available!')
+      window.alert('Snapshot server is not available!')
     })
   },
 
-  render() {
+  render () {
     return (
       <TestshotContainer>
         <Sidebar>
           <Header>Scenarios</Header>
           <ul>
-          {lodash.map(this.state.scenarios, (value, i) => {
-            return (<li key={i}>
-              <ScenarioLink
-                noDiff={this.noDiff(value)}
-                onClick={this.handleSelect.bind(this, value.name)}
-                key={value.name}
-                active={this.state.selectedScenario.name === value.name}
-              >
-                {value.name}
-              </ScenarioLink>
-            </li>)
-          })}
+            {map(this.state.scenarios, (value, i) => {
+              return (<li key={i}>
+                <ScenarioLink
+                  noDiff={this.noDiff(value)}
+                  onClick={this.handleSelect.bind(this, value.name)}
+                  key={value.name}
+                  active={this.state.selectedScenario.name === value.name}
+                >
+                  {value.name}
+                </ScenarioLink>
+              </li>)
+            })}
           </ul>
         </Sidebar>
         <TestshotContent>
           <Header>{this.state.selectedScenario.name}</Header>
           {this.state.selectedScenario.component}
-          {!lodash.isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
+          {!isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
             <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
         </TestshotContent>
         <Sidebar right>
@@ -106,9 +101,8 @@ const Testshot = React.createClass({
           {this.renderDiff()}
         </Sidebar>
       </TestshotContainer>
-    );
+    )
   },
-
 
   // TODO: Extract requests to a different module
   acceptSnapshot () {
@@ -125,7 +119,7 @@ const Testshot = React.createClass({
   },
 
   pickNextFailingScenario () {
-    const failingScenario = lodash.find(this.state.scenarios, (s) => !lodash.isEqual(s.snapshot, s.previousSnapshot))
+    const failingScenario = find(this.state.scenarios, (s) => !isEqual(s.snapshot, s.previousSnapshot))
     if (failingScenario) {
       const newState = Object.assign({}, this.state)
       newState.selectedScenario = failingScenario
@@ -133,26 +127,28 @@ const Testshot = React.createClass({
     }
   },
 
-  noDiff(scenario) {
-    return lodash.isEqual(scenario.snapshot, scenario.previousSnapshot)
+  noDiff (scenario) {
+    return isEqual(scenario.snapshot, scenario.previousSnapshot)
   },
 
-  renderDiff() {
+  renderDiff () {
     if (this.noDiff(this.state.selectedScenario)) {
       return <p>Snapshots are identical!</p>
     } else {
-      return <div>
-      <pre>{this.computeDiff()}</pre>
-    </div>
+      return (
+        <div>
+          <pre>{this.computeDiff()}</pre>
+        </div>
+      )
     }
   },
 
-  computeDiff() {
+  computeDiff () {
     var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot)
     return <Formatter nodes={diff} />
   },
 
-  renderPreviousSnapshot() {
+  renderPreviousSnapshot () {
     if (this.state.selectedScenario.previousSnapshot) {
       return <div>
         <h4>Previous snapshot:</h4>
@@ -162,16 +158,15 @@ const Testshot = React.createClass({
   },
 
   handleSelect (key) {
-    this.setState({selectedScenario: lodash.find(this.state.scenarios, ['name', key])})
+    this.setState({selectedScenario: find(this.state.scenarios, ['name', key])})
   }
-
 })
 
 // TODO: Button and Testshot workspace should be rendered only in Dev environment
 const TestshotWrapper = React.createClass({
   getInitialState () {
     return {
-      show: localStorage.getItem('testing') == 'true'
+      show: window.localStorage.getItem('testing') === 'true'
     }
   },
 
@@ -184,7 +179,7 @@ const TestshotWrapper = React.createClass({
   },
 
   toggleTestshot () {
-    localStorage.setItem('testing', !this.state.show);
+    window.localStorage.setItem('testing', !this.state.show)
     this.setState({show: !this.state.show})
   }
 })

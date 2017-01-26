@@ -1,27 +1,31 @@
-'use strict';
+'use strict'
+const path = require('path')
+const express = require('express')
+const fs = require('fs')
+const Store = require('jfs')
+const bodyParser = require('body-parser')
+const cors = require('cors')
 
-const CONFIG_NAME = 'testshot.config.json';
-const express = require('express');
-const fs = require('fs');
-const Store = require("jfs");
-const bodyParser = require('body-parser');
-const app = express();
-const config = JSON.parse(fs.readFileSync(process.cwd()+'/'+CONFIG_NAME, 'utf8'));
-const cors = require('cors');
-const staticPath = __dirname + '/build';
-const appStaticPath = process.cwd() + '/build';
-const db = new Store(config.snapshots_path);
+const configFile = path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json')
+const config = JSON.parse(fs.readFileSync(configFile, 'utf8'))
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+const app = express()
+const db = new Store(config.snapshots_path)
+
+app.use(bodyParser.json()) // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 app.use(cors({
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
+  methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
 }))
 
+// TODO: Why we are doing `post` instead of `get` here?
+// Seems we need just one route (/snapshots) with `get/post` support.
 app.options('/snapshots-list', cors())
-app.post('/snapshots-list', function (req, res) {
-  db.get('snapshots', function(err, obj){
-    console.log('Stored snapshots: ', obj)
+app.post('/snapshots-list', (req, res) => {
+  db.get('snapshots', (err, obj) => {
+    if (err) console.log(err)
+    // TODO: Improve logging
+    console.log('Stored snapshots', Object.keys(obj))
     const data = req.body.data
     var snapshots = data.map(s => {
       s.previousSnapshot = obj ? obj[s.name] : null
@@ -32,22 +36,18 @@ app.post('/snapshots-list', function (req, res) {
 })
 
 app.options('/snapshots', cors())
-app.post('/snapshots', function(req, res) {
-  console.log('POST')
-  db.get('snapshots', function(err, obj){
+app.post('/snapshots', (req, res) => {
+  db.get('snapshots', (err, obj) => {
+    if (err) console.log(err)
     let data = Object.assign({}, obj)
     data[req.body.name] = req.body.snapshot
-    db.save('snapshots', data, function() {
+    db.save('snapshots', data, () => {
       res.send('OK')
     })
   })
 })
 
-// app.use(express.static(staticPath));
-app.use('/app', express.static(appStaticPath));
-
 app.listen(config.port, function () {
   console.log('Snapshot server is running on ' + config.port)
   console.log('Config: ', config)
 })
-

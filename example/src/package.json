@@ -1,8 +1,0 @@
-{
-  "dummy": "package json",
-  "devDependencies": {
-    "escape-html": "^1.0.3",
-    "js-beautify": "^1.6.8",
-    "prettydiff": "^99.0.1"
-  }
-}
