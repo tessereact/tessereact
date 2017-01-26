@@ -10,7 +10,7 @@ export default function init () {
   const options = {
     server: {
       host: 'localhost',
-      port: '3001'
+      port: '5001'
     }
   }
 

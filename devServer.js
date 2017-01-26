@@ -7,7 +7,7 @@ const webpackConfig = require('./webpack.config')
 
 const app = express()
 const compiler = webpack(webpackConfig)
-const port = process.env.PORT || 4004
+const port = process.env.PORT || 5000
 
 app.use(express.static(path.join(process.cwd(), 'assets')))
 

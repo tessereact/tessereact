@@ -6,7 +6,7 @@ const Store = require('jfs')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-const configFile = path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.json')
+const configFile = path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json')
 const config = JSON.parse(fs.readFileSync(configFile, 'utf8'))
 
 const app = express()
