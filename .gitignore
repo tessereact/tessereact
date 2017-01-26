@@ -16,9 +16,6 @@ coverage.html
 # Dependency directory
 node_modules
 
-# Example build directory
-dist
-
 # Editor and other tmp files
 *.swp
 *.un~

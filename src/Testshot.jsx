@@ -1,5 +1,5 @@
 const React = require('react')
-import {find, map, isEqual} from 'lodash'
+import {filter, find, map, isEqual} from 'lodash'
 // const enzyme = require('enzyme')
 import ReactDOMServer from 'react-dom/server'
 import {HtmlDiffer} from 'html-differ'
@@ -14,6 +14,7 @@ import Sidebar from './styled/Sidebar'
 import AcceptButton from './styled/AcceptButton'
 import TestshotContent from './styled/TestshotContent'
 import ScenarioLink from './styled/ScenarioLink'
+import FilterInput from './styled/FilterInput'
 
 const htmlDiffer = new HtmlDiffer({})
 var names = []
@@ -45,7 +46,8 @@ const Testshot = React.createClass({
     const scenarios = this.props.data.map((f) => (f()))
     return {
       selectedScenario: scenarios[0] || {},
-      scenarios: scenarios
+      scenarios: scenarios,
+      filter: ''
     }
   },
 
@@ -59,6 +61,7 @@ const Testshot = React.createClass({
       response.json().then((json) => {
         const newData = this.state.scenarios.map((s) => {
           s.previousSnapshot = find(json, {name: s.name}).previousSnapshot
+          s.show = true
           return s
         })
         // TODO: Avoid setting states few times in a row
@@ -70,13 +73,27 @@ const Testshot = React.createClass({
     })
   },
 
+  _filterScenarios (event) {
+    const newState = Object.assign({}, this.state)
+    newState.filter = event.target.value
+    if (event.target.value.length >= 2) {
+      newState.scenarios.map(s => {
+        s.show = s.name.toLowerCase().match(event.target.value)
+      })
+    } else {
+      newState.scenarios.map(s => { s.show = true })
+    }
+    this.setState(newState)
+  },
+
   render () {
     return (
       <TestshotContainer>
         <Sidebar>
           <Header>Scenarios</Header>
+          <FilterInput placeholder='filter' type="text" value={this.state.filter}  onChange={this._filterScenarios}/>
           <ul>
-            {map(this.state.scenarios, (value, i) => {
+            {map(filter(this.state.scenarios, s => s.show), (value, i) => {
               return (<li key={i}>
                 <ScenarioLink
                   noDiff={this.noDiff(value)}
