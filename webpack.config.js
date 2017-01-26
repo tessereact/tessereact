@@ -24,6 +24,8 @@ if (isDevelopment) {
   plugins.push(new webpack.NoErrorsPlugin())
 }
 
+// TODO: Check if it makes sense to build 2 versions:
+// Minified and not minified. Or think about sourcemaps.
 if (isProduction) {
   plugins.push(new webpack.optimize.DedupePlugin())
   plugins.push(new webpack.optimize.UglifyJsPlugin({
@@ -38,7 +40,9 @@ module.exports = {
   output: {
     path: path.join(process.cwd(), 'dist'),
     publicPath: '/assets/',
-    filename: '[name].js'
+    filename: '[name].js',
+    library: 'testshot',
+    libraryTarget: 'umd'
   },
   resolve: {
     root: process.cwd(),

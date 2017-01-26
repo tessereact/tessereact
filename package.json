@@ -2,7 +2,7 @@
   "name": "testshot",
   "version": "0.1.0",
   "description": "testshot",
-  "main": "dist/app.js",
+  "main": "./dist/app.js",
   "author": "Eduard Tsech",
   "homepage": "https://github.com/toptal/testshot",
   "repository": {
@@ -71,6 +71,7 @@
   "scripts": {
     "dev": "NODE_ENV=development node devServer.js",
     "build": "NODE_ENV=production webpack",
+    "postinstall": "NODE_ENV=production webpack",
     "release": "TODO...",
     "lint": "eslint ./; true",
     "test": "echo \"no tests yet\" && exit 0"

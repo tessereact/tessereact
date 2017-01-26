@@ -2,23 +2,26 @@
 // Exposes public methods of the application
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Testshot, {scenario as testshotScenario} from 'src/Testshot'
+import Testshot, {scenario} from 'src/Testshot'
 
-export const init = () => {
-  const wrapperElement = document.createElement('div')
-  document.body.appendChild(wrapperElement)
+module.exports = {
+  // TODO: Extract this function.
+  init: () => {
+    const wrapperElement = document.createElement('div')
+    document.body.appendChild(wrapperElement)
 
-  const options = {
-    server: {
-      host: 'localhost',
-      port: '3001'
+    // TODO: Read from the config, set defaults as well.
+    const options = {
+      server: {
+        host: 'localhost',
+        port: '3001'
+      }
     }
-  }
 
-  ReactDOM.render(
-    React.createElement(Testshot, options),
-    wrapperElement
-  )
+    ReactDOM.render(
+      React.createElement(Testshot, options),
+      wrapperElement
+    )
+  },
+  scenario
 }
-
-export const scenario = testshotScenario
