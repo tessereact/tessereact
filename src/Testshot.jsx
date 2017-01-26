@@ -30,7 +30,7 @@ export const scenario = function (testName, componentBuilder) {
     throw new Error('Scenario with name "' + testName + '" already exists')
   }
   names.push(testName)
-  data.push(function() {
+  data.push(() => {
     const component = componentBuilder()
     return {
       name: testName,
@@ -66,7 +66,7 @@ const Testshot = React.createClass({
         this.pickNextFailingScenario()
       })
     }, () => {
-      alert('Snapshot server is not available!')
+      window.alert('Snapshot server is not available!')
     })
   },
 
@@ -76,33 +76,18 @@ const Testshot = React.createClass({
         <Sidebar>
           <Header>Scenarios</Header>
           <ul>
-<<<<<<< HEAD:src/Testshot.js
-          {map(this.state.scenarios, (value, i) => {
-            return (<li key={i}>
-              <ScenarioLink
-                noDiff={this.noDiff(value)}
-                onClick={this.handleSelect.bind(this, value.name)}
-                key={value.name}
-                active={this.state.selectedScenario.name === value.name}
-              >
-                {value.name}
-              </ScenarioLink>
-            </li>)
-          })}
-=======
-            {map(this.state.snapshots, (value, i) => {
+            {map(this.state.scenarios, (value, i) => {
               return (<li key={i}>
                 <ScenarioLink
                   noDiff={this.noDiff(value)}
                   onClick={this.handleSelect.bind(this, value.name)}
                   key={value.name}
-                  active={this.state.selectedSnapshot.name === value.name}
+                  active={this.state.selectedScenario.name === value.name}
                 >
                   {value.name}
                 </ScenarioLink>
               </li>)
             })}
->>>>>>> f26fc54... Make installation work, fix more linter issues:src/Testshot.jsx
           </ul>
         </Sidebar>
         <TestshotContent>
@@ -123,7 +108,6 @@ const Testshot = React.createClass({
   acceptSnapshot () {
     const url = `//${this.props.host}:${this.props.port}/snapshots`
     postJSON(url, {
-<<<<<<< HEAD:src/Testshot.js
       name: this.state.selectedScenario.name,
       snapshot: this.state.selectedScenario.snapshot
     }).then(() => {
@@ -131,13 +115,6 @@ const Testshot = React.createClass({
       newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
       this.setState(newState)
       this.pickNextFailingScenario()
-=======
-      name: this.state.selectedSnapshot.name,
-      snapshot: this.state.selectedSnapshot.snapshot
-    }).then(() => {
-      // TODO: Remove page reloading
-      window.location.href = '/'
->>>>>>> f26fc54... Make installation work, fix more linter issues:src/Testshot.jsx
     })
   },
 
@@ -154,17 +131,9 @@ const Testshot = React.createClass({
     return isEqual(scenario.snapshot, scenario.previousSnapshot)
   },
 
-<<<<<<< HEAD:src/Testshot.js
-  renderDiff() {
+  renderDiff () {
     if (this.noDiff(this.state.selectedScenario)) {
       return <p>Snapshots are identical!</p>
-=======
-  renderDiff () {
-    if (this.noDiff(this.state.selectedSnapshot)) {
-      return (
-        <p>Snapshots are identical!</p>
-      )
->>>>>>> f26fc54... Make installation work, fix more linter issues:src/Testshot.jsx
     } else {
       return (
         <div>
@@ -174,40 +143,22 @@ const Testshot = React.createClass({
     }
   },
 
-<<<<<<< HEAD:src/Testshot.js
-  computeDiff() {
+  computeDiff () {
     var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot)
     return <Formatter nodes={diff} />
   },
 
-  renderPreviousSnapshot() {
+  renderPreviousSnapshot () {
     if (this.state.selectedScenario.previousSnapshot) {
       return <div>
         <h4>Previous snapshot:</h4>
         <div><pre>{JSON.stringify(this.state.selectedScenario.previousSnapshot, null, 2) }</pre></div>
       </div>
-=======
-  computeDiff () {
-    var diff = htmlDiffer.diffHtml(this.state.selectedSnapshot.previousSnapshot, this.state.selectedSnapshot.snapshot)
-    return <Formatter nodes={diff} />
-  },
-
-  renderPreviousSnapshot () {
-    if (this.state.selectedSnapshot.previousSnapshot) {
-      return (
-        <div>
-          <h4>Previous snapshot:</h4>
-          <div>
-            <pre>{JSON.stringify(this.state.selectedSnapshot.previousSnapshot, null, 2) }</pre>
-          </div>
-        </div>
-      )
->>>>>>> f26fc54... Make installation work, fix more linter issues:src/Testshot.jsx
     }
   },
 
   handleSelect (key) {
-    this.setState({selectedScenario: find(this.state.snapshots, ['name', key])})
+    this.setState({selectedScenario: find(this.state.scenarios, ['name', key])})
   }
 })
 
@@ -220,24 +171,11 @@ const TestshotWrapper = React.createClass({
   },
 
   render () {
-<<<<<<< HEAD:src/Testshot.js
     return <div>
       {this.props.children}
       {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} data={data} />}
       <TestshotToggle onClick={this.toggleTestshot.bind(this)} href="#">Testshot</TestshotToggle>
     </div>
-=======
-    return (
-      <div>
-        {this.props.children}
-        {this.state.show &&
-          <Testshot host={this.props.server.host} port={this.props.server.port} snapshots={data} />}
-        <TestshotToggle onClick={this.toggleTestshot.bind(this)} href='#'>
-          Testshot
-        </TestshotToggle>
-      </div>
-    )
->>>>>>> f26fc54... Make installation work, fix more linter issues:src/Testshot.jsx
   },
 
   toggleTestshot () {
