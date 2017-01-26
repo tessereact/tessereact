@@ -1,5 +1,5 @@
 export function postJSON (url, body) {
-  return fetch(url, {
+  return window.fetch(url, {
     method: 'post',
     headers: {
       'Content-Type': 'application/json'
