@@ -3,7 +3,7 @@ import defaultMixin from './mixins/default'
 
 // TODO: Split it up into Button and built AcceptButton on top of it
 const ScenarioLink = styled.a`
-  color: ${props => props.noDiff ? '#1abc9c' : '#e74c3c'};
+  color: ${props => props.hasDiff ? '#e74c3c' : '#1abc9c'};
   background: ${props => props.active && '#e6e6e6'};
   display: block;
   text-align: left;
