@@ -43,6 +43,8 @@
     "json-loader": "^0.5.4",
     "postcss": "^5.2.11",
     "postcss-loader": "^1.2.2",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
     "standard": "^8.6.0",
     "standard-jsx": "^8.0.0",
     "standard-react": "^4.0.0",
