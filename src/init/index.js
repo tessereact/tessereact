@@ -1,21 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Testshot from 'src/Testshot'
+import TestshotComponent from '../Testshot'
 
-export default function init () {
-  const wrapperElement = document.createElement('div')
-  document.body.appendChild(wrapperElement)
-
-  // TODO: Read from the config, set defaults as well.
-  const options = {
+export default function init (userOptions = {}) {
+  const options = Object.assign({
     server: {
       host: 'localhost',
       port: '5001'
     }
+  }, userOptions)
+
+  const wrapperElement = document.createElement('div')
+  if (options.className) {
+    wrapperElement.classList.add(options.className)
   }
+  document.body.appendChild(wrapperElement)
 
   ReactDOM.render(
-    React.createElement(Testshot, options),
+    React.createElement(TestshotComponent, options),
     wrapperElement
   )
 }

@@ -1,6 +1,5 @@
-const React = require('react')
+import React from 'react'
 import {filter, find, map, isEqual} from 'lodash'
-// const enzyme = require('enzyme')
 import ReactDOMServer from 'react-dom/server'
 import {HtmlDiffer} from 'html-differ'
 import Formatter from './Formatter'
@@ -17,26 +16,24 @@ import ScenarioLink from './styled/ScenarioLink'
 import FilterInput from './styled/FilterInput'
 
 const htmlDiffer = new HtmlDiffer({})
-var names = []
-var data = []
-
-// TODO: Do it properly
-export const context = function (callback) {
-  callback()
-}
+const names = []
+const data = []
 
 // TODO: Add simulations from prev implementation
-export const scenario = function (testName, componentBuilder) {
-  if (names.indexOf(testName) > -1) {
-    throw new Error('Scenario with name "' + testName + '" already exists')
+export function scenario (name, type) {
+  if (names.indexOf(name) > -1) {
+    throw new Error(`Scenario with name "${name}" already exists`)
   }
-  names.push(testName)
+  names.push(name)
+
   data.push(() => {
-    const component = componentBuilder()
+    const scenarioElement = React.createElement(type, {key: name})
     return {
-      name: testName,
-      component: component,
-      snapshot: ReactDOMServer.renderToStaticMarkup(component)
+      name,
+      element: scenarioElement,
+      // TODO: Handle exception during rendering,
+      // store and then display it
+      snapshot: ReactDOMServer.renderToStaticMarkup(scenarioElement)
     }
   })
 }
@@ -109,7 +106,7 @@ const Testshot = React.createClass({
         </Sidebar>
         <TestshotContent>
           <Header>{this.state.selectedScenario.name}</Header>
-          {this.state.selectedScenario.component}
+          {this.state.selectedScenario.element}
           {!isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
             <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
         </TestshotContent>
@@ -179,8 +176,7 @@ const Testshot = React.createClass({
   }
 })
 
-// TODO: Button and Testshot workspace should be rendered only in Dev environment
-const TestshotWrapper = React.createClass({
+const TestshotComponent = React.createClass({
   getInitialState () {
     return {
       show: window.localStorage.getItem('testing') === 'true'
@@ -189,7 +185,6 @@ const TestshotWrapper = React.createClass({
 
   render () {
     return <div>
-      {this.props.children}
       {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} data={data} />}
       <TestshotToggle onClick={this.toggleTestshot.bind(this)} href="#">Testshot</TestshotToggle>
     </div>
@@ -201,4 +196,4 @@ const TestshotWrapper = React.createClass({
   }
 })
 
-export default TestshotWrapper
+export default TestshotComponent

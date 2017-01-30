@@ -61,10 +61,6 @@ module.exports = {
       {
         test: /\.css$/,
         loader: 'style!css?sourceMap!postcss'
-      },
-      {
-        test: /\.sass$/,
-        loader: 'style!css?sourceMap!postcss!sass?sourceMap&indentedSyntax'
       }
     ]
   },
