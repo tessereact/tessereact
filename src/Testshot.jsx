@@ -1,5 +1,5 @@
 import React from 'react'
-import {filter, find, map, isEqual} from 'lodash'
+import {filter, find, flatten, isEqual, map, partition} from 'lodash'
 import ReactDOMServer from 'react-dom/server'
 import {HtmlDiffer} from 'html-differ'
 import Formatter from './Formatter'
@@ -59,6 +59,7 @@ const Testshot = React.createClass({
         const newData = this.state.scenarios.map((s) => {
           s.previousSnapshot = find(json, {name: s.name}).previousSnapshot
           s.show = true
+          s.hasDiff = !isEqual(s.snapshot, s.previousSnapshot)
           return s
         })
         // TODO: Avoid setting states few times in a row
@@ -88,12 +89,12 @@ const Testshot = React.createClass({
       <TestshotContainer>
         <Sidebar>
           <Header>Scenarios</Header>
-          <FilterInput placeholder='filter' type="text" value={this.state.filter}  onChange={this._filterScenarios}/>
+          <FilterInput placeholder='filter' type='text' value={this.state.filter} onChange={this._filterScenarios} />
           <ul>
-            {map(filter(this.state.scenarios, s => s.show), (value, i) => {
+            {map(filter(flatten(partition(this.state.scenarios, s => s.hasDiff)), s => s.show), (value, i) => {
               return (<li key={i}>
                 <ScenarioLink
-                  noDiff={this.noDiff(value)}
+                  hasDiff={value.hasDiff}
                   onClick={this.handleSelect.bind(this, value.name)}
                   key={value.name}
                   active={this.state.selectedScenario.name === value.name}
@@ -107,7 +108,7 @@ const Testshot = React.createClass({
         <TestshotContent>
           <Header>{this.state.selectedScenario.name}</Header>
           {this.state.selectedScenario.element}
-          {!isEqual(this.state.selectedScenario.snapshot, this.state.selectedScenario.previousSnapshot) &&
+          {this.state.selectedScenario.hasDiff &&
             <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
         </TestshotContent>
         <Sidebar right>
@@ -127,13 +128,14 @@ const Testshot = React.createClass({
     }).then(() => {
       const newState = Object.assign({}, this.state)
       newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
+      newState.selectedScenario.hasDiff = false
       this.setState(newState)
       this.pickNextFailingScenario()
     })
   },
 
   pickNextFailingScenario () {
-    const failingScenario = find(this.state.scenarios, (s) => !isEqual(s.snapshot, s.previousSnapshot))
+    const failingScenario = find(this.state.scenarios, (s) => s.hasDiff)
     if (failingScenario) {
       const newState = Object.assign({}, this.state)
       newState.selectedScenario = failingScenario
@@ -141,19 +143,15 @@ const Testshot = React.createClass({
     }
   },
 
-  noDiff (scenario) {
-    return isEqual(scenario.snapshot, scenario.previousSnapshot)
-  },
-
   renderDiff () {
-    if (this.noDiff(this.state.selectedScenario)) {
-      return <p>Snapshots are identical!</p>
-    } else {
+    if (this.state.selectedScenario.hasDiff) {
       return (
         <div>
           <pre>{this.computeDiff()}</pre>
         </div>
       )
+    } else {
+      return <p>Snapshots are identical!</p>
     }
   },
 
@@ -186,7 +184,7 @@ const TestshotComponent = React.createClass({
   render () {
     return <div>
       {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} data={data} />}
-      <TestshotToggle onClick={this.toggleTestshot.bind(this)} href="#">Testshot</TestshotToggle>
+      <TestshotToggle onClick={this.toggleTestshot.bind(this)} href='#'>Testshot</TestshotToggle>
     </div>
   },
 
