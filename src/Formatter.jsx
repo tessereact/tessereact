@@ -1,46 +1,36 @@
 import React from 'react'
 import {pad, flatten} from 'lodash'
-
+import BottomPane from './styled/BottomPane'
 import HighligthedDiff from './styled/HighligthedDiff'
 
-// TODO: Change to smth reasonable
-const DELIMETER = '+++'
-
-// TODO: Rewrite it properly
 const Formatter = React.createClass({
   render () {
     return (
-      <pre>
-        {flatten(this._nodes()).map((n, i) => {
-          return <HighligthedDiff key={i} added={n.added} removed={n.removed}>
-            {(n.tag ? pad('', n.indent) : '') + n.value}
-            {n.tag && <br />}
-          </HighligthedDiff>
-        })}
-      </pre>
+      <BottomPane>
+        <BottomPane.Row>
+          <BottomPane.Column>
+            <BottomPane.ColumnHeader>Previous version</BottomPane.ColumnHeader>
+            <BottomPane.ColumnBody>
+              {flatten(this.props.nodes).map((n, i) => {
+                return !n.added && <HighligthedDiff key={i} removed={n.removed}>
+                  {n.value}
+                </HighligthedDiff>
+              })}
+            </BottomPane.ColumnBody>
+          </BottomPane.Column>
+          <BottomPane.Column>
+            <BottomPane.ColumnHeader>Current version</BottomPane.ColumnHeader>
+            <BottomPane.ColumnBody>
+              {flatten(this.props.nodes).map((n, i) => {
+                return !n.removed && <HighligthedDiff key={i} added={n.added}>
+                  {n.value}
+                </HighligthedDiff>
+              })}
+            </BottomPane.ColumnBody>
+          </BottomPane.Column>
+        </BottomPane.Row>
+      </BottomPane>
     )
-  },
-
-  _nodes () {
-    var indent = 0
-    return this.props.nodes.map((n, i) => {
-      return n.value.replace(/></g, '>' + DELIMETER + '<').split(DELIMETER).map((el) => {
-        // TODO: Rewrite it so it actually works :D
-        if (el.slice(0, 2) === '</') {
-          indent = indent - 2
-        } else if (el[0] === '<') {
-          indent = indent + 2
-        }
-
-        return {
-          value: el,
-          added: n.added,
-          removed: n.removed,
-          tag: !!el.match('>'),
-          indent: indent
-        }
-      })
-    })
   }
 })
 

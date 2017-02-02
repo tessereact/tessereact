@@ -4,6 +4,7 @@ import ReactDOMServer from 'react-dom/server'
 import {HtmlDiffer} from 'html-differ'
 import Formatter from './Formatter'
 import {postJSON} from './Fetch'
+import {html} from 'js-beautify'
 
 // styled components
 import TestshotContainer from './styled/TestshotContainer'
@@ -14,8 +15,16 @@ import AcceptButton from './styled/AcceptButton'
 import TestshotContent from './styled/TestshotContent'
 import ScenarioLink from './styled/ScenarioLink'
 import FilterInput from './styled/FilterInput'
+import ComponentPreview from './styled/ComponentPreview'
 
-const htmlDiffer = new HtmlDiffer({})
+const htmlFormatterOptions = {
+  indent_size: 2,
+  wrap_line_length: 30,
+  unformatted: ['b', 'i', 'strong']
+}
+const htmlDiffer = new HtmlDiffer({
+  ignoreWhitespaces: false
+})
 const names = []
 const data = []
 
@@ -106,15 +115,14 @@ const Testshot = React.createClass({
           </ul>
         </Sidebar>
         <TestshotContent>
-          <Header>{this.state.selectedScenario.name}</Header>
-          {this.state.selectedScenario.element}
+          <ComponentPreview>
+            <Header>{this.state.selectedScenario.name}</Header>
+            {this.state.selectedScenario.element}
+          </ComponentPreview>
+          {this.renderDiff()}
           {this.state.selectedScenario.hasDiff &&
             <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
         </TestshotContent>
-        <Sidebar right>
-          <Header>Diff</Header>
-          {this.renderDiff()}
-        </Sidebar>
       </TestshotContainer>
     )
   },
@@ -145,18 +153,18 @@ const Testshot = React.createClass({
 
   renderDiff () {
     if (this.state.selectedScenario.hasDiff) {
-      return (
-        <div>
-          <pre>{this.computeDiff()}</pre>
-        </div>
-      )
+      return this.computeDiff()
     } else {
       return <p>Snapshots are identical!</p>
     }
   },
 
   computeDiff () {
-    var diff = htmlDiffer.diffHtml(this.state.selectedScenario.previousSnapshot, this.state.selectedScenario.snapshot)
+    const previousSnapshot = this.state.selectedScenario.previousSnapshot
+    const snapshot = this.state.selectedScenario.snapshot
+    const left = previousSnapshot ? html(previousSnapshot, htmlFormatterOptions) : ''
+    const right = snapshot ? html(snapshot, htmlFormatterOptions) : ''
+    const diff = htmlDiffer.diffHtml(left, right)
     return <Formatter nodes={diff} />
   },
 
