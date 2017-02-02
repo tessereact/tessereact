@@ -13,7 +13,7 @@ const app = express()
 const db = new Store(config.snapshots_path)
 
 app.use(bodyParser.json()) // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
+app.use(bodyParser.urlencoded({extended: true})) // support encoded bodies
 app.use(cors({
   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
 }))
@@ -27,7 +27,7 @@ app.post('/snapshots-list', (req, res) => {
     // TODO: Improve logging
     console.log('Stored snapshots', Object.keys(obj))
     const data = req.body.data
-    var snapshots = data.map(s => {
+    const snapshots = data.map(s => {
       s.previousSnapshot = obj ? obj[s.name] : null
       return s
     })

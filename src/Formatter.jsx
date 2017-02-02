@@ -1,7 +1,7 @@
 import React from 'react'
-import {pad, flatten} from 'lodash'
+import {flatten} from 'lodash'
 import BottomPane from './styled/BottomPane'
-import HighligthedDiff from './styled/HighligthedDiff'
+import HighlightedDiff from './styled/HighlightedDiff'
 
 const Formatter = React.createClass({
   render () {
@@ -12,9 +12,9 @@ const Formatter = React.createClass({
             <BottomPane.ColumnHeader>Previous version</BottomPane.ColumnHeader>
             <BottomPane.ColumnBody>
               {flatten(this.props.nodes).map((n, i) => {
-                return !n.added && <HighligthedDiff key={i} removed={n.removed}>
+                return !n.added && <HighlightedDiff key={i} removed={n.removed}>
                   {n.value}
-                </HighligthedDiff>
+                </HighlightedDiff>
               })}
             </BottomPane.ColumnBody>
           </BottomPane.Column>
@@ -22,9 +22,9 @@ const Formatter = React.createClass({
             <BottomPane.ColumnHeader>Current version</BottomPane.ColumnHeader>
             <BottomPane.ColumnBody>
               {flatten(this.props.nodes).map((n, i) => {
-                return !n.removed && <HighligthedDiff key={i} added={n.added}>
+                return !n.removed && <HighlightedDiff key={i} added={n.added}>
                   {n.value}
-                </HighligthedDiff>
+                </HighlightedDiff>
               })}
             </BottomPane.ColumnBody>
           </BottomPane.Column>

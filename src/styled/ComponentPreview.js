@@ -6,5 +6,3 @@ const ComponentPreview = styled.div`
 `
 
 export default defaultMixin(ComponentPreview)
-
-

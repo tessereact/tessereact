@@ -172,7 +172,9 @@ const Testshot = React.createClass({
     if (this.state.selectedScenario.previousSnapshot) {
       return <div>
         <h4>Previous snapshot:</h4>
-        <div><pre>{JSON.stringify(this.state.selectedScenario.previousSnapshot, null, 2) }</pre></div>
+        <div>
+          <pre>{JSON.stringify(this.state.selectedScenario.previousSnapshot, null, 2) }</pre>
+        </div>
       </div>
     }
   },
