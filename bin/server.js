@@ -2,15 +2,16 @@
 const path = require('path')
 const express = require('express')
 const fs = require('fs')
-const Store = require('jfs')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const globby = require('globby')
+const fsp = require('fs-promise')
 
 const configFile = path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json')
 const config = JSON.parse(fs.readFileSync(configFile, 'utf8'))
+const defaultSnapshotsDir = path.resolve(process.cwd(), config.snapshots_path)
 
 const app = express()
-const db = new Store(config.snapshots_path)
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({extended: true})) // support encoded bodies
@@ -22,32 +23,60 @@ app.use(cors({
 // Seems we need just one route (/snapshots) with `get/post` support.
 app.options('/snapshots-list', cors())
 app.post('/snapshots-list', (req, res) => {
-  db.get('snapshots', (err, obj) => {
-    if (err) console.log(err)
-    // TODO: Improve logging
-    console.log('Stored snapshots', Object.keys(obj))
-    const data = req.body.data
-    const snapshots = data.map(s => {
-      s.previousSnapshot = obj ? obj[s.name] : null
-      return s
+  readSnapshots()
+    .then(snapshots => {
+      return snapshots.reduce((acc, {name, snapshot}) => {
+        console.log(`${name} ... ${snapshot}`)
+        acc[name] = snapshot
+        return acc
+      }, {})
     })
-    res.send(snapshots)
-  })
+    .then(snapshots => {
+      // TODO: Improve logging
+      console.log('Stored snapshots', Object.keys(snapshots))
+      const data = req.body.data
+      const responseJSON = data.map(s => {
+        s.previousSnapshot = snapshots ? snapshots[s.name] : null
+        return s
+      })
+      res.send(responseJSON)
+    })
+    .catch(rescue)
 })
 
 app.options('/snapshots', cors())
 app.post('/snapshots', (req, res) => {
-  db.get('snapshots', (err, obj) => {
-    if (err) console.log(err)
-    let data = Object.assign({}, obj)
-    data[req.body.name] = req.body.snapshot
-    db.save('snapshots', data, () => {
+  const {name, snapshot} = req.body
+  writeSnapshot(name, snapshot)
+    .then(() => {
+      // TODO: Improve logging
+      console.log(`${name} written`)
       res.send('OK')
     })
-  })
+    .catch(rescue)
 })
 
 app.listen(config.port, function () {
   console.log('Snapshot server is running on ' + config.port)
   console.log('Config: ', config)
 })
+
+function writeSnapshot (name, snapshot, dir = defaultSnapshotsDir) {
+  return fsp.ensureDir(dir)
+    .then(() => fsp.writeFile(path.resolve(dir, `${name}.html`), snapshot))
+}
+
+function readSnapshots (dir) {
+  return globby([path.resolve(dir || defaultSnapshotsDir, '*.html')])
+    .then(snapshotPaths => {
+      return Promise.all(snapshotPaths.map(snapshotPath => {
+        const {name} = path.parse(snapshotPath)
+        return fsp.readFile(snapshotPath).then(snapshot => ({name, snapshot: snapshot.toString()}))
+      }))
+    })
+}
+
+function rescue (err) {
+  console.error(err)
+  process.exit(1)
+}

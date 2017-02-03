@@ -80,11 +80,11 @@ const App = React.createClass({
 })
 
 // TODO: Move to snapshots.js file
-scenario('Service: Basic', () => {
+scenario('Service - Basic', () => {
   return <Service name='UI Design' price={332} />
 })
 
-scenario('Cart: With a service', () => {
+scenario('Cart - With a service', () => {
   const services = [
     { name: 'Web Development', price: 300, selected: false },
     { name: 'Design', price: 400 },
