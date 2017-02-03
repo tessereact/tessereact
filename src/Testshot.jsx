@@ -68,7 +68,7 @@ const Testshot = React.createClass({
         const newData = this.state.scenarios.map((s) => {
           s.previousSnapshot = find(json, {name: s.name}).previousSnapshot
           s.show = true
-          s.hasDiff = !isEqual(s.snapshot, s.previousSnapshot)
+          s.hasDiff = html(s.snapshot) !== s.previousSnapshot
           return s
         })
         // TODO: Avoid setting states few times in a row
@@ -132,7 +132,7 @@ const Testshot = React.createClass({
     const url = `//${this.props.host}:${this.props.port}/snapshots`
     postJSON(url, {
       name: this.state.selectedScenario.name,
-      snapshot: this.state.selectedScenario.snapshot
+      snapshot: html(this.state.selectedScenario.snapshot)
     }).then(() => {
       const newState = Object.assign({}, this.state)
       newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
