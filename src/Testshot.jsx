@@ -104,7 +104,7 @@ const Testshot = React.createClass({
               return (<li key={i}>
                 <ScenarioLink
                   hasDiff={value.hasDiff}
-                  onClick={this.handleSelect.bind(this, value.name)}
+                  onClick={() => this.handleSelect(value.name)}
                   key={value.name}
                   active={this.state.selectedScenario.name === value.name}
                 >
@@ -121,7 +121,7 @@ const Testshot = React.createClass({
           </ComponentPreview>
           {this.renderDiff()}
           {this.state.selectedScenario.hasDiff &&
-            <AcceptButton onClick={this.acceptSnapshot.bind(this)}>Accept</AcceptButton> }
+            <AcceptButton onClick={this.acceptSnapshot}>Accept</AcceptButton> }
         </TestshotContent>
       </TestshotContainer>
     )
@@ -194,7 +194,7 @@ const TestshotComponent = React.createClass({
   render () {
     return <div>
       {this.state.show && <Testshot host={this.props.server.host} port={this.props.server.port} data={data} />}
-      <TestshotToggle onClick={this.toggleTestshot.bind(this)} href='#'>Testshot</TestshotToggle>
+      <TestshotToggle onClick={this.toggleTestshot} href='#'>Testshot</TestshotToggle>
     </div>
   },
 
