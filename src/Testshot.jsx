@@ -19,9 +19,10 @@ import ComponentPreview from './styled/ComponentPreview'
 
 const htmlFormatterOptions = {
   indent_size: 2,
-  wrap_line_length: 30,
+  end_with_newline: true,
   unformatted: ['b', 'i', 'strong']
 }
+const formatHTML = str => html(str, htmlFormatterOptions)
 const htmlDiffer = new HtmlDiffer({
   ignoreWhitespaces: false
 })
@@ -68,7 +69,7 @@ const Testshot = React.createClass({
         const newData = this.state.scenarios.map((s) => {
           s.previousSnapshot = find(json, {name: s.name}).previousSnapshot
           s.show = true
-          s.hasDiff = html(s.snapshot) !== s.previousSnapshot
+          s.hasDiff = formatHTML(s.snapshot) !== s.previousSnapshot
           return s
         })
         // TODO: Avoid setting states few times in a row
@@ -132,7 +133,7 @@ const Testshot = React.createClass({
     const url = `//${this.props.host}:${this.props.port}/snapshots`
     postJSON(url, {
       name: this.state.selectedScenario.name,
-      snapshot: html(this.state.selectedScenario.snapshot)
+      snapshot: formatHTML(this.state.selectedScenario.snapshot)
     }).then(() => {
       const newState = Object.assign({}, this.state)
       newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
@@ -162,8 +163,8 @@ const Testshot = React.createClass({
   computeDiff () {
     const previousSnapshot = this.state.selectedScenario.previousSnapshot
     const snapshot = this.state.selectedScenario.snapshot
-    const left = previousSnapshot ? html(previousSnapshot, htmlFormatterOptions) : ''
-    const right = snapshot ? html(snapshot, htmlFormatterOptions) : ''
+    const left = previousSnapshot ? formatHTML(previousSnapshot) : ''
+    const right = snapshot ? formatHTML(snapshot) : ''
     const diff = htmlDiffer.diffHtml(left, right)
     return <Formatter nodes={diff} />
   },
