@@ -1,5 +1,5 @@
-import React from 'react'
-import {filter, find, flatten, isEqual, map, partition} from 'lodash'
+import React, {PropTypes} from 'react'
+import {filter, find, flatten, map, partition} from 'lodash'
 import ReactDOMServer from 'react-dom/server'
 import {HtmlDiffer} from 'html-differ'
 import Formatter from './Formatter'
@@ -49,6 +49,12 @@ export function scenario (name, type) {
 }
 
 const Testshot = React.createClass({
+  propTypes: {
+    data: PropTypes.array.isRequired,
+    host: PropTypes.string,
+    port: PropTypes.string
+  },
+
   getInitialState () {
     const scenarios = this.props.data.map((f) => (f()))
     return {
@@ -186,6 +192,14 @@ const Testshot = React.createClass({
 })
 
 const TestshotComponent = React.createClass({
+  propTypes: {
+    data: PropTypes.array.isRequired,
+    server: PropTypes.shape({
+      host: PropTypes.string,
+      port: PropTypes.string
+    })
+  },
+
   getInitialState () {
     return {
       show: window.localStorage.getItem('testing') === 'true'

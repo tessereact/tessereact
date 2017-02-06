@@ -1,9 +1,13 @@
-import React from 'react'
+import React, {PropTypes} from 'react'
 import {flatten} from 'lodash'
 import BottomPane from './styled/BottomPane'
 import HighlightedDiff from './styled/HighlightedDiff'
 
 const Formatter = React.createClass({
+  propTypes: {
+    nodes: PropTypes.array
+  },
+
   render () {
     return (
       <BottomPane>
