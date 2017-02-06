@@ -1,13 +1,8 @@
 {
   "parser": "babel-eslint",
   "extends": ["standard", "standard-jsx", "standard-react"],
-  "plugins": ["mocha", "react"],
+  "plugins": ["react"],
   "rules": {
-    "mocha/no-exclusive-tests": "error",
-    "mocha/no-skipped-tests": "error",
-    "mocha/no-pending-tests": "error",
-    "mocha/handle-done-callback": "error",
-    "mocha/no-global-tests": "error",
     "react/jsx-filename-extension": "error",
     "react/jsx-no-bind": 0
   }
