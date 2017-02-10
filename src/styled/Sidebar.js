@@ -4,7 +4,7 @@ import defaultMixin from './mixins/default'
 const Sidebar = styled.div`
   flex-basis: 15%;
   padding: 10px;
-  color: #333;
+  color: #585858;
   text-align: left;
   max-height: 100vh;
   overflow-y: auto;

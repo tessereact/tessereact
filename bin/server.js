@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict'
 const path = require('path')
 const express = require('express')
@@ -10,7 +12,7 @@ const fsp = require('fs-promise')
 const configFile = path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json')
 const config = JSON.parse(fs.readFileSync(configFile, 'utf8'))
 const defaultSnapshotsDir = path.resolve(process.cwd(), config.snapshots_path)
-
+const CONTEXT_DELIMITER = ' - '
 const app = express()
 
 app.use(bodyParser.json()) // for parsing application/json
@@ -18,6 +20,12 @@ app.use(bodyParser.urlencoded({extended: true})) // support encoded bodies
 app.use(cors({
   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
 }))
+
+function composeScenarioFileName (name, context) {
+  return context
+    ? [context, name].join(CONTEXT_DELIMITER)
+    : name
+}
 
 // TODO: Why we are doing `post` instead of `get` here?
 // Seems we need just one route (/snapshots) with `get/post` support.
@@ -36,7 +44,7 @@ app.post('/snapshots-list', (req, res) => {
       console.log('Stored snapshots', Object.keys(snapshots))
       const data = req.body.data
       const responseJSON = data.map(s => {
-        s.previousSnapshot = snapshots ? snapshots[s.name] : null
+        s.previousSnapshot = snapshots ? snapshots[composeScenarioFileName(s.name, s.context)] : null
         return s
       })
       res.send(responseJSON)
@@ -46,8 +54,10 @@ app.post('/snapshots-list', (req, res) => {
 
 app.options('/snapshots', cors())
 app.post('/snapshots', (req, res) => {
-  const {name, snapshot} = req.body
-  writeSnapshot(name, snapshot)
+  const {name, context, snapshot} = req.body
+  const fileName = composeScenarioFileName(name, context)
+  const dir = path.join(defaultSnapshotsDir, context || '')
+  writeSnapshot(fileName, snapshot, dir)
     .then(() => {
       // TODO: Improve logging
       console.log(`${name} written`)
@@ -67,7 +77,7 @@ function writeSnapshot (name, snapshot, dir = defaultSnapshotsDir) {
 }
 
 function readSnapshots (dir) {
-  return globby([path.resolve(dir || defaultSnapshotsDir, '*.html')])
+  return globby([path.resolve(dir || defaultSnapshotsDir, '**/*.html')])
     .then(snapshotPaths => {
       return Promise.all(snapshotPaths.map(snapshotPath => {
         const {name} = path.parse(snapshotPath)

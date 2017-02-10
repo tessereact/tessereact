@@ -1,10 +1,11 @@
 // Main entry point, exposes the public API
 
 import init from './init'
-import TestshotComponent, {scenario} from './Testshot'
+import Testshot, {scenario, context} from './Testshot'
 
 module.exports = {
   init,
   scenario,
-  Testshot: TestshotComponent
+  context,
+  Testshot
 }

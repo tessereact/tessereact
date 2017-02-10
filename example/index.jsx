@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import './index.css'
-import {init, scenario} from 'src/index'
+import {init, scenario, context} from 'src/index'
 
 console.log('--- WELCOME TO TESTSHOT DEVELOPMENT ---')
 
@@ -69,7 +69,6 @@ const App = React.createClass({
     const services = [
       { name: 'Web Development', price: 300 },
       { name: 'Design', price: 400 },
-      { name: 'Integration', price: 250 },
       { name: 'Training', price: 220 }
     ]
 
@@ -80,19 +79,31 @@ const App = React.createClass({
 })
 
 // TODO: Move to snapshots.js file
-scenario('Service - Basic', () => {
-  return <Service name='UI Design' price={332} />
+context('Cart', () => {
+  scenario('Basic', () => {
+    return <Service name='UI Design' price={332} />
+  })
+
+  scenario('With a service', () => {
+    const services = [
+      { name: 'Web Development', price: 300, selected: false },
+      { name: 'UI Design', price: 250 },
+      { name: 'New service', price: 120 }
+    ]
+
+    return <Cart items={services} />
+  })
 })
 
-scenario('Cart - With a service', () => {
-  const services = [
-    { name: 'Web Development', price: 300, selected: false },
-    { name: 'Design', price: 400 },
-    { name: 'Integration', price: 250 },
-    { name: 'New service', price: 120 }
-  ]
 
-  return <Cart items={services} />
+context('Service', () => {
+  scenario('Basic', () => {
+    return <Service name='UI Designer' price={666} />
+  })
+
+  scenario('Expensive', () => {
+    return <Service name='MacBook Pro' price={2000} />
+  })
 })
 
 document.addEventListener('DOMContentLoaded', () => {

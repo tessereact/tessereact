@@ -1,9 +1,9 @@
 import React, {PropTypes} from 'react'
 import {flatten} from 'lodash'
-import BottomPane from './styled/BottomPane'
-import HighlightedDiff from './styled/HighlightedDiff'
+import BottomPane from '../../styled/BottomPane'
+import HighlightedDiff from '../../styled/HighlightedDiff'
 
-const Formatter = React.createClass({
+const Diff = React.createClass({
   propTypes: {
     nodes: PropTypes.array
   },
@@ -38,4 +38,4 @@ const Formatter = React.createClass({
   }
 })
 
-export default Formatter
+export default Diff
