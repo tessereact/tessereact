@@ -43,6 +43,20 @@ const TestshotWindow = React.createClass({
     postJSON(url, requestScenariosList(this.state.scenarios)).then((response) => {
       response.json().then((json) => {
         this.setState(pickFailingScenario(mergeWithPayload(this.state, json)))
+
+        // Report to CI
+        const failingScenarios = this.state.scenarios
+          .filter(({hasDiff}) => hasDiff)
+          .map(({context, name}) => ({context, name}))
+
+        const ws = new window.WebSocket(window.__testshotWSURL)
+        ws.addEventListener('open', () => {
+          if (failingScenarios.length > 0) {
+            ws.send(JSON.stringify(failingScenarios))
+          } else {
+            ws.send('OK')
+          }
+        })
       })
     }, _ => {
       window.alert('Snapshot server is not available!')

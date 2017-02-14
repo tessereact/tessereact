@@ -2,9 +2,6 @@ import React, {PropTypes} from 'react'
 import ReactDOMServer from 'react-dom/server'
 import TestshotWindow from './components/TestshotWindow'
 
-// styled components
-import TestshotToggle from './styled/TestshotToggle'
-
 const names = []
 const data = []
 var currentContext = null
@@ -44,22 +41,10 @@ const Testshot = React.createClass({
     })
   },
 
-  getInitialState () {
-    return {
-      show: window.localStorage.getItem('testing') === 'true'
-    }
-  },
-
   render () {
     return <div>
-      {this.state.show && <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} />}
-      <TestshotToggle onClick={this.toggleTestshot} href='#'>Testshot</TestshotToggle>
+      <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} />
     </div>
-  },
-
-  toggleTestshot () {
-    window.localStorage.setItem('testing', !this.state.show)
-    this.setState({show: !this.state.show})
   }
 })
 

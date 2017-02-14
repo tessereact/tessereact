@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import defaultMixin from './mixins/default'
 
 const TestshotContent = styled.div`
   display: flex;
@@ -12,4 +11,4 @@ const TestshotContent = styled.div`
   overflow-y: auto;
 `
 
-export default defaultMixin(TestshotContent)
+export default TestshotContent
