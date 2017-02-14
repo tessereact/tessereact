@@ -12,7 +12,7 @@ import {
 test('buildInitialState', t => {
   const data = [_ => 1, _ => 2]
   t.deepEqual(buildInitialState(data), {
-    selectedScenario: 1,
+    selectedNode: 1,
     scenarios: [1, 2]
   })
 })
@@ -20,7 +20,7 @@ test('buildInitialState', t => {
 test('buildInitialState empty', t => {
   const data = []
   t.deepEqual(buildInitialState(data), {
-    selectedScenario: {},
+    selectedNode: {},
     scenarios: []
   })
 })
@@ -45,7 +45,7 @@ test('pickFailingScenario w/ failing scenarios', t => {
     }]
   }
   const expectedState = Object.assign({}, state)
-  expectedState.selectedScenario = {name: 'Second', hasDiff: true}
+  expectedState.selectedNode = {name: 'Second', hasDiff: true}
   t.deepEqual(pickFailingScenario(state), expectedState)
 })
 
@@ -77,6 +77,7 @@ test('mergeWithPayload w/o previously stored snapshots', t => {
   t.deepEqual(mergeWithPayload(state, {}), {
     scenarios: [{
       name: 'First',
+      isScenario: true,
       snapshot: '',
       hasDiff: true,
       previousSnapshot: undefined
@@ -112,12 +113,14 @@ test('mergeWithPayload w/ previous snapshot', t => {
       // FIXME: Sorry for not true black box test formatHTML should be stubed
       snapshot: '<input type="submit" />\n',
       hasDiff: true,
+      isScenario: true,
       previousSnapshot: '<button>'
     }, {
       name: 'Default',
       context: 'Checkbox',
       snapshot: '<input type="checkbox" />\n',
       hasDiff: true,
+      isScenario: true,
       previousSnapshot: '<input>'
     }]
   })
@@ -140,6 +143,7 @@ test('mergeWithPayload w/ matching snapshots', t => {
       // FIXME: Sorry for not true black box test — formatHTML should be stubed
       snapshot: '<span></span>\n',
       hasDiff: false,
+      isScenario: true,
       previousSnapshot: '<span></span>\n'
     }]
   })
@@ -147,14 +151,14 @@ test('mergeWithPayload w/ matching snapshots', t => {
 
 test('acceptCurrentScenario', t => {
   const state = {
-    selectedScenario: {
+    selectedNode: {
       previousSnapshot: 'prev',
       snapshot: 'current',
       hasDiff: true
     }
   }
   t.deepEqual(acceptCurrentScenario(state), {
-    selectedScenario: {
+    selectedNode: {
       previousSnapshot: 'current',
       snapshot: 'current',
       hasDiff: false

@@ -6,7 +6,7 @@ export function pickFailingScenario (state) {
   const failingScenario = find(state.scenarios, (s) => s.hasDiff)
   if (failingScenario) {
     newState = Object.assign({}, state)
-    newState.selectedScenario = failingScenario
+    newState.selectedNode = failingScenario
   }
   return newState
 }
@@ -14,7 +14,7 @@ export function pickFailingScenario (state) {
 export function buildInitialState (data) {
   const scenarios = data.map((f) => (f()))
   return {
-    selectedScenario: scenarios[0] || {},
+    selectedNode: scenarios[0] || {},
     scenarios: scenarios
   }
 }
@@ -40,6 +40,7 @@ export function mergeWithPayload (state, payload) {
     s.previousSnapshot = storedScenario.previousSnapshot
     s.snapshot = formatHTML(s.snapshot)
     s.hasDiff = s.snapshot !== s.previousSnapshot
+    s.isScenario = true
     return s
   })
   return {scenarios: newData}
@@ -47,8 +48,8 @@ export function mergeWithPayload (state, payload) {
 
 export function acceptCurrentScenario (state) {
   const newState = Object.assign({}, state)
-  newState.selectedScenario.previousSnapshot = newState.selectedScenario.snapshot
-  newState.selectedScenario.hasDiff = false
+  newState.selectedNode.previousSnapshot = newState.selectedNode.snapshot
+  newState.selectedNode.hasDiff = false
   return newState
 }
 

@@ -7,15 +7,9 @@ import {isNodeActive, matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
 const Context = React.createClass({
   propTypes: {
     node: PropTypes.object,
-    selectedScenario: PropTypes.object,
-    selectScenario: PropTypes.func,
+    selectedNode: PropTypes.object,
+    selectNode: PropTypes.func,
     searchQuery: PropTypes.string
-  },
-
-  getInitialState () {
-    return {
-      expanded: false
-    }
   },
 
   _hasFailingChildren () {
@@ -23,7 +17,10 @@ const Context = React.createClass({
   },
 
   _shouldExpand () {
-    return this.state.expanded || this._hasFailingChildren() || this._applyFilter()
+    return this.props.selectedNode.name === this.props.node.name ||
+      this.props.selectedNode.context === this.props.node.name ||
+      this._hasFailingChildren() ||
+      this._applyFilter()
   },
 
   _applyFilter () {
@@ -37,17 +34,20 @@ const Context = React.createClass({
       ))
   },
 
+  _handleClick () {
+    this.props.selectNode(this.props.node.name, null)
+  },
+
   render () {
-    console.log('isNodeActive', isNodeActive(this.props.selectedScenario, this.props.node))
     return this._matchFilter() && <li key={this.props.node.name}>
       <ContextLink
         hasDiff={this.props.node.hasDiff}
-        active={isNodeActive(this.props.selectedScenario, this.props.node)}
-        onClick={() => this.setState({expanded: !this.state.expanded})}
+        active={isNodeActive(this.props.selectedNode, this.props.node)}
+        onClick={this._handleClick}
       >
         &rsaquo; {this.props.node.name}
       </ContextLink>
-      {this._shouldExpand() && <List nodes={this.props.node.children} child selectedScenario={this.props.selectedScenario} selectScenario={this.props.selectScenario} />}
+      {this._shouldExpand() && <List nodes={this.props.node.children} child selectedNode={this.props.selectedNode} selectNode={this.props.selectNode} />}
     </li>
   }
 })

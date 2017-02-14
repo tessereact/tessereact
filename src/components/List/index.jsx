@@ -6,8 +6,8 @@ const List = React.createClass({
   propTypes: {
     nodes: PropTypes.array,
     child: PropTypes.bool,
-    selectedScenario: PropTypes.object,
-    selectScenario: PropTypes.func,
+    selectedNode: PropTypes.object,
+    selectNode: PropTypes.func,
     searchQuery: PropTypes.string
   },
 
@@ -19,8 +19,8 @@ const List = React.createClass({
     return <Context
       key={node.name}
       node={node}
-      selectedScenario={this.props.selectedScenario}
-      selectScenario={this.props.selectScenario}
+      selectedNode={this.props.selectedNode}
+      selectNode={this.props.selectNode}
       searchQuery={this.props.searchQuery}
     />
   },
@@ -29,8 +29,8 @@ const List = React.createClass({
     return <Scenario
       key={[node.context, node.name].join(' - ')}
       node={node}
-      selectScenario={this.props.selectScenario}
-      selectedScenario={this.props.selectedScenario}
+      selectNode={this.props.selectNode}
+      selectedNode={this.props.selectedNode}
       searchQuery={this.props.searchQuery}
       child={this.props.child}
     />

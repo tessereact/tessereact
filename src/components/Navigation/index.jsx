@@ -7,8 +7,8 @@ import Sidebar from '../../styled/Sidebar'
 const Navigation = React.createClass({
   propTypes: {
     nodes: PropTypes.array,
-    selectedScenario: PropTypes.object,
-    selectScenario: PropTypes.func
+    selectedNode: PropTypes.object,
+    selectNode: PropTypes.func
   },
 
   getInitialState () {
@@ -28,8 +28,8 @@ const Navigation = React.createClass({
         <FilterInput ref={this.state.searchQuery} onChange={this._handleFilter} />
         <List
           nodes={this.props.nodes}
-          selectScenario={this.props.selectScenario}
-          selectedScenario={this.props.selectedScenario}
+          selectNode={this.props.selectNode}
+          selectedNode={this.props.selectedNode}
           searchQuery={this.state.searchQuery}
         />
       </Sidebar>

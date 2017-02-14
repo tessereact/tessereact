@@ -20,6 +20,8 @@ import Header from '../../styled/Header'
 import AcceptButton from '../../styled/AcceptButton'
 import TestshotContent from '../../styled/TestshotContent'
 import ComponentPreview from '../../styled/ComponentPreview'
+import ScenarioBlock from '../../styled/ScenarioBlock'
+import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
 
 const htmlDiffer = new HtmlDiffer({
   ignoreWhitespaces: false
@@ -52,46 +54,62 @@ const TestshotWindow = React.createClass({
       <TestshotContainer>
         <Navigation
           nodes={generateTreeNodes(this.state.scenarios)}
-          selectedScenario={this.state.selectedScenario}
-          selectScenario={this._handleSelect}
+          selectedNode={this.state.selectedNode}
+          selectNode={this._handleSelect}
         />
         <TestshotContent>
           <ComponentPreview>
-            <Header>{this.state.selectedScenario.name}</Header>
-            {this.state.selectedScenario.element}
+            <Header>{this.state.selectedNode.name}</Header>
+            {this._renderContent()}
           </ComponentPreview>
           {this._renderDiff()}
-          {this.state.selectedScenario.hasDiff &&
+          {this.state.selectedNode.hasDiff &&
             <AcceptButton onClick={this._acceptSnapshot}>Accept</AcceptButton> }
         </TestshotContent>
       </TestshotContainer>
     )
   },
 
+  _renderContent () {
+    if (this.state.selectedNode.isScenario) {
+      return this.state.selectedNode.element
+    } else {
+      const scenarios = this.state.scenarios.filter(s => (s.context === this.state.selectedNode.name))
+      return scenarios.map(s => (<ScenarioBlock>
+        <h3>{s.name}</h3>
+        <ScenarioBlockContent key={s.name}>
+          {s.element}
+        </ScenarioBlockContent>
+      </ScenarioBlock>))
+    }
+  },
+
   _acceptSnapshot () {
     const url = `//${this.props.host}:${this.props.port}/snapshots`
-    postJSON(url, requestScenarioAcceptance(this.state.selectedScenario)).then(() => {
+    postJSON(url, requestScenarioAcceptance(this.state.selectedNode)).then(() => {
       this.setState(pickFailingScenario(acceptCurrentScenario(this.state)))
     })
   },
 
   _renderDiff () {
-    if (this.state.selectedScenario.hasDiff) {
+    if (this.state.selectedNode.hasDiff) {
       return this._computeDiff()
-    } else {
-      return <p>Snapshots are identical!</p>
     }
   },
 
   _computeDiff () {
-    const previousSnapshot = this.state.selectedScenario.previousSnapshot
-    const snapshot = this.state.selectedScenario.snapshot
+    const previousSnapshot = this.state.selectedNode.previousSnapshot
+    const snapshot = this.state.selectedNode.snapshot
     const diff = htmlDiffer.diffHtml(previousSnapshot, snapshot)
     return <Diff nodes={diff} />
   },
 
-  _handleSelect (key, context) {
-    this.setState({selectedScenario: find(this.state.scenarios, {name: key, context: context})})
+  _handleSelect (context, scenario) {
+    if (scenario) {
+      this.setState({selectedNode: find(this.state.scenarios, {name: scenario, context: context})})
+    } else {
+      this.setState({selectedNode: {name: context}})
+    }
   }
 })
 
