@@ -1,4 +1,4 @@
-import {map, find, groupBy, pickBy, pick} from 'lodash'
+import {map, find, groupBy, pickBy, pick, some} from 'lodash'
 import formatHTML from '../../lib/formatter/'
 
 export function pickFailingScenario (state) {
@@ -57,11 +57,21 @@ function _extractProperties (children) {
   return children ? children.map(c => pick(c, ['name', 'hasDiff', 'context'])) : []
 }
 
+function _sortingNodes (node1, node2) {
+  const node1HasDiff = node1.hasDiff || some(node1.children, c => c.hasDiff)
+  if (node1HasDiff) return -1
+  const node2HasDiff = node2.hasDiff || some(node2.children, c => c.hasDiff)
+  if (node2HasDiff) return 1
+  return 0
+}
+
 export function generateTreeNodes (snapshots) {
   const groupedByContext = groupBy(snapshots, 'context')
   const contextsOnly = pickBy(groupedByContext, (v, k) => k !== 'null')
   const plainScenarios = pickBy(groupedByContext, (v, k) => k === 'null')['null']
-  return map(contextsOnly, (value, key) => {
+  const result = map(contextsOnly, (value, key) => {
     return {name: key, children: _extractProperties(value)}
   }).concat(_extractProperties(plainScenarios))
+  return result.sort(_sortingNodes)
 }
+

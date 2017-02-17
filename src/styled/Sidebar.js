@@ -7,6 +7,7 @@ const Sidebar = styled.div`
   color: #585858;
   text-align: left;
   max-height: 100vh;
+  min-width: 200px;
   overflow-y: auto;
 `
 

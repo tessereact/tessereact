@@ -195,6 +195,41 @@ test('generateTreeNodes', t => {
     name: 'Third',
     context: 'Boom',
     snapshot: 'piupie',
+    hasDiff: false
+  }]
+  t.deepEqual(generateTreeNodes(scenarios), [{
+    name: 'Second',
+    context: null,
+    hasDiff: true
+  }, {
+    name: 'Boom',
+    children: [{
+      name: 'First',
+      context: 'Boom',
+      hasDiff: false
+    }, {
+      name: 'Third',
+      context: 'Boom',
+      hasDiff: false
+    }]
+  }])
+})
+
+test('generateTreeNodes failing child', t => {
+  const scenarios = [{
+    name: 'First',
+    context: 'Boom',
+    snapshot: 'blahblah',
+    hasDiff: false
+  }, {
+    name: 'Second',
+    context: null,
+    snapshot: 'boomboom',
+    hasDiff: false
+  }, {
+    name: 'Third',
+    context: 'Boom',
+    snapshot: 'piupie',
     hasDiff: true
   }]
   t.deepEqual(generateTreeNodes(scenarios), [{
@@ -211,6 +246,6 @@ test('generateTreeNodes', t => {
   }, {
     name: 'Second',
     context: null,
-    hasDiff: true
+    hasDiff: false
   }])
 })

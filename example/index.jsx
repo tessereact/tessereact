@@ -106,6 +106,10 @@ context('Service', () => {
   })
 })
 
+scenario('Single scenario', () => {
+  return <Service name='MacBook Pro' price={200} />
+})
+
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<App />, document.getElementById('app'))
   init()
