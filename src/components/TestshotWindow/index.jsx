@@ -17,11 +17,12 @@ import {
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
 import Header from '../../styled/Header'
-import AcceptButton from '../../styled/AcceptButton'
 import TestshotContent from '../../styled/TestshotContent'
 import ComponentPreview from '../../styled/ComponentPreview'
 import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
+import AcceptButton from '../../styled/AcceptButton'
+import Text from '../../styled/Text'
 
 const htmlDiffer = new HtmlDiffer({
   ignoreWhitespaces: false
@@ -67,21 +68,30 @@ const TestshotWindow = React.createClass({
     return (
       <TestshotContainer>
         <Navigation
+          failedScenariosCount={this.state.scenarios.filter(c => c.hasDiff).length}
+          scenariosCount={this.state.scenarios.length}
           nodes={generateTreeNodes(this.state.scenarios)}
           selectedNode={this.state.selectedNode}
           selectNode={this._handleSelect}
         />
         <TestshotContent>
-          <ComponentPreview>
-            <Header>{this.state.selectedNode.name}</Header>
-            {this._renderContent()}
-          </ComponentPreview>
+          <div>
+            <Header color='#32363d'>
+              <span>{this.state.selectedNode.name}</span>
+              {this.state.selectedNode.hasDiff && <AcceptButton onClick={this._acceptSnapshot}>Accept & next</AcceptButton>}
+            </Header>
+            <ComponentPreview>
+              {this._renderContent()}
+            </ComponentPreview>
+          </div>
           {this._renderDiff()}
-          {this.state.selectedNode.hasDiff &&
-            <AcceptButton onClick={this._acceptSnapshot}>Accept</AcceptButton> }
         </TestshotContent>
       </TestshotContainer>
     )
+  },
+
+  _renderSectionHeader (s) {
+    return s.hasDiff ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text> : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   },
 
   _renderContent () {
@@ -90,7 +100,7 @@ const TestshotWindow = React.createClass({
     } else {
       const scenarios = this.state.scenarios.filter(s => (s.context === this.state.selectedNode.name))
       return scenarios.map(s => (<ScenarioBlock>
-        <h3>{s.name}</h3>
+        {this._renderSectionHeader(s)}
         <ScenarioBlockContent key={s.name}>
           {s.element}
         </ScenarioBlockContent>

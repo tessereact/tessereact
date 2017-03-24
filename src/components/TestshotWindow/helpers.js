@@ -70,7 +70,8 @@ export function generateTreeNodes (snapshots) {
   const contextsOnly = pickBy(groupedByContext, (v, k) => k !== 'null')
   const plainScenarios = pickBy(groupedByContext, (v, k) => k === 'null')['null']
   const result = map(contextsOnly, (value, key) => {
-    return {name: key, children: _extractProperties(value)}
+    const children = _extractProperties(value)
+    return {name: key, children: children, hasDiff: some(children, c => c.hasDiff)}
   }).concat(_extractProperties(plainScenarios))
   return result.sort(_sortingNodes)
 }

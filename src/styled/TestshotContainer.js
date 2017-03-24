@@ -7,7 +7,7 @@ const TestshotContainer = styled.div`
   width: 100%;
   top: 0;
   left: 0;
-  background: #f3f4f5;
+  background: #32363d;
 `
 
 export default TestshotContainer

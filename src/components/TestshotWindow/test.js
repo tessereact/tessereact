@@ -203,6 +203,7 @@ test('generateTreeNodes', t => {
     hasDiff: true
   }, {
     name: 'Boom',
+    hasDiff: false,
     children: [{
       name: 'First',
       context: 'Boom',
@@ -234,6 +235,7 @@ test('generateTreeNodes failing child', t => {
   }]
   t.deepEqual(generateTreeNodes(scenarios), [{
     name: 'Boom',
+    hasDiff: true,
     children: [{
       name: 'First',
       context: 'Boom',

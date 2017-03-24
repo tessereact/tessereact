@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import ScenarioLink from '../../styled/ScenarioLink'
+import Sidebar from '../../styled/Sidebar'
 import {isNodeActive, matchesQuery} from '../_lib/utils'
 
 const Scenario = React.createClass({
@@ -16,16 +17,17 @@ const Scenario = React.createClass({
 
   render () {
     return matchesQuery(this.props.searchQuery, this.props.node.name) &&
-      <li key={this.props.node.name}>
+      <Sidebar.ListItem key={this.props.node.name}>
         <ScenarioLink
           hasDiff={this.props.node.hasDiff}
           onClick={() => this.props.selectNode(this.props.node.context, this.props.node.name)}
           active={isNodeActive(this.props.selectedNode, this.props.node)}
           child={this.props.child}
+          title={this.props.node.name}
         >
           {this.props.node.name}
         </ScenarioLink>
-      </li>
+      </Sidebar.ListItem>
   }
 
 })

@@ -2,12 +2,20 @@ import styled from 'styled-components'
 import defaultMixin from './mixins/default'
 
 const Header = styled.div`
-  text-align: center;
-  font-size: 24.5px;
-  color: #34495e;
-  font-weight: bold;
-  margin-bottom: 15px;
-  margin-top: 5px;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  width: 80%;
+  font-size: 24px;
+  color: ${props => props.color};
+  text-align: left;
+  font-weight: normal;
+  height: 70px;
+  padding: 20px;
+  background: #f5f6f8;
+  border: 1px solid #e2e2e2;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+  z-index: 1;
 `
 
 export default defaultMixin(Header)
