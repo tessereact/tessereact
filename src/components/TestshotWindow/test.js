@@ -12,7 +12,6 @@ import {
 test('buildInitialState', t => {
   const data = [_ => 1, _ => 2]
   t.deepEqual(buildInitialState(data), {
-    selectedNode: 1,
     scenarios: [1, 2]
   })
 })
@@ -20,7 +19,6 @@ test('buildInitialState', t => {
 test('buildInitialState empty', t => {
   const data = []
   t.deepEqual(buildInitialState(data), {
-    selectedNode: {},
     scenarios: []
   })
 })
@@ -151,18 +149,23 @@ test('mergeWithPayload w/ matching snapshots', t => {
 
 test('acceptCurrentScenario', t => {
   const state = {
-    selectedNode: {
-      previousSnapshot: 'prev',
-      snapshot: 'current',
+    scenarios: [{
+      name: 'current',
+      context: 'new',
+      previousSnapshot: 'old',
+      snapshot: 'new',
       hasDiff: true
-    }
+    }]
   }
-  t.deepEqual(acceptCurrentScenario(state), {
-    selectedNode: {
-      previousSnapshot: 'current',
-      snapshot: 'current',
+  t.deepEqual(acceptCurrentScenario(state, {name: 'current', context: 'new'}), {
+    findNextFailingScenario: true,
+    scenarios: [{
+      name: 'current',
+      context: 'new',
+      snapshot: 'new',
+      previousSnapshot: 'new',
       hasDiff: false
-    }
+    }]
   })
 })
 

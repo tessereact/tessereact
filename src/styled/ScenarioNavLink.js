@@ -1,10 +1,9 @@
 import styled from 'styled-components'
 import defaultMixin from './mixins/default'
+import {NavLink} from 'react-router-dom'
 
-// TODO: Split it up into Button and built AcceptButton on top of it
-const ScenarioLink = styled.a`
-  color: ${props => (props.active ? 'white' : (props.hasDiff ? '#e91e63' : '#939599'))};
-  background: ${props => props.active && (props.hasDiff ? '#e91e63' : '#278db5')};
+const ScenarioNavLink = styled(NavLink)`
+  color: ${props => props.hasDiff ? '#e91e63' : '#939599'};
   overflow: hidden;
   display: block;
   text-align: left;
@@ -14,6 +13,12 @@ const ScenarioLink = styled.a`
   margin-left: -20px;
   margin-right: -10px;
   padding-left: ${props => props.child ? '40px' : '20px'};
+  text-decoration: none;
+
+  &.active {
+    color: #fff;
+    background: ${props => props.hasDiff ? '#e91e63' : '#278db5'}
+  }
 `
 
-export default defaultMixin(ScenarioLink)
+export default defaultMixin(ScenarioNavLink)

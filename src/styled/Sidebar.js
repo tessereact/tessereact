@@ -15,6 +15,7 @@ Sidebar.Header = defaultMixin(styled.div`
   height: 70px;
   font-size: 24px;
   padding: 20px;
+  color: #e4e4e4;
   font-weight: normal;
   border-bottom: 1px solid #4d5056;
 `)

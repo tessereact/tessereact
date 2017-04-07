@@ -1,17 +1,19 @@
 import React, {PropTypes} from 'react'
 import {some} from 'lodash'
 import List from '../List'
-import ContextLink from '../../styled/ContextLink'
 import Sidebar from '../../styled/Sidebar'
 import Arrow from '../../styled/Arrow'
-import {isNodeActive, matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
+import ContextNavLink from '../../styled/ContextNavLink'
+import {matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
+import {withRouter} from 'react-router'
 
 const Context = React.createClass({
   propTypes: {
     node: PropTypes.object,
     selectedNode: PropTypes.object,
     selectNode: PropTypes.func,
-    searchQuery: PropTypes.string
+    searchQuery: PropTypes.string,
+    location: PropTypes.object
   },
 
   _hasFailingChildren () {
@@ -19,8 +21,7 @@ const Context = React.createClass({
   },
 
   _shouldExpand () {
-    return this.props.selectedNode.name === this.props.node.name ||
-      this.props.selectedNode.context === this.props.node.name ||
+    return this.props.location.pathname.match(`/contexts/${this.props.node.name}`) ||
       this._hasFailingChildren() || (this._applyFilter() && this._searchMatchChildren())
   },
 
@@ -38,27 +39,22 @@ const Context = React.createClass({
     ))
   },
 
-  _handleClick () {
-    this.props.selectNode(this.props.node.name, null)
-  },
-
   _renderIcon () {
     return this._shouldExpand() ? <Arrow.Down /> : <Arrow.Right />
   },
 
+  _makeURL () {
+    return `/contexts/${this.props.node.name}`
+  },
+
   render () {
     return this._matchFilter() && <Sidebar.ListItem key={this.props.node.name}>
-      <ContextLink
-        hasDiff={this.props.node.hasDiff}
-        active={isNodeActive(this.props.selectedNode, this.props.node)}
-        onClick={this._handleClick}
-        title={this.props.node.name}
-      >
+      <ContextNavLink exact to={this._makeURL()}>
         {this._renderIcon()} {this.props.node.name}
-      </ContextLink>
-      {this._shouldExpand() && <List nodes={this.props.node.children} child selectedNode={this.props.selectedNode} selectNode={this.props.selectNode} />}
+      </ContextNavLink>
+      {this._shouldExpand() && <List nodes={this.props.node.children} child />}
     </Sidebar.ListItem>
   }
 })
 
-export default Context
+export default withRouter(Context)

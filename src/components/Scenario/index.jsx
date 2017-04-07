@@ -1,36 +1,31 @@
 import React, {PropTypes} from 'react'
-import ScenarioLink from '../../styled/ScenarioLink'
 import Sidebar from '../../styled/Sidebar'
-import {isNodeActive, matchesQuery} from '../_lib/utils'
+import {matchesQuery} from '../_lib/utils'
+import ScenarioNavLink from '../../styled/ScenarioNavLink'
 
 const Scenario = React.createClass({
   propTypes: {
     node: PropTypes.object,
-    selectedNode: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      context: PropTypes.string
-    }).isRequired,
-    selectNode: PropTypes.func,
     searchQuery: PropTypes.string,
     child: PropTypes.bool
+  },
+
+  _makeURL () {
+    return `/contexts/${this.props.node.context}/scenarios/${this.props.node.name}`
   },
 
   render () {
     return matchesQuery(this.props.searchQuery, this.props.node.name) &&
       <Sidebar.ListItem key={this.props.node.name}>
-        <ScenarioLink
+        <ScenarioNavLink to={this._makeURL()}
           hasDiff={this.props.node.hasDiff}
-          onClick={() => this.props.selectNode(this.props.node.context, this.props.node.name)}
-          active={isNodeActive(this.props.selectedNode, this.props.node)}
           child={this.props.child}
-          title={this.props.node.name}
         >
           {this.props.node.name}
-        </ScenarioLink>
+        </ScenarioNavLink>
       </Sidebar.ListItem>
   }
 
 })
 
 export default Scenario
-

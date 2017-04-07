@@ -87,8 +87,8 @@ context('Cart', () => {
   scenario('With a service', () => {
     const services = [
       { name: 'Web Development', price: 300, selected: false },
-      { name: 'UI Design', price: 25000 },
-      { name: 'New service', price: 12090 }
+      { name: 'UI Design', price: 2500 },
+      { name: 'New service', price: 1201 }
     ]
 
     return <Cart items={services} />
@@ -98,7 +98,7 @@ context('Cart', () => {
 
 context('Service', () => {
   scenario('Basic', () => {
-    return <Service name='UI Designer' price={666} />
+    return <Service name='UI Designer' price={6687} />
   })
 
   scenario('Expensive', () => {

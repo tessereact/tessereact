@@ -14,7 +14,6 @@ export function pickFailingScenario (state) {
 export function buildInitialState (data) {
   const scenarios = data.map((f) => (f()))
   return {
-    selectedNode: scenarios[0] || {},
     scenarios: scenarios
   }
 }
@@ -46,10 +45,12 @@ export function mergeWithPayload (state, payload) {
   return {scenarios: newData}
 }
 
-export function acceptCurrentScenario (state) {
+export function acceptCurrentScenario (state, scenario) {
   const newState = Object.assign({}, state)
-  newState.selectedNode.previousSnapshot = newState.selectedNode.snapshot
-  newState.selectedNode.hasDiff = false
+  const newScenario = find(newState.scenarios, {name: scenario.name, context: scenario.context})
+  newScenario.previousSnapshot = newScenario.snapshot
+  newScenario.hasDiff = false
+  newState.findNextFailingScenario = true
   return newState
 }
 

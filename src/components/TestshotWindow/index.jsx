@@ -6,13 +6,14 @@ import Navigation from '../../components/Navigation'
 import {postJSON} from '../../lib/fetch'
 import {
   buildInitialState,
-  pickFailingScenario,
   requestScenariosList,
   mergeWithPayload,
   acceptCurrentScenario,
   requestScenarioAcceptance,
   generateTreeNodes
 } from './helpers'
+import {BrowserRouter, Route} from 'react-router-dom'
+import {Redirect} from 'react-router'
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -43,7 +44,7 @@ const TestshotWindow = React.createClass({
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
     postJSON(url, requestScenariosList(this.state.scenarios)).then((response) => {
       response.json().then((json) => {
-        this.setState(pickFailingScenario(mergeWithPayload(this.state, json)))
+        this.setState(mergeWithPayload(this.state, json))
 
         // Report to CI
         const failingScenarios = this.state.scenarios
@@ -66,39 +67,77 @@ const TestshotWindow = React.createClass({
 
   render () {
     return (
-      <TestshotContainer>
-        <Navigation
-          failedScenariosCount={this.state.scenarios.filter(c => c.hasDiff).length}
-          scenariosCount={this.state.scenarios.length}
-          nodes={generateTreeNodes(this.state.scenarios)}
-          selectedNode={this.state.selectedNode}
-          selectNode={this._handleSelect}
-        />
-        <TestshotContent>
-          <div>
-            <Header color='#32363d'>
-              <span>{this.state.selectedNode.name}</span>
-              {this.state.selectedNode.hasDiff && <AcceptButton onClick={this._acceptSnapshot}>Accept & next</AcceptButton>}
-            </Header>
-            <ComponentPreview>
-              {this._renderContent()}
-            </ComponentPreview>
-          </div>
-          {this._renderDiff()}
-        </TestshotContent>
-      </TestshotContainer>
+      <BrowserRouter>
+        <TestshotContainer>
+          <Navigation
+            failedScenariosCount={this.state.scenarios.filter(c => c.hasDiff).length}
+            scenariosCount={this.state.scenarios.length}
+            nodes={generateTreeNodes(this.state.scenarios)}
+          />
+          {this.state.scenarios[0].hasOwnProperty('hasDiff') && <TestshotContent>
+            <Route exact path='/' render={_ => {
+              const scenario = find(this.state.scenarios, (s) => s.hasDiff) || this.state.scenarios[0]
+              return <Redirect to={`/contexts/${scenario.context}/scenarios/${scenario.name}`} />
+            }} />
+            <Route exact path='/contexts/:context' render={({match}) => {
+              return this._renderContext(match.params.context)
+            }} />
+            <Route path='/contexts/:context/scenarios/:scenario' render={routerContext => {
+              const {match, history} = routerContext
+              return this._renderScenario(history, match.params.context, match.params.scenario)
+            }} />
+          </TestshotContent>}
+        </TestshotContainer>
+      </BrowserRouter>
     )
+  },
+
+  _renderScenario (history, contextName, scenarioName) {
+    const scenario = find(this.state.scenarios, s => {
+      if (contextName !== 'null') {
+        return s.name === scenarioName && s.context === contextName
+      } else {
+        return s.name === scenarioName && !s.context
+      }
+    })
+    return <TestshotContent.Wrapper>
+      <Header>
+        <span>{scenario.name}</span>
+        {scenario.hasDiff && <AcceptButton onClick={_ => this._acceptSnapshot(scenario, history)}>Accept & next</AcceptButton>}
+      </Header>
+      <ComponentPreview>
+        {scenario.element}
+      </ComponentPreview>
+      {this._renderDiff(scenario)}
+    </TestshotContent.Wrapper>
+  },
+
+  _renderContext (contextName) {
+    const scenarios = this.state.scenarios.filter(s => (s.context === contextName))
+    return <TestshotContent.Wrapper>
+      <Header>
+        <span>{contextName}</span>
+      </Header>
+      <ComponentPreview>
+        {scenarios.map(s => (<ScenarioBlock key={s.name}>
+          {this._renderSectionHeader(s)}
+          <ScenarioBlockContent key={s.name}>
+            {s.element}
+          </ScenarioBlockContent>
+        </ScenarioBlock>))}
+      </ComponentPreview>
+    </TestshotContent.Wrapper>
   },
 
   _renderSectionHeader (s) {
     return s.hasDiff ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text> : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   },
 
-  _renderContent () {
-    if (this.state.selectedNode.isScenario) {
-      return this.state.selectedNode.element
+  _renderContent (node) {
+    if (node.isScenario) {
+      return node.element
     } else {
-      const scenarios = this.state.scenarios.filter(s => (s.context === this.state.selectedNode.name))
+      const scenarios = this.state.scenarios.filter(s => (s.context === node.name))
       return scenarios.map(s => (<ScenarioBlock>
         {this._renderSectionHeader(s)}
         <ScenarioBlockContent key={s.name}>
@@ -108,34 +147,26 @@ const TestshotWindow = React.createClass({
     }
   },
 
-  _acceptSnapshot () {
+  _acceptSnapshot (scenario, history) {
     const url = `//${this.props.host}:${this.props.port}/snapshots`
-    postJSON(url, requestScenarioAcceptance(this.state.selectedNode)).then(() => {
-      this.setState(pickFailingScenario(acceptCurrentScenario(this.state)))
+    postJSON(url, requestScenarioAcceptance(scenario)).then(_ => {
+      this.setState(acceptCurrentScenario(this.state, scenario))
+      history.push('/')
     })
   },
 
-  _renderDiff () {
-    if (this.state.selectedNode.hasDiff) {
-      return this._computeDiff()
+  _renderDiff (scenario) {
+    if (scenario.hasDiff) {
+      return this._computeDiff(scenario)
     }
   },
 
-  _computeDiff () {
-    const previousSnapshot = this.state.selectedNode.previousSnapshot
-    const snapshot = this.state.selectedNode.snapshot
+  _computeDiff (scenario) {
+    const previousSnapshot = scenario.previousSnapshot
+    const snapshot = scenario.snapshot
     const diff = htmlDiffer.diffHtml(previousSnapshot, snapshot)
     return <Diff nodes={diff} />
-  },
-
-  _handleSelect (context, scenario) {
-    if (scenario) {
-      this.setState({selectedNode: find(this.state.scenarios, {name: scenario, context: context})})
-    } else {
-      this.setState({selectedNode: {name: context}})
-    }
   }
 })
 
 export default TestshotWindow
-

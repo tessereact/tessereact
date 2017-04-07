@@ -2,14 +2,13 @@ import React, {PropTypes} from 'react'
 import List from '../List'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
+import {Link} from 'react-router-dom'
 
 const Navigation = React.createClass({
   propTypes: {
     failedScenariosCount: PropTypes.number,
     scenariosCount: PropTypes.number,
-    nodes: PropTypes.array,
-    selectedNode: PropTypes.object,
-    selectNode: PropTypes.func
+    nodes: PropTypes.array
   },
 
   getInitialState () {
@@ -31,7 +30,7 @@ const Navigation = React.createClass({
   render () {
     return (
       <Sidebar>
-        <Sidebar.Header>Testshot</Sidebar.Header>
+        <Link to='/' style={{textDecoration: 'none'}}><Sidebar.Header>Testshot</Sidebar.Header></Link>
         <Sidebar.SearchBox>
           <FilterInput placeholder='Search' ref={this.state.searchQuery} onChange={this._handleFilter} />
         </Sidebar.SearchBox>
@@ -39,8 +38,6 @@ const Navigation = React.createClass({
           {this._renderFailed()}
           <List
             nodes={this.props.nodes}
-            selectNode={this.props.selectNode}
-            selectedNode={this.props.selectedNode}
             searchQuery={this.state.searchQuery}
           />
         </Sidebar.List>
@@ -50,4 +47,3 @@ const Navigation = React.createClass({
 })
 
 export default Navigation
-

@@ -7,7 +7,7 @@ const Header = styled.div`
   align-items: center;
   width: 80%;
   font-size: 24px;
-  color: ${props => props.color};
+  color: ${props => props.color || '#32363d'};
   text-align: left;
   font-weight: normal;
   height: 70px;
