@@ -38,6 +38,9 @@ Pane.Column = defaultMixin(
 
 Pane.ColumnHeader = defaultMixin(
   styled.h3`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     border-bottom: 1px solid #e2e2e2;
     color: #32363d;
     font-weight: normal;
@@ -54,6 +57,20 @@ Pane.ColumnBody = styled.pre`
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   word-wrap: break-word;
   white-space: pre-wrap;
+`
+
+Pane.CollapseButton = styled.a`
+  background: #278db5;
+  float: right;
+  cursor: pointer;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 12px;
+  padding: 3px;
+`
+
+Pane.Text = styled.span`
+  padding: 3px;
 `
 
 export default Pane
