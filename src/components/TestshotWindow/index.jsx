@@ -164,6 +164,7 @@ const TestshotWindow = React.createClass({
   _computeDiff (scenario) {
     const previousSnapshot = scenario.previousSnapshot
     const snapshot = scenario.snapshot
+    if (!snapshot.length) { return null }
     const diff = htmlDiffer.diffHtml(previousSnapshot, snapshot)
     return <Diff nodes={diff} />
   }

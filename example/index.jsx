@@ -95,7 +95,6 @@ context('Cart', () => {
   })
 })
 
-
 context('Service', () => {
   scenario('Basic', () => {
     return <Service name='UI Designer' price={6687} />
@@ -108,6 +107,10 @@ context('Service', () => {
 
 scenario('Single scenario', () => {
   return <Service name='MacBook Pro' price={200} />
+})
+
+scenario('Empty component', () => {
+  return (() => {return null})()
 })
 
 document.addEventListener('DOMContentLoaded', () => {
