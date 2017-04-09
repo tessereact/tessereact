@@ -31,7 +31,7 @@ getPort()
   .then(wsPort => {
     const wsURL = `ws://localhost:${wsPort}`
 
-    app.get('/', (req, res) => {
+    const renderIndex = (req, res) => {
       const templatePath = config.template_path
         ? path.resolve(process.cwd(), config.template_path)
         : path.resolve(__dirname, '../index.ejs')
@@ -46,7 +46,11 @@ getPort()
         }
         res.send(templateHTML)
       })
-    })
+    }
+
+    app.get('/contexts/:context/scenarios/:scenario', renderIndex)
+    app.get('/contexts/:context', renderIndex)
+    app.get('/', renderIndex)
 
     if (process.env.CI) {
       app.use(express.static(path.resolve(process.cwd(), config.build_path)))

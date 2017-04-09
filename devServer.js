@@ -21,9 +21,13 @@ app.use(webpackHotMiddleware(compiler))
 app.set('view engine', 'ejs')
 app.set('views', path.join(process.cwd(), 'example'))
 
-app.get('*', (req, res) => {
+function renderIndex (req, res) {
   res.render('index')
-})
+}
+
+app.get('/contexts/:context/scenarios/:scenario', renderIndex)
+app.get('/contexts/:context', renderIndex)
+app.get('/', renderIndex)
 
 app.listen(port, '0.0.0.0', err => {
   if (err) {
