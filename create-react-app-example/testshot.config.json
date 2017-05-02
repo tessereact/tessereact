@@ -1,0 +1,8 @@
+{
+  "port": 5001,
+  "snapshots_path": "snapshots",
+  "entry_url": "http://localhost:5000/assets/js/testshot.js",
+  "template_path": "testshot/scenarios.ejs",
+  "build_path": "build",
+  "built_entry_path": "static/js/testshot.js"
+}

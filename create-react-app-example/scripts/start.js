@@ -7,7 +7,7 @@ process.env.NODE_ENV = 'development';
 // that have already been set.
 // https://github.com/motdotla/dotenv
 require('dotenv').config({silent: true});
-
+var isTestshot = process.env.TESTSHOT
 var chalk = require('chalk');
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
@@ -21,7 +21,7 @@ var getProcessForPort = require('react-dev-utils/getProcessForPort');
 var openBrowser = require('react-dev-utils/openBrowser');
 var prompt = require('react-dev-utils/prompt');
 var fs = require('fs');
-var config = require('../config/webpack.config.dev');
+var config = require(isTestshot ? '../config/webpack.config.testshot' : '../config/webpack.config.dev');
 var paths = require('../config/paths');
 
 var useYarn = fs.existsSync(paths.yarnLockFile);
