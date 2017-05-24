@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'
 import Sidebar from '../../styled/Sidebar'
 import {matchesQuery} from '../_lib/utils'
 import ScenarioNavLink from '../../styled/ScenarioNavLink'
+import routes from '../../routes'
 
 const Scenario = React.createClass({
   propTypes: {
@@ -10,18 +11,25 @@ const Scenario = React.createClass({
     child: PropTypes.bool
   },
 
-  _makeURL () {
-    return `/contexts/${this.props.node.context}/scenarios/${this.props.node.name}`
-  },
-
   render () {
-    return matchesQuery(this.props.searchQuery, this.props.node.name) &&
-      <Sidebar.ListItem key={this.props.node.name}>
-        <ScenarioNavLink to={this._makeURL()}
-          hasDiff={this.props.node.hasDiff}
-          child={this.props.child}
+    const {
+      searchQuery,
+      child,
+      node: {name, context, hasDiff}
+    } = this.props
+    const params = {context: context || 'null', scenario: name}
+    const path = routes.hrefTo('scenario', params)
+
+    return matchesQuery(searchQuery, name) &&
+      <Sidebar.ListItem key={name}>
+        <ScenarioNavLink
+          name='scenario'
+          params={params}
+          hasDiff={hasDiff}
+          child={child}
+          active={routes.isPathMatchesRouteOrParents(path)}
         >
-          {this.props.node.name}
+          {name}
         </ScenarioNavLink>
       </Sidebar.ListItem>
   }

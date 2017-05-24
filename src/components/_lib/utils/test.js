@@ -1,18 +1,5 @@
 import test from 'ava'
-import {isNodeActive, matchesQuery} from '.'
-
-test('isNodeActive', t => {
-  const selectedScenario = {
-    name: 'First',
-    context: 'Foo'
-  }
-  const node = {
-    name: 'First',
-    context: 'Foo'
-  }
-  t.is(isNodeActive(selectedScenario, node), true)
-  t.is(isNodeActive(selectedScenario, {name: 'Second'}), false)
-})
+import {matchesQuery} from '.'
 
 test('matchesQuery no matching', t => {
   t.is(matchesQuery('First', 'Second'), false)

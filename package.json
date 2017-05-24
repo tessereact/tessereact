@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "body-parser": "^1.15.2",
+    "browser-env": "^2.0.31",
     "chromedriver": "^2.27.2",
     "cors": "^2.8.1",
     "express": "^4.14.0",
@@ -22,8 +23,6 @@
     "js-beautify": "^1.6.8",
     "lodash": "^4.17.2",
     "node-fetch": "^1.6.3",
-    "react-router": "^4.0.0",
-    "react-router-dom": "^4.0.0",
     "styled-components": "^1.3.1",
     "styled-mixin": "^0.1.2",
     "ws": "^2.0.3"
@@ -91,7 +90,8 @@
   ],
   "ava": {
     "require": [
-      "babel-register"
+      "babel-register",
+      "./test/helpers/setup-browser-env.js"
     ],
     "babel": "inherit"
   }

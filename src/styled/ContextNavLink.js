@@ -1,10 +1,12 @@
 import styled from 'styled-components'
 import defaultMixin from './mixins/default'
-import {NavLink} from 'react-router-dom'
+import Link from '../lib/link'
 
-const ContextNavLink = styled(NavLink)`
-  color: #c7c7c7;
+const ContextNavLink = styled(Link)`
+  color: ${props => props.active ? '#fefefe' : '#c7c7c7'};
+  background: ${props => props.active && '#278db5'}
   overflow: hidden;
+  cursor: pointer;
   text-decoration: none;
   display: flex;
   flex-wrap: nowrap;
@@ -13,11 +15,6 @@ const ContextNavLink = styled(NavLink)`
   margin-right: -10px;
   border-radius: 0 3px 3px 0;
   padding: 7px 20px;
-
-  &.active {
-    background: #278db5;
-    color: #fefefe;
-  }
 `
 
 export default defaultMixin(ContextNavLink)

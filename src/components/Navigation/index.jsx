@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import List from '../List'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
-import {Link} from 'react-router-dom'
+import Link from '../../lib/link'
 
 const Navigation = React.createClass({
   propTypes: {
@@ -22,23 +22,28 @@ const Navigation = React.createClass({
   },
 
   _renderFailed () {
-    return this.props.failedScenariosCount > 0 && <Sidebar.Failed>
-      FAILED ({this.props.failedScenariosCount}/{this.props.scenariosCount})
+    const {failedScenariosCount, scenariosCount} = this.props
+
+    return failedScenariosCount > 0 && <Sidebar.Failed>
+      FAILED ({failedScenariosCount}/{scenariosCount})
     </Sidebar.Failed>
   },
 
   render () {
+    const {searchQuery} = this.state
+    const {nodes} = this.props
+
     return (
       <Sidebar>
-        <Link to='/' style={{textDecoration: 'none'}}><Sidebar.Header>Testshot</Sidebar.Header></Link>
+        <Link name='home' style={{textDecoration: 'none'}}><Sidebar.Header>Testshot</Sidebar.Header></Link>
         <Sidebar.SearchBox>
-          <FilterInput placeholder='Search' ref={this.state.searchQuery} onChange={this._handleFilter} />
+          <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter} />
         </Sidebar.SearchBox>
         <Sidebar.List>
           {this._renderFailed()}
           <List
-            nodes={this.props.nodes}
-            searchQuery={this.state.searchQuery}
+            nodes={nodes}
+            searchQuery={searchQuery}
           />
         </Sidebar.List>
       </Sidebar>

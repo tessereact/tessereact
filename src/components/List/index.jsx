@@ -16,23 +16,27 @@ const List = React.createClass({
   },
 
   _renderContext (node) {
+    const {selectedNode, searchQuery, selectNode} = this.props
+
     return <Context
       key={node.name}
       node={node}
-      selectedNode={this.props.selectedNode}
-      selectNode={this.props.selectNode}
-      searchQuery={this.props.searchQuery}
+      selectedNode={selectedNode}
+      selectNode={selectNode}
+      searchQuery={searchQuery}
     />
   },
 
   _renderScenario (node) {
+    const {selectNode, selectedNode, searchQuery, child} = this.props
+
     return <Scenario
       key={[node.context, node.name].join(' - ')}
       node={node}
-      selectNode={this.props.selectNode}
-      selectedNode={this.props.selectedNode}
-      searchQuery={this.props.searchQuery}
-      child={this.props.child}
+      selectNode={selectNode}
+      selectedNode={selectedNode}
+      searchQuery={searchQuery}
+      child={child}
     />
   },
 

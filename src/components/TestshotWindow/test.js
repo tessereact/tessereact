@@ -1,7 +1,6 @@
 import test from 'ava'
 import {
   buildInitialState,
-  pickFailingScenario,
   requestScenariosList,
   mergeWithPayload,
   acceptCurrentScenario,
@@ -21,30 +20,6 @@ test('buildInitialState empty', t => {
   t.deepEqual(buildInitialState(data), {
     scenarios: []
   })
-})
-
-test('pickFailingScenario w/o failing scenarios', t => {
-  const state = {
-    scenarios: [{
-      hasDiff: false
-    }]
-  }
-  t.is(pickFailingScenario(state), state)
-})
-
-test('pickFailingScenario w/ failing scenarios', t => {
-  const state = {
-    scenarios: [{
-      name: 'First',
-      hasDiff: false
-    }, {
-      name: 'Second',
-      hasDiff: true
-    }]
-  }
-  const expectedState = Object.assign({}, state)
-  expectedState.selectedNode = {name: 'Second', hasDiff: true}
-  t.deepEqual(pickFailingScenario(state), expectedState)
 })
 
 test('requestScenariosList', t => {

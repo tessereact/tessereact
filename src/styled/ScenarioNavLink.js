@@ -1,9 +1,10 @@
 import styled from 'styled-components'
 import defaultMixin from './mixins/default'
-import {NavLink} from 'react-router-dom'
+import Link from '../lib/link'
 
-const ScenarioNavLink = styled(NavLink)`
-  color: ${props => props.hasDiff ? '#e91e63' : '#939599'};
+const ScenarioNavLink = styled(Link)`
+  color: ${props => props.active ? '#fff' : (props.hasDiff ? '#e91e63' : '#939599')};
+  background: ${props => !props.active ? '' : props.hasDiff ? '#e91e63' : '#278db5'}
   overflow: hidden;
   display: block;
   text-align: left;
@@ -14,11 +15,6 @@ const ScenarioNavLink = styled(NavLink)`
   margin-right: -10px;
   padding-left: ${props => props.child ? '40px' : '20px'};
   text-decoration: none;
-
-  &.active {
-    color: #fff;
-    background: ${props => props.hasDiff ? '#e91e63' : '#278db5'}
-  }
 `
 
 export default defaultMixin(ScenarioNavLink)

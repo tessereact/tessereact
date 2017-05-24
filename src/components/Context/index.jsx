@@ -5,7 +5,7 @@ import Sidebar from '../../styled/Sidebar'
 import Arrow from '../../styled/Arrow'
 import ContextNavLink from '../../styled/ContextNavLink'
 import {matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
-import {withRouter} from 'react-router'
+import routes from '../../routes'
 
 const Context = React.createClass({
   propTypes: {
@@ -21,7 +21,7 @@ const Context = React.createClass({
   },
 
   _shouldExpand () {
-    return this.props.location.pathname.match(`/contexts/${this.props.node.name}`) ||
+    return window.location.pathname.match(`/contexts/${this.props.node.name}`) ||
       this._hasFailingChildren() || (this._applyFilter() && this._searchMatchChildren())
   },
 
@@ -43,18 +43,20 @@ const Context = React.createClass({
     return this._shouldExpand() ? <Arrow.Down /> : <Arrow.Right />
   },
 
-  _makeURL () {
-    return `/contexts/${this.props.node.name}`
-  },
-
   render () {
-    return this._matchFilter() && <Sidebar.ListItem key={this.props.node.name}>
-      <ContextNavLink exact to={this._makeURL()}>
-        {this._renderIcon()} {this.props.node.name}
+    const {name, children} = this.props.node
+    const path = routes.hrefTo('context', {context: name})
+
+    return this._matchFilter() && <Sidebar.ListItem key={name}>
+      <ContextNavLink
+        name='context'
+        params={{context: name}}
+        active={routes.isPathMatchesRouteOrParents(path)}>
+        {this._renderIcon()} {name}
       </ContextNavLink>
-      {this._shouldExpand() && <List nodes={this.props.node.children} child />}
+      {this._shouldExpand() && <List nodes={children} child />}
     </Sidebar.ListItem>
   }
 })
 
-export default withRouter(Context)
+export default Context

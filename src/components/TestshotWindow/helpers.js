@@ -1,18 +1,9 @@
 import {map, find, groupBy, pickBy, pick, some} from 'lodash'
 import formatHTML from '../../lib/formatter/'
 
-export function pickFailingScenario (state) {
-  let newState = state
-  const failingScenario = find(state.scenarios, (s) => s.hasDiff)
-  if (failingScenario) {
-    newState = Object.assign({}, state)
-    newState.selectedNode = failingScenario
-  }
-  return newState
-}
-
 export function buildInitialState (data) {
   const scenarios = data.map((f) => (f()))
+
   return {
     scenarios: scenarios
   }
@@ -76,4 +67,3 @@ export function generateTreeNodes (snapshots) {
   }).concat(_extractProperties(plainScenarios))
   return result.sort(_sortingNodes)
 }
-

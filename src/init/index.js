@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import TestshotComponent from '../Testshot'
+import routes from '../routes'
 
 export default function init (userOptions = {}) {
   const options = Object.assign({
@@ -9,15 +10,17 @@ export default function init (userOptions = {}) {
       port: '5001'
     }
   }, userOptions)
-
   const wrapperElement = document.createElement('div')
-  if (options.className) {
-    wrapperElement.classList.add(options.className)
+
+  if (userOptions.className) {
+    wrapperElement.classList.add(userOptions.className)
   }
   document.body.appendChild(wrapperElement)
 
-  ReactDOM.render(
-    React.createElement(TestshotComponent, options),
-    wrapperElement
-  )
+  routes.start((routeData) => {
+    ReactDOM.render(
+      React.createElement(TestshotComponent, Object.assign({}, options, {routeData})),
+      wrapperElement
+    )
+  })
 }

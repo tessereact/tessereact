@@ -14,6 +14,7 @@ const Diff = React.createClass({
     }
   },
 
+  // This method is responsible for collape/expand functionality
   _getNodes () {
     if (!this.state.collapsed) { return this.props.nodes }
     return this.props.nodes.map((n, i) => {
@@ -41,7 +42,9 @@ const Diff = React.createClass({
   },
 
   _renderCollapseButton () {
-    return <BottomPane.CollapseButton onClick={this._toggleCollapsed}>{this.state.collapsed ? 'Expand' : 'Collapse'}</BottomPane.CollapseButton>
+    return <BottomPane.CollapseButton onClick={this._toggleCollapsed}>
+      {this.state.collapsed ? 'Expand' : 'Collapse'}
+    </BottomPane.CollapseButton>
   },
 
   render () {
@@ -49,7 +52,9 @@ const Diff = React.createClass({
       <BottomPane>
         <BottomPane.Row>
           <BottomPane.Column>
-            <BottomPane.ColumnHeader><BottomPane.Text>Previous version</BottomPane.Text></BottomPane.ColumnHeader>
+            <BottomPane.ColumnHeader>
+              <BottomPane.Text>Previous version</BottomPane.Text>
+            </BottomPane.ColumnHeader>
             <BottomPane.ColumnBody>
               {flatten(this._getNodes()).map((n, i) => {
                 return !n.added && <HighlightedDiff key={i} removed={n.removed}>
@@ -59,7 +64,10 @@ const Diff = React.createClass({
             </BottomPane.ColumnBody>
           </BottomPane.Column>
           <BottomPane.Column>
-            <BottomPane.ColumnHeader><BottomPane.Text>Current version</BottomPane.Text> {this._renderCollapseButton()}</BottomPane.ColumnHeader>
+            <BottomPane.ColumnHeader>
+              <BottomPane.Text>Current version</BottomPane.Text>
+              {this._renderCollapseButton()}
+            </BottomPane.ColumnHeader>
             <BottomPane.ColumnBody>
               {flatten(this._getNodes()).map((n, i) => {
                 return !n.removed && <HighlightedDiff key={i} added={n.added}>

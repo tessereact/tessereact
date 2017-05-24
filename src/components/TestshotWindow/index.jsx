@@ -12,8 +12,7 @@ import {
   requestScenarioAcceptance,
   generateTreeNodes
 } from './helpers'
-import {BrowserRouter, Route} from 'react-router-dom'
-import {Redirect} from 'react-router'
+import History from '../../lib/router/history'
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -33,7 +32,8 @@ const TestshotWindow = React.createClass({
   propTypes: {
     data: PropTypes.array.isRequired,
     host: PropTypes.string.isRequired,
-    port: PropTypes.string.isRequired
+    port: PropTypes.string.isRequired,
+    routeData: PropTypes.object
   },
 
   getInitialState () {
@@ -65,45 +65,59 @@ const TestshotWindow = React.createClass({
     })
   },
 
+  _areScenariosAvailable () {
+    return this.state.scenarios[0].hasOwnProperty('hasDiff')
+  },
+
   render () {
+    const {
+      routeData: {
+        params: {
+          context,
+          scenario
+        },
+        route: {
+          name: routeName
+        }
+      }
+    } = this.props
+    const {scenarios} = this.state
+
+    if (routeName === 'home') {
+      let scenario = find(scenarios, (s) => s.hasDiff) || scenarios[0]
+      History.push(`/contexts/${scenario.context}/scenarios/${scenario.name}`)
+    }
+
     return (
-      <BrowserRouter>
-        <TestshotContainer>
-          <Navigation
-            failedScenariosCount={this.state.scenarios.filter(c => c.hasDiff).length}
-            scenariosCount={this.state.scenarios.length}
-            nodes={generateTreeNodes(this.state.scenarios)}
-          />
-          {this.state.scenarios[0].hasOwnProperty('hasDiff') && <TestshotContent>
-            <Route exact path='/' render={_ => {
-              const scenario = find(this.state.scenarios, (s) => s.hasDiff) || this.state.scenarios[0]
-              return <Redirect to={`/contexts/${scenario.context}/scenarios/${scenario.name}`} />
-            }} />
-            <Route exact path='/contexts/:context' render={({match}) => {
-              return this._renderContext(match.params.context)
-            }} />
-            <Route path='/contexts/:context/scenarios/:scenario' render={routerContext => {
-              const {match, history} = routerContext
-              return this._renderScenario(history, match.params.context, match.params.scenario)
-            }} />
-          </TestshotContent>}
-        </TestshotContainer>
-      </BrowserRouter>
+      <TestshotContainer>
+        <Navigation
+          failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
+          scenariosCount={scenarios.length}
+          nodes={generateTreeNodes(scenarios)}
+        />
+        {this._areScenariosAvailable && <TestshotContent>
+          {routeName === 'context' && this._renderContext(context)}
+          {routeName === 'scenario' && this._renderScenario(this._findScenario(context, scenario))}
+        </TestshotContent>}
+      </TestshotContainer>
     )
   },
 
-  _renderScenario (history, contextName, scenarioName) {
-    const scenario = find(this.state.scenarios, s => {
+  _findScenario (contextName, scenarioName) {
+    return find(this.state.scenarios, s => {
       if (contextName !== 'null') {
         return s.name === scenarioName && s.context === contextName
       } else {
         return s.name === scenarioName && !s.context
       }
     })
+  },
+
+  _renderScenario (scenario) {
     return <TestshotContent.Wrapper>
       <Header>
         <span>{scenario.name}</span>
-        {scenario.hasDiff && <AcceptButton onClick={_ => this._acceptSnapshot(scenario, history)}>Accept & next</AcceptButton>}
+        {scenario.hasDiff && <AcceptButton onClick={_ => this._acceptSnapshot(scenario)}>Accept & next</AcceptButton>}
       </Header>
       <ComponentPreview>
         {scenario.element}
@@ -113,7 +127,8 @@ const TestshotWindow = React.createClass({
   },
 
   _renderContext (contextName) {
-    const scenarios = this.state.scenarios.filter(s => (s.context === contextName))
+    const scenarios = this.state.scenarios.filter(s => s.context === contextName)
+
     return <TestshotContent.Wrapper>
       <Header>
         <span>{contextName}</span>
@@ -130,7 +145,9 @@ const TestshotWindow = React.createClass({
   },
 
   _renderSectionHeader (s) {
-    return s.hasDiff ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text> : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
+    return s.hasDiff
+      ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text>
+      : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   },
 
   _renderContent (node) {
@@ -147,11 +164,13 @@ const TestshotWindow = React.createClass({
     }
   },
 
-  _acceptSnapshot (scenario, history) {
-    const url = `//${this.props.host}:${this.props.port}/snapshots`
+  _acceptSnapshot (scenario) {
+    const {host, port} = this.props
+    const url = `//${host}:${port}/snapshots`
+
     postJSON(url, requestScenarioAcceptance(scenario)).then(_ => {
       this.setState(acceptCurrentScenario(this.state, scenario))
-      history.push('/')
+      History.push('/')
     })
   },
 
@@ -162,8 +181,8 @@ const TestshotWindow = React.createClass({
   },
 
   _computeDiff (scenario) {
-    const previousSnapshot = scenario.previousSnapshot
-    const snapshot = scenario.snapshot
+    const {previousSnapshot, snapshot} = scenario
+
     if (!snapshot.length) { return null }
     const diff = htmlDiffer.diffHtml(previousSnapshot, snapshot)
     return <Diff nodes={diff} />

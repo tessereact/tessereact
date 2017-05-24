@@ -38,12 +38,13 @@ const Testshot = React.createClass({
     server: PropTypes.shape({
       host: PropTypes.string,
       port: PropTypes.string
-    })
+    }),
+    routeData: PropTypes.object
   },
 
   render () {
     return <div>
-      <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} />
+      <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
     </div>
   }
 })
