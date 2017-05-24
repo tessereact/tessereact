@@ -2167,9 +2167,9 @@ eslint-config-standard-jsx@3.2.0, eslint-config-standard-jsx@^3.0.0, eslint-conf
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/eslint-config-standard-jsx/-/eslint-config-standard-jsx-3.2.0.tgz#c240e26ed919a11a42aa4de8059472b38268d620"
 
-eslint-config-standard-jsx@tyrsius/eslint-config-standard-jsx#2.0:
+eslint-config-standard-jsx@feross/eslint-config-standard-jsx#2.0:
   version "1.2.0"
-  resolved "https://codeload.github.com/tyrsius/eslint-config-standard-jsx/tar.gz/f85f775f6e79dce64f635708ae8e364808b2aa5d"
+  resolved "https://codeload.github.com/feross/eslint-config-standard-jsx/tar.gz/f85f775f6e79dce64f635708ae8e364808b2aa5d"
 
 eslint-config-standard-react@4.0.0:
   version "4.0.0"
@@ -5242,7 +5242,7 @@ standard-jsx@^8.0.0:
   dependencies:
     eslint "~2.10.2"
     eslint-config-standard "5.3.1"
-    eslint-config-standard-jsx tyrsius/eslint-config-standard-jsx#2.0
+    eslint-config-standard-jsx feross/eslint-config-standard-jsx#2.0
     eslint-plugin-promise "^1.0.8"
     eslint-plugin-react "^5.0.1"
     eslint-plugin-standard "^1.3.1"
