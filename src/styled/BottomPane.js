@@ -45,8 +45,8 @@ Pane.ColumnHeader = defaultMixin(
     color: #32363d;
     font-weight: normal;
     font-size: 14px;
+    margin: 0;
     padding-bottom: 10px;
-    margin-bottom: 10px;
   `
 )
 

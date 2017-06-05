@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import Context from '../Context'
 import Scenario from '../Scenario'
+import StyledList from '../../styled/List'
 
 const List = React.createClass({
   propTypes: {
@@ -41,9 +42,9 @@ const List = React.createClass({
   },
 
   render () {
-    return <ul>
+    return <StyledList>
       {this.props.nodes.map(this._renderItem)}
-    </ul>
+    </StyledList>
   }
 })
 
