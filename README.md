@@ -1,8 +1,10 @@
 # Testshot
 
-Experimental snapshot testing for React components.
+Presentational snapshot testing for React components.
 
-[Some screenshots](https://github.com/toptal/testshot/blob/master/docs/sceenshots.md)
+![Screenshot](https://d2ppvlu71ri8gs.cloudfront.net/items/1G231j0K2e0l45011G11/Image%202017-05-28%20at%2012.21.33%20PM.png)
+
+[More Screenshots](https://github.com/toptal/testshot/blob/master/docs/sceenshots.md)
 
 ## Demo & Examples
 
@@ -12,8 +14,8 @@ To build the basic example locally, run:
 
 ```
 yarn install
-yarn run dev
-yarn run dev-server
+yarn dev
+yarn dev-server
 ```
 
 Then open [`localhost:5000`](http://localhost:5000) in a browser.
@@ -22,56 +24,26 @@ Then open [`localhost:5000`](http://localhost:5000) in a browser.
 
 ```
 cd create-react-app-example
-npm run start-testshot
+yarn start-testshot
 ```
 
 ## Installation
 
 ```
-npm install toptal/testshot
+yarn add toptal/testshot
 ```
 
-## Integration
-
-For Webpack integration take a look on this commit https://github.com/toptal/testshot/commit/118575ba8a5e95530b2fe5f169fc69131e22addd
-
-It illustrates how to integrate Testshot into create-react-app.
-
-### Open Testshot
-
-```
-cd create-react-app-example
-npm run start-testshot
-```
+[Configuring Webpack](docs/integration.md)
 
 ## Basic Usage
 
-Let's write a Testshot scenario for this component.
+For the complete usage guide take a look [here](docs/usage.md).
 
 ``` js
-class Text extends Component {
-  render() {
-    return (
-      <span style={{color: this.props.color}}>{this.props.children}</span>
-    );
-  }
-}
-```
+import React from 'react'
+import {context, scenario} from 'testshot'
+import Text from '.'
 
-### Creating a `scenario`
-
-``` js
-scenario('Default', () => (
-  <Text>Text</Text>
-))
-```
-
-### Adding a `context`
-
-When you have multiple scenarios for the component it's a good idea to
-group them into a context.
-
-``` js
 context('Text', () => {
   scenario('Default', () => (
     <Text>Text</Text>
@@ -86,3 +58,9 @@ context('Text', () => {
 ## Contributors
 
 [See here](https://github.com/toptal/testshot/graphs/contributors)
+
+Special thanks to:
+  - Team Portal Toptal Team
+  - [Aleksandar Djuric](https://dribbble.com/mnmalt)
+  - [Nadya Tsech](https://twitter.com/n_tsech)
+  - [Sasha Koss](https://github.com/kossnocorp)

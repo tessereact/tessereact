@@ -43,9 +43,16 @@ const Testshot = React.createClass({
   },
 
   render () {
-    return <div>
-      <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
-    </div>
+    if (data.length) {
+      return <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
+    } else {
+      // TODO: Replace with nice and stylish welcome page :)
+      return <div style={{'text-align': 'center'}}>
+        <h1>Welcome to Testshot</h1>
+        <p>It's time to add your first scenario.</p>
+        <p>Don't know how? Have a look <a href='https://github.com/toptal/testshot/blob/docs/docs/usage.md'>here</a>.</p>
+      </div>
+    }
   }
 })
 
