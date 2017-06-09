@@ -1,7 +1,7 @@
 {
-  "name": "testshot",
+  "name": "@toptal/testshot",
   "version": "0.1.0",
-  "description": "testshot",
+  "description": "Presentational snapshot testing for React components.",
   "main": "./lib/index.js",
   "author": "Eduard Tsech",
   "homepage": "https://github.com/toptal/testshot",
