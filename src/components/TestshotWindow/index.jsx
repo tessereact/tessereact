@@ -45,6 +45,8 @@ const TestshotWindow = React.createClass({
     postJSON(url, requestScenariosList(this.state.scenarios)).then((response) => {
       response.json().then((json) => {
         this.setState(mergeWithPayload(this.state, json))
+        this._checkForHomeRoute(this.props)
+        this._checkIfRouteExists(this.props)
 
         // Report to CI
         const failingScenarios = this.state.scenarios
@@ -65,11 +67,43 @@ const TestshotWindow = React.createClass({
     })
   },
 
+  componentWillReceiveProps (nextProps) {
+    this._checkForHomeRoute(nextProps)
+  },
+
+  _checkIfRouteExists (props) {
+    const {context, scenario, routeName} = this.getRouteData(props)
+    switch (routeName) {
+      case 'scenario':
+        !this._findScenario(context, scenario) &&
+          History.push(`/contexts/${context}`)
+        break
+      case 'context':
+        !this.state.scenarios.find((s) => { return s.context === context }) &&
+          History.push('/')
+        break
+      case 'home':
+        break
+      default:
+        History.push('/')
+    }
+  },
+
+  _checkForHomeRoute (props) {
+    const routeName = props.routeData.route.name
+    const {scenarios} = this.state
+
+    if (routeName === 'home') {
+      let scenario = find(scenarios, (s) => { return s.hasDiff }) || scenarios[0]
+      History.push(`/contexts/${scenario.context}/scenarios/${scenario.name}`)
+    }
+  },
+
   _areScenariosAvailable () {
     return this.state.scenarios[0].hasOwnProperty('hasDiff')
   },
 
-  render () {
+  getRouteData (props) {
     const {
       routeData: {
         params: {
@@ -80,13 +114,13 @@ const TestshotWindow = React.createClass({
           name: routeName
         }
       }
-    } = this.props
-    const {scenarios} = this.state
+    } = props
+    return {context, scenario, routeName}
+  },
 
-    if (routeName === 'home') {
-      let scenario = find(scenarios, (s) => s.hasDiff) || scenarios[0]
-      History.push(`/contexts/${scenario.context}/scenarios/${scenario.name}`)
-    }
+  render () {
+    const {context, scenario, routeName} = this.getRouteData(this.props)
+    const {scenarios} = this.state
 
     return (
       <TestshotContainer>
@@ -114,6 +148,7 @@ const TestshotWindow = React.createClass({
   },
 
   _renderScenario (scenario) {
+    if (!scenario) return null
     return <TestshotContent.Wrapper>
       <Header>
         <span>{scenario.name}</span>

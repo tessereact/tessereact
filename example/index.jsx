@@ -101,7 +101,7 @@ context('Service', () => {
   })
 
   scenario('Expensive', () => {
-    return <Service name='MacBook Pro' price={2000} />
+    return <Service name='MacBook Pro' price={200} />
   })
 })
 
