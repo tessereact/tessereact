@@ -12,6 +12,7 @@
   "bugs": {
     "url": "https://github.com/toptal/testshot/issues"
   },
+  "private": false,
   "dependencies": {
     "body-parser": "^1.15.2",
     "browser-env": "^2.0.31",
