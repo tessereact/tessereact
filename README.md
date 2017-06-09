@@ -30,7 +30,7 @@ yarn start-testshot
 ## Installation
 
 ```
-yarn add toptal/testshot
+yarn add @toptal/testshot
 ```
 
 [Configuring Webpack](docs/integration.md)
@@ -41,7 +41,7 @@ For the complete usage guide take a look [here](docs/usage.md).
 
 ``` js
 import React from 'react'
-import {context, scenario} from 'testshot'
+import {context, scenario} from '@toptal/testshot'
 import Text from '.'
 
 context('Text', () => {

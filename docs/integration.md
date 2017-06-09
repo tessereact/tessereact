@@ -25,7 +25,7 @@ You can have a look on this [commit](https://github.com/toptal/testshot/commit/1
 
 ### 1. Add Testshot to your project
 
-`yarn add toptal/testshot`
+`yarn add @toptal/testshot`
 
 ### 2. Create Testshot folder
 

@@ -75,7 +75,6 @@
     "dev": "NODE_ENV=development node devServer.js",
     "dev-server": "TESTSHOT_CONFIG='./example/testshot.config.json' node bin/server.js",
     "build": "babel src --source-root src --out-dir lib --ignore test.js",
-    "release": "TODO...",
     "lint": "esw src '*.js' --ext '.js,.jsx'  --ignore-pattern 'lib'",
     "lint-watch": "yarn run lint -- --watch",
     "lint-fix": "yarn run lint -- --fix",
@@ -85,7 +84,7 @@
   "bin": {
     "testshot-server": "./bin/server.js"
   },
-  "files": ["lib", "bin"],
+  "files": ["lib", "bin", "docs"],
   "keywords": [
     "react",
     "react-component"

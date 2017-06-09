@@ -24,7 +24,7 @@ export default class Text extends Component {
 // src/Text/scenarios.jsx
 
 import React from 'react'
-import {scenario} from 'testshot'
+import {scenario} from '@toptal/testshot'
 import Text from '.'
 
 scenario('Default', () => (
@@ -55,7 +55,7 @@ group them into a context to not bloat the navigation bar.
 // src/Text/scenarios.jsx
 
 import React from 'react'
-import {context, scenario} from 'testshot'
+import {context, scenario} from '@toptal/testshot'
 import Text from '.'
 
 context('Text', () => {
