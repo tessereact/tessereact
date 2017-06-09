@@ -4,15 +4,12 @@
 const path = require('path')
 const express = require('express')
 const WebSocket = require('ws')
-const fs = require('fs')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const globby = require('globby')
 const fsp = require('fs-promise')
-const chromeDriverPath = require('chromedriver').path
-const {execFile} = require('child_process')
 const fetch = require('node-fetch')
-const {startChromeDriver} = require('../src/lib/chromeDriver')
+const {startChromeDriver} = require('../lib/lib/chromeDriver')
 const getPort = require('get-port')
 const ejs = require('ejs')
 

@@ -84,6 +84,7 @@
   "bin": {
     "testshot-server": "./bin/server.js"
   },
+  "files": ["lib", "bin"],
   "keywords": [
     "react",
     "react-component"
