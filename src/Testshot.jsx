@@ -50,7 +50,7 @@ const Testshot = React.createClass({
       return <div style={{'text-align': 'center'}}>
         <h1>Welcome to Testshot</h1>
         <p>It's time to add your first scenario.</p>
-        <p>Don't know how? Have a look <a href='https://github.com/toptal/testshot/blob/docs/docs/usage.md'>here</a>.</p>
+        <p>Don't know how? Have a look <a href='https://github.com/toptal/testshot/blob/master/docs/usage.md'>here</a>.</p>
       </div>
     }
   }
