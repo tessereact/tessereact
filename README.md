@@ -6,7 +6,7 @@ Presentational snapshot testing for React components.
 
 ![Screenshot](https://d2ppvlu71ri8gs.cloudfront.net/items/1G231j0K2e0l45011G11/Image%202017-05-28%20at%2012.21.33%20PM.png)
 
-[More Screenshots](https://github.com/toptal/testshot/blob/master/docs/sceenshots.md)
+[Check usage guide for more screenshots](docs/usage.md).
 
 ## Demo & Examples
 
