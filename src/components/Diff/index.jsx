@@ -26,7 +26,7 @@ const Diff = React.createClass({
       } else if (i === 0) {
         showedRows = ['...'].concat(rows.slice(rows.length - 1, rows.length))
       } else if (i === rows.length - 1) {
-        showedRows = rows.slice(0, 1).push(['...'])
+        showedRows = rows.slice(0, 1).concat(['...'])
       } else if (rows.length > 1) {
         showedRows = rows.slice(0, 1).concat('...').concat(rows.slice(rows.length - 1, rows.length))
       } else {
