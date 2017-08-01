@@ -162,7 +162,9 @@ const TestshotWindow = React.createClass({
   },
 
   _renderContext (contextName) {
-    const scenarios = this.state.scenarios.filter(s => s.context === contextName)
+    const scenarios = this.state.scenarios
+      .filter(s => s.context === contextName)
+      .sort((a, b) => a.name.localeCompare(b.name))
 
     return <TestshotContent.Wrapper>
       <Header>

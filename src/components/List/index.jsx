@@ -43,7 +43,15 @@ const List = React.createClass({
 
   render () {
     return <StyledList>
-      {this.props.nodes.map(this._renderItem)}
+      {
+        this.props.nodes
+          // Separate contexts and scenarios and then sort alphabetically by name
+          .sort((a, b) =>
+            (Boolean(a.children) === Boolean(b.children) ? 0 : a.children ? -1 : 1) ||
+              a.name.localeCompare(b.name)
+          )
+          .map(this._renderItem)
+      }
     </StyledList>
   }
 })
