@@ -47,14 +47,19 @@ const Context = React.createClass({
     const {name, children} = this.props.node
     const path = routes.hrefTo('context', {context: name})
 
-    return this._matchFilter() && <Sidebar.ListItem key={name}>
+    // If context's name matches filter, render all children. Otherwise, filter them
+    const filteredChildren = this._matchFilter()
+      ? children
+      : children.filter(({name}) => matchesQuery(this.props.searchQuery, name))
+
+    return filteredChildren.length > 0 && <Sidebar.ListItem key={name}>
       <ContextNavLink
         name='context'
         params={{context: name}}
         active={routes.isPathMatchesRouteOrParents(path)}>
         {this._renderIcon()} {name}
       </ContextNavLink>
-      {this._shouldExpand() && <List nodes={children} child />}
+      {this._shouldExpand() && <List nodes={filteredChildren} child />}
     </Sidebar.ListItem>
   }
 })
