@@ -31,7 +31,11 @@ const Scenario = React.createClass({
           child={child}
           active={active}
         >
-          {name}
+          <a ref={ref =>
+            ref && active && ref.scrollIntoViewIfNeeded && ref.scrollIntoViewIfNeeded()
+          }>
+            {name}
+          </a>
         </ScenarioNavLink>
       </Sidebar.ListItem>
   }

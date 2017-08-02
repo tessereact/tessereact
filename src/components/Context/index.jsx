@@ -58,14 +58,21 @@ const Context = React.createClass({
         })
 
     const hasSelectedChildren = routes.isPathMatchesRouteOrParentsOrChildren(path)
+    const active = routes.isPathMatchesRouteOrParents(path)
 
     return (hasSelectedChildren || filteredChildren.length > 0) &&
       <Sidebar.ListItem key={name}>
         <ContextNavLink
           name='context'
           params={{context: name}}
-          active={routes.isPathMatchesRouteOrParents(path)}>
-          {this._renderIcon()} {name}
+          active={active}
+        >
+          {this._renderIcon()}
+          <a ref={ref =>
+            ref && active && ref.scrollIntoViewIfNeeded && ref.scrollIntoViewIfNeeded()
+          }>
+            {name}
+          </a>
         </ContextNavLink>
         {this._shouldExpand() && <List nodes={filteredChildren} child />}
       </Sidebar.ListItem>
