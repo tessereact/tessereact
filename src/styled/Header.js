@@ -4,6 +4,7 @@ import defaultMixin from './mixins/default'
 const Header = styled.div`
   position: fixed;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   width: 80%;
   font-size: 24px;

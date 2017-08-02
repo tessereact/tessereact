@@ -10,13 +10,16 @@ html {
 }
 
 body {
-  padding: 60px;
   text-align: center;
 }
 
 h1 {
   font-size: 18px;
   margin-bottom: 20px;
+}
+
+#app {
+  display: none;
 }
 
 #services {

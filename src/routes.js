@@ -11,7 +11,13 @@ export default new Router([
         routes: [
           {
             path: '/scenarios/:scenario',
-            name: 'scenario'
+            name: 'scenario',
+            routes: [
+              {
+                path: '/view',
+                name: 'view'
+              }
+            ]
           }
         ]
       }

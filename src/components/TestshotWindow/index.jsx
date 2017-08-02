@@ -22,6 +22,7 @@ import ComponentPreview from '../../styled/ComponentPreview'
 import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
 import AcceptButton from '../../styled/AcceptButton'
+import Button from '../../styled/Button'
 import Text from '../../styled/Text'
 
 const htmlDiffer = new HtmlDiffer({
@@ -74,6 +75,7 @@ const TestshotWindow = React.createClass({
   _checkIfRouteExists (props) {
     const {context, scenario, routeName} = this.getRouteData(props)
     switch (routeName) {
+      case 'view':
       case 'scenario':
         !this._findScenario(context, scenario) &&
           History.push(`/contexts/${context}`)
@@ -122,6 +124,10 @@ const TestshotWindow = React.createClass({
     const {context, scenario, routeName} = this.getRouteData(this.props)
     const {scenarios} = this.state
 
+    if (routeName === 'view') {
+      return this._renderView(this._findScenario(context, scenario))
+    }
+
     return (
       <TestshotContainer>
         <Navigation
@@ -147,12 +153,22 @@ const TestshotWindow = React.createClass({
     })
   },
 
+  _renderView (scenario) {
+    if (!scenario) return null
+    return scenario.element
+  },
+
   _renderScenario (scenario) {
     if (!scenario) return null
     return <TestshotContent.Wrapper>
       <Header>
         <span>{scenario.name}</span>
-        {scenario.hasDiff && <AcceptButton onClick={_ => this._acceptSnapshot(scenario)}>Accept & next</AcceptButton>}
+        <div>
+          <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
+            <Button>View</Button>
+          </a>
+          {scenario.hasDiff && <AcceptButton onClick={_ => this._acceptSnapshot(scenario)}>Accept & next</AcceptButton>}
+        </div>
       </Header>
       <ComponentPreview>
         {scenario.element}

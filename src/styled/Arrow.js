@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 
-// TODO: Split it up into Button and built AcceptButton on top of it
 const Arrow = {}
 Arrow.Right = styled.div`
   display: inline-block;
@@ -24,4 +23,3 @@ Arrow.Down = styled.div`
 `
 
 export default Arrow
-

@@ -45,6 +45,7 @@ getPort()
       })
     }
 
+    app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
     app.get('/contexts/:context/scenarios/:scenario', renderIndex)
     app.get('/contexts/:context', renderIndex)
     app.get('/', renderIndex)

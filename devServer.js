@@ -25,6 +25,7 @@ function renderIndex (req, res) {
   res.render('index')
 }
 
+app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
 app.get('/contexts/:context/scenarios/:scenario', renderIndex)
 app.get('/contexts/:context', renderIndex)
 app.get('/', renderIndex)
