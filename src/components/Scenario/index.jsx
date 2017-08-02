@@ -20,14 +20,16 @@ const Scenario = React.createClass({
     const params = {context: context || 'null', scenario: name}
     const path = routes.hrefTo('scenario', params)
 
-    return matchesQuery(searchQuery, name) &&
+    const active = routes.isPathMatchesRouteOrParents(path)
+
+    return (active || matchesQuery(searchQuery, name)) &&
       <Sidebar.ListItem key={name}>
         <ScenarioNavLink
           name='scenario'
           params={params}
           hasDiff={hasDiff}
           child={child}
-          active={routes.isPathMatchesRouteOrParents(path)}
+          active={active}
         >
           {name}
         </ScenarioNavLink>

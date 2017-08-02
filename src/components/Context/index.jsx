@@ -47,20 +47,28 @@ const Context = React.createClass({
     const {name, children} = this.props.node
     const path = routes.hrefTo('context', {context: name})
 
-    // If context's name matches filter, render all children. Otherwise, filter them
+    // If context's name matches filter, render all children.
+    // Otherwise, filter them by query or selected
     const filteredChildren = this._matchFilter()
       ? children
-      : children.filter(({name}) => matchesQuery(this.props.searchQuery, name))
+      : children.filter(scenario => {
+          const childPath = routes.hrefTo('scenario', {context: name, scenario: scenario.name})
+          return matchesQuery(this.props.searchQuery, scenario.name)
+            || routes.isPathMatchesRouteOrParents(childPath)
+        })
 
-    return filteredChildren.length > 0 && <Sidebar.ListItem key={name}>
-      <ContextNavLink
-        name='context'
-        params={{context: name}}
-        active={routes.isPathMatchesRouteOrParents(path)}>
-        {this._renderIcon()} {name}
-      </ContextNavLink>
-      {this._shouldExpand() && <List nodes={filteredChildren} child />}
-    </Sidebar.ListItem>
+    const hasSelectedChildren = routes.isPathMatchesRouteOrParentsOrChildren(path)
+
+    return (hasSelectedChildren || filteredChildren.length > 0) &&
+      <Sidebar.ListItem key={name}>
+        <ContextNavLink
+          name='context'
+          params={{context: name}}
+          active={routes.isPathMatchesRouteOrParents(path)}>
+          {this._renderIcon()} {name}
+        </ContextNavLink>
+        {this._shouldExpand() && <List nodes={filteredChildren} child />}
+      </Sidebar.ListItem>
   }
 })
 

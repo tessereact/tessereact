@@ -154,15 +154,39 @@ class Router {
     const currentRoute = this.currentRoute()
     const matchingRoute = Matcher.matchPath(this.routes, path)
 
+    if (!matchingRoute.route) {
+      return false
+    }
+
     if (currentRoute && currentRoute.route) {
       const paramsMatch = Object.keys(matchingRoute.params)
         .every(function (key) {
           return currentRoute.params[key] === matchingRoute.params[key]
         })
 
-      if (!matchingRoute.route) return
-
       if (currentRoute.route.name === matchingRoute.route.name && paramsMatch) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  isPathMatchesRouteOrParentsOrChildren (path) {
+    const currentRoute = this.currentRoute()
+    const matchingRoute = Matcher.matchPath(this.routes, path)
+
+    if (!matchingRoute.route) {
+      return false
+    }
+
+    if (currentRoute && currentRoute.route) {
+      const paramsMatch = Object.keys(matchingRoute.params)
+        .every(function (key) {
+          return currentRoute.params[key] === matchingRoute.params[key]
+        })
+
+      if (paramsMatch) {
         return true
       }
     }
