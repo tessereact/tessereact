@@ -114,7 +114,6 @@ scenario('Empty component', () => {
 })
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(<App />, document.getElementById('app'))
   init()
 })
 
