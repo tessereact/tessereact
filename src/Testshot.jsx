@@ -8,7 +8,9 @@ var currentContext = null
 
 export function scenario (name, type) {
   const contextCopy = currentContext
-  if (names.indexOf([name, currentContext]) > -1) {
+  if (names.some(([existingName, existingContext]) =>
+    name === existingName && currentContext === existingContext
+  )) {
     throw new Error(`Scenario with name "${name}" already exists`)
   }
   names.push([name, currentContext])
