@@ -1,0 +1,20 @@
+* {
+  padding: 0px;
+  margin: 0px;
+}
+
+html {
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  font-stretch: normal;
+  font-size: 14px;
+  line-height: normal;
+  font-family: "normal Arial", sans-serif;
+  color: rgb(98, 103, 113);
+  background-color: rgb(255, 255, 255);
+}
+
+body {
+  text-align: center;
+}

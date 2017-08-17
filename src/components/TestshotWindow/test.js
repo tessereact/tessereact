@@ -1,126 +1,9 @@
 import test from 'ava'
 import {
-  buildInitialState,
-  requestScenariosList,
-  mergeWithPayload,
   acceptCurrentScenario,
   requestScenarioAcceptance,
   generateTreeNodes
 } from './helpers'
-
-test('buildInitialState', t => {
-  const data = [_ => 1, _ => 2]
-  t.deepEqual(buildInitialState(data), {
-    scenarios: [1, 2]
-  })
-})
-
-test('buildInitialState empty', t => {
-  const data = []
-  t.deepEqual(buildInitialState(data), {
-    scenarios: []
-  })
-})
-
-test('requestScenariosList', t => {
-  const scenarios = [{
-    name: 'First',
-    context: 'Boom',
-    snapshot: 'snapshot'
-  }, {
-    name: 'Second',
-    snapshot: 'snapshot'
-  }]
-  t.deepEqual(requestScenariosList(scenarios), {data: [{
-    name: 'First',
-    context: 'Boom'
-  }, {
-    name: 'Second',
-    context: undefined
-  }]})
-})
-
-test('mergeWithPayload w/o previously stored snapshots', t => {
-  const state = {
-    scenarios: [{
-      name: 'First',
-      snapshot: ''
-    }]
-  }
-  t.deepEqual(mergeWithPayload(state, {}), {
-    scenarios: [{
-      name: 'First',
-      isScenario: true,
-      snapshot: '',
-      hasDiff: true,
-      previousSnapshot: undefined
-    }]
-  })
-})
-
-test('mergeWithPayload w/ previous snapshot', t => {
-  const state = {
-    scenarios: [{
-      name: 'Default',
-      context: 'Button',
-      snapshot: '<input type="submit" />'
-    }, {
-      name: 'Default',
-      context: 'Checkbox',
-      snapshot: '<input type="checkbox" />'
-    }]
-  }
-  const payload = [{
-    name: 'Default',
-    context: 'Checkbox',
-    previousSnapshot: '<input>'
-  }, {
-    name: 'Default',
-    context: 'Button',
-    previousSnapshot: '<button>'
-  }]
-  t.deepEqual(mergeWithPayload(state, payload), {
-    scenarios: [{
-      name: 'Default',
-      context: 'Button',
-      // FIXME: Sorry for not true black box test formatHTML should be stubed
-      snapshot: '<input type="submit" />\n',
-      hasDiff: true,
-      isScenario: true,
-      previousSnapshot: '<button>'
-    }, {
-      name: 'Default',
-      context: 'Checkbox',
-      snapshot: '<input type="checkbox" />\n',
-      hasDiff: true,
-      isScenario: true,
-      previousSnapshot: '<input>'
-    }]
-  })
-})
-
-test('mergeWithPayload w/ matching snapshots', t => {
-  const state = {
-    scenarios: [{
-      name: 'First',
-      snapshot: '<span></span>'
-    }]
-  }
-  const payload = [{
-    name: 'First',
-    previousSnapshot: '<span></span>\n'
-  }]
-  t.deepEqual(mergeWithPayload(state, payload), {
-    scenarios: [{
-      name: 'First',
-      // FIXME: Sorry for not true black box test — formatHTML should be stubed
-      snapshot: '<span></span>\n',
-      hasDiff: false,
-      isScenario: true,
-      previousSnapshot: '<span></span>\n'
-    }]
-  })
-})
 
 test('acceptCurrentScenario', t => {
   const state = {
@@ -157,6 +40,23 @@ test('requestScenarioAcceptance', t => {
     snapshot: 'Snapshot'
   })
 })
+
+test('requestScenarioAcceptance with snapshotCSS', t => {
+  const scenario = {
+    name: 'Name',
+    context: 'Context',
+    snapshot: 'Snapshot',
+    snapshotCSS: 'Snapshot CSS',
+    previousSnapshot: 'Prev'
+  }
+  t.deepEqual(requestScenarioAcceptance(scenario), {
+    name: 'Name',
+    context: 'Context',
+    snapshot: 'Snapshot',
+    snapshotCSS: 'Snapshot CSS'
+  })
+})
+
 
 test('generateTreeNodes', t => {
   const scenarios = [{

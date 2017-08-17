@@ -30,7 +30,7 @@ Sidebar.List = defaultMixin(styled.div`
   overflow-y: auto;
 `)
 
-Sidebar.Failed = defaultMixin(styled.div`
+Sidebar.Progress = defaultMixin(styled.div`
   margin-bottom: 20px;
 `)
 

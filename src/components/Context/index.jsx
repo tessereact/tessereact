@@ -52,10 +52,10 @@ const Context = React.createClass({
     const filteredChildren = this._matchFilter()
       ? children
       : children.filter(scenario => {
-          const childPath = routes.hrefTo('scenario', {context: name, scenario: scenario.name})
-          return matchesQuery(this.props.searchQuery, scenario.name)
-            || routes.isPathMatchesRouteOrParents(childPath)
-        })
+        const childPath = routes.hrefTo('scenario', {context: name, scenario: scenario.name})
+        return matchesQuery(this.props.searchQuery, scenario.name) ||
+          routes.isPathMatchesRouteOrParents(childPath)
+      })
 
     const hasSelectedChildren = routes.isPathMatchesRouteOrParentsOrChildren(path)
     const active = routes.isPathMatchesRouteOrParents(path)
@@ -68,11 +68,11 @@ const Context = React.createClass({
           active={active}
         >
           {this._renderIcon()}
-          <a ref={ref =>
+          <span ref={ref =>
             ref && active && ref.scrollIntoViewIfNeeded && ref.scrollIntoViewIfNeeded()
           }>
             {name}
-          </a>
+          </span>
         </ContextNavLink>
         {this._shouldExpand() && <List nodes={filteredChildren} child />}
       </Sidebar.ListItem>

@@ -31,11 +31,11 @@ const Scenario = React.createClass({
           child={child}
           active={active}
         >
-          <a ref={ref =>
+          <span ref={ref =>
             ref && active && ref.scrollIntoViewIfNeeded && ref.scrollIntoViewIfNeeded()
           }>
             {name}
-          </a>
+          </span>
         </ScenarioNavLink>
       </Sidebar.ListItem>
   }

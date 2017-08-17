@@ -6,6 +6,7 @@ import Link from '../../lib/link'
 
 const Navigation = React.createClass({
   propTypes: {
+    loadedScenariosCount: PropTypes.number,
     failedScenariosCount: PropTypes.number,
     scenariosCount: PropTypes.number,
     nodes: PropTypes.array
@@ -21,12 +22,21 @@ const Navigation = React.createClass({
     this.setState({searchQuery: event.target.value})
   },
 
-  _renderFailed () {
-    const {failedScenariosCount, scenariosCount} = this.props
+  _renderLoading () {
+    const {loadedScenariosCount, scenariosCount} = this.props
 
-    return failedScenariosCount > 0 && <Sidebar.Failed>
+    return loadedScenariosCount !== scenariosCount && <Sidebar.Progress>
+      LOADING ({loadedScenariosCount}/{scenariosCount})
+    </Sidebar.Progress>
+  },
+
+  _renderFailed () {
+    const {failedScenariosCount, loadedScenariosCount, scenariosCount} = this.props
+    const showFailed = loadedScenariosCount === scenariosCount && failedScenariosCount > 0
+
+    return showFailed && <Sidebar.Progress>
       FAILED ({failedScenariosCount}/{scenariosCount})
-    </Sidebar.Failed>
+    </Sidebar.Progress>
   },
 
   render () {
@@ -40,6 +50,7 @@ const Navigation = React.createClass({
           <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter} />
         </Sidebar.SearchBox>
         <Sidebar.List>
+          {this._renderLoading()}
           {this._renderFailed()}
           <List
             nodes={nodes}

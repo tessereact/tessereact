@@ -1,4 +1,5 @@
 {
   "port": 5001,
-  "snapshots_path": "example/snapshots"
+  "snapshots_path": "example/snapshots",
+  "diff_css": true
 }

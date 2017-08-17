@@ -1,18 +1,19 @@
 import React, {PropTypes} from 'react'
-import {find} from 'lodash'
-import {HtmlDiffer} from 'html-differ'
-import Diff from '../../components/Diff'
+import { find } from 'lodash'
 import Navigation from '../../components/Navigation'
 import {postJSON} from '../../lib/fetch'
 import {
-  buildInitialState,
-  requestScenariosList,
-  mergeWithPayload,
   acceptCurrentScenario,
   requestScenarioAcceptance,
-  generateTreeNodes
+  generateTreeNodes,
+  resolveScenario,
+  shiftCurrentScenario,
+  shiftCurrentContext,
+  toArray,
+  onLoad
 } from './helpers'
 import History from '../../lib/router/history'
+import formatHTML from '../../lib/formatter'
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -24,10 +25,7 @@ import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
 import AcceptButton from '../../styled/AcceptButton'
 import Button from '../../styled/Button'
 import Text from '../../styled/Text'
-
-const htmlDiffer = new HtmlDiffer({
-  ignoreWhitespaces: false
-})
+import './diff2html.css'
 
 const TestshotWindow = React.createClass({
   propTypes: {
@@ -38,14 +36,54 @@ const TestshotWindow = React.createClass({
   },
 
   getInitialState () {
-    return buildInitialState(this.props.data)
+    return {
+      scenarios: this.props.data
+    }
   },
 
   componentWillMount () {
+    const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
-    postJSON(url, requestScenariosList(this.state.scenarios)).then((response) => {
-      response.json().then((json) => {
-        this.setState(mergeWithPayload(this.state, json))
+
+    const trigger = window.__diffCSS ? onLoad() : Promise.resolve()
+
+    trigger
+      .then(() => {
+        const styles = window.__diffCSS
+          ? toArray(document.styleSheets).reduce(
+              (array, {rules}) =>
+                array.concat(
+                  toArray(rules)
+                    .map(({selectorText, cssText}) => ({selectorText, cssText}))
+                ),
+              []
+            )
+          : null
+
+        const scenarios = this._scenariosToLoad()
+          .map(scenario => {
+            console.log(scenario)
+            const payload = {
+              name: scenario.name,
+              context: scenario.context,
+              snapshot: formatHTML(scenario.getSnapshot())
+            }
+            return payload
+          })
+
+        return postJSON(url, {
+          scenarios,
+          styles
+        })
+      })
+      .then((response) => {
+        return response.json()
+      })
+      .then(({scenarios}) => {
+        this.setState({scenarios: scenarios.reduce(resolveScenario, this.state.scenarios)})
+        if (routeData.route.name === 'home') {
+          this._redirectFromHomeToFirstFailingScenario()
+        }
         this._checkForHomeRoute(this.props)
         this._checkIfRouteExists(this.props)
 
@@ -54,18 +92,20 @@ const TestshotWindow = React.createClass({
           .filter(({hasDiff}) => hasDiff)
           .map(({context, name}) => ({context, name}))
 
-        const ws = new window.WebSocket(window.__testshotWSURL)
-        ws.addEventListener('open', () => {
-          if (failingScenarios.length > 0) {
-            ws.send(JSON.stringify(failingScenarios))
-          } else {
-            ws.send('OK')
-          }
-        })
+        if (window.__testshotWSURL) {
+          const ws = new window.WebSocket(window.__testshotWSURL)
+          ws.addEventListener('open', () => {
+            if (failingScenarios.length > 0) {
+              ws.send(JSON.stringify(failingScenarios))
+            } else {
+              ws.send('OK')
+            }
+          })
+        }
       })
-    }, _ => {
-      window.alert('Snapshot server is not available!')
-    })
+      .catch(() => {
+        window.alert('Snapshot server is not available!')
+      })
   },
 
   componentWillReceiveProps (nextProps) {
@@ -75,7 +115,6 @@ const TestshotWindow = React.createClass({
   _checkIfRouteExists (props) {
     const {context, scenario, routeName} = this.getRouteData(props)
     switch (routeName) {
-      case 'view':
       case 'scenario':
         !this._findScenario(context, scenario) &&
           History.push(`/contexts/${context}`)
@@ -101,8 +140,48 @@ const TestshotWindow = React.createClass({
     }
   },
 
+  _scenariosToLoad () {
+    const {
+      routeData: {
+        params: { context: contextName, scenario: name },
+        route: { name: routeName }
+      }
+    } = this.props
+    const { scenarios } = this.state
+    const context = contextName === 'null' ? null : contextName
+    if (routeName === 'scenario') {
+      return shiftCurrentScenario(scenarios, { name, context })
+    } else if (routeName === 'context') {
+      return shiftCurrentContext(scenarios, { context })
+    } else {
+      return scenarios
+    }
+  },
+
   _areScenariosAvailable () {
     return this.state.scenarios[0].hasOwnProperty('hasDiff')
+  },
+
+  _redirectFromHomeToFirstScenario (routeName) {
+    const { scenarios } = this.state
+    const scenario = scenarios[0]
+    this._redirectToScenario(scenario)
+  },
+
+  _redirectFromHomeToFirstFailingScenario () {
+    const { scenarios } = this.state
+    const scenario = find(scenarios, s => s.hasDiff)
+
+    if (!scenario) {
+      return this._redirectFromHomeToFirstScenario()
+    }
+
+    this._redirectToScenario(scenario)
+  },
+
+  _redirectToScenario (scenario) {
+    const { context, name } = scenario
+    scenario && History.push(`/contexts/${context}/scenarios/${name}`)
   },
 
   getRouteData (props) {
@@ -124,16 +203,13 @@ const TestshotWindow = React.createClass({
     const {context, scenario, routeName} = this.getRouteData(this.props)
     const {scenarios} = this.state
 
-    if (routeName === 'view') {
-      return this._renderView(this._findScenario(context, scenario))
-    }
-
     return (
       <TestshotContainer>
         <Navigation
+          loadedScenariosCount={scenarios.filter(c => c.status === 'resolved').length}
           failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
           scenariosCount={scenarios.length}
-          nodes={generateTreeNodes(scenarios)}
+          nodes={generateTreeNodes(scenarios.filter(c => c.status === 'resolved'))}
         />
         {this._areScenariosAvailable && <TestshotContent>
           {routeName === 'context' && this._renderContext(context)}
@@ -153,11 +229,6 @@ const TestshotWindow = React.createClass({
     })
   },
 
-  _renderView (scenario) {
-    if (!scenario) return null
-    return scenario.element
-  },
-
   _renderScenario (scenario) {
     if (!scenario) return null
     return <TestshotContent.Wrapper>
@@ -173,7 +244,7 @@ const TestshotWindow = React.createClass({
       <ComponentPreview>
         {scenario.element}
       </ComponentPreview>
-      {this._renderDiff(scenario)}
+      <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
     </TestshotContent.Wrapper>
   },
 
@@ -223,7 +294,7 @@ const TestshotWindow = React.createClass({
 
     postJSON(url, requestScenarioAcceptance(scenario)).then(_ => {
       this.setState(acceptCurrentScenario(this.state, scenario))
-      History.push('/')
+      this._redirectFromHomeToFirstFailingScenario()
     })
   },
 
@@ -234,11 +305,8 @@ const TestshotWindow = React.createClass({
   },
 
   _computeDiff (scenario) {
-    const {previousSnapshot, snapshot} = scenario
-
-    if (!snapshot.length) { return null }
-    const diff = htmlDiffer.diffHtml(previousSnapshot, snapshot)
-    return <Diff nodes={diff} />
+    const { diff } = scenario
+    return diff
   }
 })
 

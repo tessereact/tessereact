@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react'
 import ReactDOMServer from 'react-dom/server'
 import TestshotWindow from './components/TestshotWindow'
+import ScenarioView from './components/ScenarioView'
 
 const names = []
 const data = []
@@ -15,16 +16,13 @@ export function scenario (name, type) {
   }
   names.push([name, currentContext])
 
-  data.push(() => {
-    const scenarioElement = React.createElement(type, {key: name})
-    return {
-      name,
-      element: scenarioElement,
-      // TODO: Handle exception during rendering,
-      // store and then display it
-      snapshot: ReactDOMServer.renderToStaticMarkup(scenarioElement),
-      context: contextCopy
-    }
+  data.push({
+    name,
+    getElement: () => React.createElement(type, {key: name}),
+    // TODO: Handle exception during rendering,
+    // store and then display it
+    getSnapshot: () => ReactDOMServer.renderToStaticMarkup(React.createElement(type, {key: name})),
+    context: contextCopy
   })
 }
 
@@ -45,9 +43,7 @@ const Testshot = React.createClass({
   },
 
   render () {
-    if (data.length) {
-      return <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
-    } else {
+    if (!data.length) {
       // TODO: Replace with nice and stylish welcome page :)
       return <div style={{'text-align': 'center'}}>
         <h1>Welcome to Testshot</h1>
@@ -55,6 +51,12 @@ const Testshot = React.createClass({
         <p>Don't know how? Have a look <a href='https://github.com/toptal/testshot/blob/master/docs/usage.md'>here</a>.</p>
       </div>
     }
+
+    if (this.props.routeData.route.name === 'view') {
+      return <ScenarioView data={data} routeData={this.props.routeData} />
+    }
+
+    return <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
   }
 })
 
