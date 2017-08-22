@@ -1,8 +1,9 @@
 import React, {PropTypes} from 'react'
-import { find } from 'lodash'
+import { find, chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
 import {postJSON} from '../../lib/fetch'
 import {
+  asyncEach,
   acceptCurrentScenario,
   requestScenarioAcceptance,
   generateTreeNodes,
@@ -13,7 +14,6 @@ import {
   onLoad
 } from './helpers'
 import History from '../../lib/router/history'
-import formatHTML from '../../lib/formatter'
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -26,6 +26,8 @@ import AcceptButton from '../../styled/AcceptButton'
 import Button from '../../styled/Button'
 import Text from '../../styled/Text'
 import './diff2html.css'
+
+const SCENARIO_CHUNK_SIZE = Infinity
 
 const TestshotWindow = React.createClass({
   propTypes: {
@@ -45,42 +47,53 @@ const TestshotWindow = React.createClass({
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
 
-    const trigger = window.__diffCSS ? onLoad() : Promise.resolve()
-
-    trigger
+    onLoad()
       .then(() => {
-        const styles = window.__diffCSS
-          ? toArray(document.styleSheets).reduce(
-              (array, {rules}) =>
-                array.concat(
-                  toArray(rules)
-                    .map(({selectorText, cssText}) => ({selectorText, cssText}))
-                ),
-              []
-            )
-          : null
+        const styles = toArray(document.styleSheets)
+          .reduce(
+            (array, {rules}) =>
+              array.concat(
+                toArray(rules)
+                  .map(rule => {
+                    if (rule instanceof CSSMediaRule) {
+                      return {
+                        type: 'media',
+                        selectorText: `@media ${rule.conditionText}`,
+                        cssText: rule.cssText,
+                        rules: toArray(rule.cssRules)
+                          .map(({selectorText, cssText}) => ({selectorText, cssText}))
+                      }
+                    }
 
-        const scenarios = this._scenariosToLoad()
-          .map(scenario => {
-            console.log(scenario)
-            const payload = {
-              name: scenario.name,
-              context: scenario.context,
-              snapshot: formatHTML(scenario.getSnapshot())
-            }
-            return payload
-          })
+                    return {
+                      selectorText: rule.selectorText,
+                      cssText: rule.cssText
+                    }
+                  })
+              ),
+            []
+          )
 
-        return postJSON(url, {
-          scenarios,
-          styles
-        })
+        const scenariosToLoad = this._scenariosToLoad()
+          .map(scenario => ({
+            name: scenario.name,
+            context: scenario.context,
+            snapshot: scenario.getSnapshot(),
+            diffCSS: scenario.diffCSS
+          }))
+
+        const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
+
+        return Promise.all(
+          chunks.map(scenarios =>
+            postJSON(url, { scenarios, styles })
+              .then(response => response.json())
+              .then(({scenarios}) => this.setState({scenarios: scenarios.reduce(resolveScenario, this.state.scenarios)}))
+              .catch(e => console.log('Snapshot server is not available!', e))
+          )
+        )
       })
-      .then((response) => {
-        return response.json()
-      })
-      .then(({scenarios}) => {
-        this.setState({scenarios: scenarios.reduce(resolveScenario, this.state.scenarios)})
+      .then(() => {
         if (routeData.route.name === 'home') {
           this._redirectFromHomeToFirstFailingScenario()
         }
@@ -103,8 +116,8 @@ const TestshotWindow = React.createClass({
           })
         }
       })
-      .catch(() => {
-        window.alert('Snapshot server is not available!')
+      .catch(e => {
+        console.log('Unexpected error!', e)
       })
   },
 

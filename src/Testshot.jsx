@@ -7,7 +7,7 @@ const names = []
 const data = []
 var currentContext = null
 
-export function scenario (name, type) {
+export function scenario (name, type, options = {}) {
   const contextCopy = currentContext
   if (names.some(([existingName, existingContext]) =>
     name === existingName && currentContext === existingContext
@@ -22,7 +22,8 @@ export function scenario (name, type) {
     // TODO: Handle exception during rendering,
     // store and then display it
     getSnapshot: () => ReactDOMServer.renderToStaticMarkup(React.createElement(type, {key: name})),
-    context: contextCopy
+    context: contextCopy,
+    diffCSS: Boolean(options.diffCSS)
   })
 }
 

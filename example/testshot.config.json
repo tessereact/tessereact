@@ -1,5 +1,5 @@
 {
   "port": 5001,
   "snapshots_path": "example/snapshots",
-  "diff_css": true
+  "cache_css_policy": "cache"
 }
