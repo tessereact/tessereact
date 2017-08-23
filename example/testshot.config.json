@@ -1,5 +1,6 @@
 {
   "port": 5001,
   "snapshots_path": "example/snapshots",
+  "failed_path": "example/failed",
   "cache_css_policy": "cache"
 }

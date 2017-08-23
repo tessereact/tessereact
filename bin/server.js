@@ -11,7 +11,10 @@ const getPort = require('get-port')
 const ejs = require('ejs')
 const {
   readSnapshot,
-  writeSnapshot
+  writeSnapshot,
+  buildFailed,
+  writeFailed,
+  deleteFailed
 } = require('./_lib/snapshots')
 const collectStylesFromSnapshot = require('./_lib/collectStylesFromSnapshot')
 const formatHTML = require('./_lib/formatHTML')
@@ -122,6 +125,10 @@ app.post('/snapshots-list', async (req, res) => {
         diffPatch = diffSnapshots('HTML', oldHTML, html)
       }
 
+      if (diffPatch) {
+        await writeFailed(buildFailed(html, css), name, context, 'html')
+      }
+
       const diff = diffPatch && Diff2Html.getPrettyHtml(diffPatch, {outputFormat: 'side-by-side'})
 
       return resolve({
@@ -142,10 +149,14 @@ app.post('/snapshots', async (req, res) => {
   if (snapshotCSS) {
     await Promise.all([
       writeSnapshot(snapshot, name, context, 'html'),
-      writeSnapshot(snapshotCSS, name, context, 'css')
+      writeSnapshot(snapshotCSS, name, context, 'css'),
+      deleteFailed(name, context, 'html')
     ])
   } else {
-    await writeSnapshot(snapshot, name, context, 'html')
+    await Promise.all([
+      writeSnapshot(snapshot, name, context, 'html'),
+      deleteFailed(name, context, 'html')
+    ])
   }
 
   res.send('OK')

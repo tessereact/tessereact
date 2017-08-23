@@ -92,7 +92,7 @@ context('Cart', () => {
     ]
 
     return <Cart items={services} />
-  })
+  }, {diffCSS: true})
 })
 
 context('Service', () => {
