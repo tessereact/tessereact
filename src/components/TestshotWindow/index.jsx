@@ -10,10 +10,10 @@ import {
   resolveScenario,
   shiftCurrentScenario,
   shiftCurrentContext,
-  toArray,
   onLoad
 } from './helpers'
 import History from '../../lib/router/history'
+import prepareStyles from './_lib/prepareStyles'
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -49,30 +49,7 @@ const TestshotWindow = React.createClass({
 
     onLoad()
       .then(() => {
-        const styles = toArray(document.styleSheets)
-          .reduce(
-            (array, {rules}) =>
-              array.concat(
-                toArray(rules)
-                  .map(rule => {
-                    if (rule instanceof CSSMediaRule) {
-                      return {
-                        type: 'media',
-                        selectorText: `@media ${rule.conditionText}`,
-                        cssText: rule.cssText,
-                        rules: toArray(rule.cssRules)
-                          .map(({selectorText, cssText}) => ({selectorText, cssText}))
-                      }
-                    }
-
-                    return {
-                      selectorText: rule.selectorText,
-                      cssText: rule.cssText
-                    }
-                  })
-              ),
-            []
-          )
+        const styles = prepareStyles(document.styleSheets)
 
         const scenariosToLoad = this._scenariosToLoad()
           .map(scenario => ({

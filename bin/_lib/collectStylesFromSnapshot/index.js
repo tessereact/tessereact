@@ -51,19 +51,41 @@ function treeIntoArray (node) {
 
 function getMatchingStylesFromNodeArray (styles, nodes) {
   return styles.map(rule => {
-    // Filter only those @media rules which contain matching rules
-    if (rule.type === 'media') {
-      const mediaRules = getMatchingStylesFromNodeArray(rule.rules, nodes)
-      return mediaRules.length && Object.assign({}, rule, {rules: mediaRules})
+    if (rule.cssRules) {
+      // Ignore rules with prefixes (e.g. @-webkit-keyframes)
+      if (rule.atRuleType[0] === '-') {
+        return null
+      }
+
+      // Pass all children if the rule is @keyframes or @font-feature-values
+      if (rule.atRuleType === 'keyframes' || rule.atRuleType === 'font-feature-values') {
+        return rule
+      }
+
+      // Filter children in the rule is @media, @supports or @document
+      const cssRules = getMatchingStylesFromNodeArray(rule.cssRules, nodes)
+      return cssRules.length && Object.assign({}, rule, {cssRules})
     }
 
-    // All at-rules (e.g. @font-face) except @media are passed
-    if (!rule.selectorText) {
+    // Ignore @charset, @import and @namespace rules
+    if (
+      rule.atRuleType === 'charset'
+        || rule.atRuleType === 'import'
+        || rule.atRuleType === 'namespace'
+    ) {
+      return null
+    }
+
+    // Pass all rules which are @page, @font-face, @viewport, @counter-style,
+    // @swash, @ornaments, @annotation, @stylistic, @styleset or @character-variant
+    if (rule.atRuleType) {
       return rule
     }
 
     // Strip all pseudoclasses and pseudoelements from the selector
     const selectorText = rule.selectorText.replace(/::?[a-z\-]+(\([^)]*\))?/g, '')
+
+    // Check if any node matches the resulting selector and pass the rule if so
     return nodes.some(node => node.matches(selectorText)) && rule
   }).filter(x => x)
 }
@@ -76,16 +98,23 @@ function formatCSSRule (rule, indent = 0) {
   const outerIndent = '  '.repeat(indent)
   const innerIndent = '  '.repeat(indent + 1)
 
-  if (rule.type === 'media') {
+  if (rule.cssRules) {
     return [`${outerIndent}${rule.selectorText.trim()} {`]
-      .concat(rule.rules.map(childRule => formatCSSRule(childRule, indent + 1)).join('\n\n'))
+      .concat(rule.cssRules.map(childRule => formatCSSRule(childRule, indent + 1)).join('\n\n'))
       .concat(`${outerIndent}}`)
       .join('\n')
   }
 
-  const [_, selectorText, cssText] = rule.cssText.replace(/\n/g, ' ').match(/^([^{]*){(.*)}$/)
+  const matchResult = rule.cssText.replace(/\n/g, ' ').match(/^([^{]*){(.*)}$/)
 
-  return [`${outerIndent}${selectorText.trim()} {`]
+  // Format rules without a body (e.g. @namespace)
+  if (!matchResult) {
+    return `${outerIndent}${rule.cssText}`
+  }
+
+  const cssText = matchResult[2]
+
+  return [`${outerIndent}${rule.selectorText.trim()} {`]
     .concat(cssText
       .split(';')
       .map(prop => prop.trim())

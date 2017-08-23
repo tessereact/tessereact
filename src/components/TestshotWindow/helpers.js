@@ -126,7 +126,3 @@ export function onLoad () {
     }
   })
 }
-
-export function toArray (object) {
-  return Array.prototype.slice.call(object)
-}
