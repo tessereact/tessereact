@@ -80,7 +80,7 @@
     "lint": "esw src '*.js' --ext '.js,.jsx'  --ignore-pattern 'lib'",
     "lint-watch": "yarn run lint -- --watch",
     "lint-fix": "yarn run lint -- --fix",
-    "test": "ava-webpack --webpack-config ./webpack.config.js '**/test.js'"
+    "test": "NODE_ENV=development ava-webpack --webpack-config ./webpack.config.js ./test.js"
   },
   "bin": {
     "testshot-server": "./bin/server.js"

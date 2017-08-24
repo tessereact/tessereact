@@ -18,8 +18,10 @@ const {
 } = require('./_lib/snapshots')
 const collectStylesFromSnapshot = require('./_lib/collectStylesFromSnapshot')
 const formatHTML = require('./_lib/formatHTML')
-const { Diff2Html } = require('diff2html')
-const difflib = require('difflib')
+const {
+  diffSnapshots,
+  diffToHTML
+} = require('./_lib/diff')
 
 const hash = require('object-hash')
 
@@ -129,7 +131,7 @@ app.post('/snapshots-list', async (req, res) => {
         await writeFailed(buildFailed(html, css), name, context, 'html')
       }
 
-      const diff = diffPatch && Diff2Html.getPrettyHtml(diffPatch, {outputFormat: 'side-by-side'})
+      const diff = diffToHTML(diffPatch)
 
       return resolve({
         name,
@@ -170,16 +172,4 @@ app.listen(config.port, function () {
 function rescue (err) {
   console.error(err)
   process.exit(1)
-}
-
-function diffSnapshots (name, snapshotA, snapshotB) {
-  return difflib.unifiedDiff(
-    snapshotA == null ? null : snapshotA.split('\n'),
-    snapshotB == null ? null : snapshotB.split('\n'),
-    {
-      fromfile: name,
-      tofile: name,
-      lineterm: ''
-    }
-  ).join('\n')
 }

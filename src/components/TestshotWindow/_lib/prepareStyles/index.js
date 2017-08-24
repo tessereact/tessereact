@@ -27,7 +27,7 @@ function prepareCSSRule (rule) {
   }
 
   if (preparedRule.selectorText[0] === '@') {
-    preparedRule.atRuleType = preparedRule.selectorText.match(/^@([a-z\-]+)/)[1]
+    preparedRule.atRuleType = preparedRule.selectorText.match(/^@([a-z-]+)/)[1]
   }
 
   return preparedRule

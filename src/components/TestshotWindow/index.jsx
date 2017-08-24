@@ -1,18 +1,21 @@
 import React, {PropTypes} from 'react'
-import { find, chunk } from 'lodash'
+import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
-import {postJSON} from '../../lib/fetch'
+import postJSON from './_lib/postJSON'
+import onLoad from './_lib/onLoad'
 import {
-  asyncEach,
-  acceptCurrentScenario,
-  requestScenarioAcceptance,
-  generateTreeNodes,
+  checkIfRouteExists,
+  checkForHomeRoute,
+  redirectToFirstFailingScenario
+} from './_lib/routes'
+import {
+  findScenario,
+  getScenariosToLoad,
+  acceptScenario,
   resolveScenario,
-  shiftCurrentScenario,
-  shiftCurrentContext,
-  onLoad
-} from './helpers'
-import History from '../../lib/router/history'
+  requestScenarioAcceptance
+} from './_lib/scenarios'
+import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
 
 // styled components
@@ -49,9 +52,11 @@ const TestshotWindow = React.createClass({
 
     onLoad()
       .then(() => {
+        const { scenarios } = this.state
+
         const styles = prepareStyles(document.styleSheets)
 
-        const scenariosToLoad = this._scenariosToLoad()
+        const scenariosToLoad = getScenariosToLoad(routeData, scenarios)
           .map(scenario => ({
             name: scenario.name,
             context: scenario.context,
@@ -62,27 +67,30 @@ const TestshotWindow = React.createClass({
         const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
 
         return Promise.all(
-          chunks.map(scenarios =>
-            postJSON(url, { scenarios, styles })
+          chunks.map(scenariosChunk =>
+            postJSON(url, { scenarios: scenariosChunk, styles })
               .then(response => response.json())
-              .then(({scenarios}) => this.setState({scenarios: scenarios.reduce(resolveScenario, this.state.scenarios)}))
+              .then(({scenarios: responseScenarios}) =>
+                this.setState({
+                  scenarios: responseScenarios.reduce(resolveScenario, scenarios)
+                })
+              )
               .catch(e => console.log('Snapshot server is not available!', e))
           )
         )
       })
       .then(() => {
-        if (routeData.route.name === 'home') {
-          this._redirectFromHomeToFirstFailingScenario()
-        }
-        this._checkForHomeRoute(this.props)
-        this._checkIfRouteExists(this.props)
+        const { scenarios } = this.state
+
+        checkForHomeRoute(routeData, scenarios)
+        checkIfRouteExists(routeData, scenarios)
 
         // Report to CI
-        const failingScenarios = this.state.scenarios
-          .filter(({hasDiff}) => hasDiff)
-          .map(({context, name}) => ({context, name}))
-
         if (window.__testshotWSURL) {
+          const failingScenarios = scenarios
+            .filter(({hasDiff}) => hasDiff)
+            .map(({context, name}) => ({context, name}))
+
           const ws = new window.WebSocket(window.__testshotWSURL)
           ws.addEventListener('open', () => {
             if (failingScenarios.length > 0) {
@@ -99,99 +107,16 @@ const TestshotWindow = React.createClass({
   },
 
   componentWillReceiveProps (nextProps) {
-    this._checkForHomeRoute(nextProps)
-  },
-
-  _checkIfRouteExists (props) {
-    const {context, scenario, routeName} = this.getRouteData(props)
-    switch (routeName) {
-      case 'scenario':
-        !this._findScenario(context, scenario) &&
-          History.push(`/contexts/${context}`)
-        break
-      case 'context':
-        !this.state.scenarios.find((s) => { return s.context === context }) &&
-          History.push('/')
-        break
-      case 'home':
-        break
-      default:
-        History.push('/')
-    }
-  },
-
-  _checkForHomeRoute (props) {
-    const routeName = props.routeData.route.name
-    const {scenarios} = this.state
-
-    if (routeName === 'home') {
-      let scenario = find(scenarios, (s) => { return s.hasDiff }) || scenarios[0]
-      History.push(`/contexts/${scenario.context}/scenarios/${scenario.name}`)
-    }
-  },
-
-  _scenariosToLoad () {
-    const {
-      routeData: {
-        params: { context: contextName, scenario: name },
-        route: { name: routeName }
-      }
-    } = this.props
-    const { scenarios } = this.state
-    const context = contextName === 'null' ? null : contextName
-    if (routeName === 'scenario') {
-      return shiftCurrentScenario(scenarios, { name, context })
-    } else if (routeName === 'context') {
-      return shiftCurrentContext(scenarios, { context })
-    } else {
-      return scenarios
-    }
-  },
-
-  _areScenariosAvailable () {
-    return this.state.scenarios[0].hasOwnProperty('hasDiff')
-  },
-
-  _redirectFromHomeToFirstScenario (routeName) {
-    const { scenarios } = this.state
-    const scenario = scenarios[0]
-    this._redirectToScenario(scenario)
-  },
-
-  _redirectFromHomeToFirstFailingScenario () {
-    const { scenarios } = this.state
-    const scenario = find(scenarios, s => s.hasDiff)
-
-    if (!scenario) {
-      return this._redirectFromHomeToFirstScenario()
-    }
-
-    this._redirectToScenario(scenario)
-  },
-
-  _redirectToScenario (scenario) {
-    const { context, name } = scenario
-    scenario && History.push(`/contexts/${context}/scenarios/${name}`)
-  },
-
-  getRouteData (props) {
-    const {
-      routeData: {
-        params: {
-          context,
-          scenario
-        },
-        route: {
-          name: routeName
-        }
-      }
-    } = props
-    return {context, scenario, routeName}
+    checkForHomeRoute(nextProps.routeData, this.state.scenarios)
   },
 
   render () {
-    const {context, scenario, routeName} = this.getRouteData(this.props)
-    const {scenarios} = this.state
+    const {
+      params: { context, scenario },
+      route: { name: routeName }
+    } = this.props.routeData
+
+    const { scenarios } = this.state
 
     return (
       <TestshotContainer>
@@ -201,22 +126,12 @@ const TestshotWindow = React.createClass({
           scenariosCount={scenarios.length}
           nodes={generateTreeNodes(scenarios.filter(c => c.status === 'resolved'))}
         />
-        {this._areScenariosAvailable && <TestshotContent>
+        <TestshotContent>
           {routeName === 'context' && this._renderContext(context)}
-          {routeName === 'scenario' && this._renderScenario(this._findScenario(context, scenario))}
-        </TestshotContent>}
+          {routeName === 'scenario' && this._renderScenario(findScenario(scenarios, context, scenario))}
+        </TestshotContent>
       </TestshotContainer>
     )
-  },
-
-  _findScenario (contextName, scenarioName) {
-    return find(this.state.scenarios, s => {
-      if (contextName !== 'null') {
-        return s.name === scenarioName && s.context === contextName
-      } else {
-        return s.name === scenarioName && !s.context
-      }
-    })
   },
 
   _renderScenario (scenario) {
@@ -283,20 +198,16 @@ const TestshotWindow = React.createClass({
     const url = `//${host}:${port}/snapshots`
 
     postJSON(url, requestScenarioAcceptance(scenario)).then(_ => {
-      this.setState(acceptCurrentScenario(this.state, scenario))
-      this._redirectFromHomeToFirstFailingScenario()
+      const scenarios = acceptScenario(this.state.scenarios, scenario)
+      this.setState({scenarios})
+      redirectToFirstFailingScenario(scenarios)
     })
   },
 
   _renderDiff (scenario) {
     if (scenario.hasDiff) {
-      return this._computeDiff(scenario)
+      return scenario.diff
     }
-  },
-
-  _computeDiff (scenario) {
-    const { diff } = scenario
-    return diff
   }
 })
 
