@@ -104,13 +104,13 @@ app.post('/snapshots-list', async (req, res) => {
   const styleHash = shouldCacheCSS ? hash(styles) : null
 
   const payload = await Promise.all(
-    scenarios.map(({ name, context, snapshot, diffCSS }) => new Promise(async resolve => {
+    scenarios.map(({ name, context, snapshot, options = {} }) => new Promise(async resolve => {
       const html = formatHTML(snapshot)
 
       let diffPatch
       let css
 
-      if (diffCSS) {
+      if (options.css) {
         css = collectStylesFromSnapshot(styles, html, shouldCacheCSS, styleHash)
 
         const [oldHTML, oldCSS] = await Promise.all([

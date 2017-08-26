@@ -23,7 +23,7 @@ export function scenario (name, type, options = {}) {
     // store and then display it
     getSnapshot: () => ReactDOMServer.renderToStaticMarkup(React.createElement(type, {key: name})),
     context: contextCopy,
-    diffCSS: Boolean(options.diffCSS)
+    options
   })
 }
 

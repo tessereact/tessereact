@@ -61,7 +61,7 @@ const TestshotWindow = React.createClass({
             name: scenario.name,
             context: scenario.context,
             snapshot: scenario.getSnapshot(),
-            diffCSS: scenario.diffCSS
+            options: scenario.options
           }))
 
         const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
