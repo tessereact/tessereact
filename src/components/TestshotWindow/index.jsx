@@ -13,7 +13,8 @@ import {
   getScenariosToLoad,
   acceptScenario,
   resolveScenario,
-  requestScenarioAcceptance
+  addScreenshotToScenario,
+  requestScenarioAcceptance,
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
@@ -140,16 +141,20 @@ const TestshotWindow = React.createClass({
       <Header>
         <span>{scenario.name}</span>
         <div>
+          {scenario.screenshotData && <Button onClick={() => this._requestScreenshot(scenario)}>Get screenshot diff</Button>}
           <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
             <Button>View</Button>
           </a>
-          {scenario.hasDiff && <AcceptButton onClick={_ => this._acceptSnapshot(scenario)}>Accept & next</AcceptButton>}
+          {scenario.hasDiff && <AcceptButton onClick={() => this._acceptSnapshot(scenario)}>Accept & next</AcceptButton>}
         </div>
       </Header>
       <ComponentPreview>
         {scenario.element}
       </ComponentPreview>
       <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
+      {scenario.screenshotData
+        && scenario.screenshotData.url
+        && this._renderScreenshot(scenario.screenshotData.url)}
     </TestshotContent.Wrapper>
   },
 
@@ -197,17 +202,39 @@ const TestshotWindow = React.createClass({
     const {host, port} = this.props
     const url = `//${host}:${port}/snapshots`
 
-    postJSON(url, requestScenarioAcceptance(scenario)).then(_ => {
+    postJSON(url, requestScenarioAcceptance(scenario)).then(() => {
       const scenarios = acceptScenario(this.state.scenarios, scenario)
       this.setState({scenarios})
       redirectToFirstFailingScenario(scenarios)
     })
   },
 
+  _requestScreenshot (scenario) {
+    const {host, port} = this.props
+    const url = `//${host}:${port}/screenshots`
+    const {before, after} = scenario.screenshotData
+
+    postJSON(url, {before, after})
+      .then((response) => {
+        return response.blob()
+      })
+      .then((blob) => {
+        const url = URL.createObjectURL(blob)
+        const scenarios = addScreenshotToScenario(this.state.scenarios, scenario, url)
+        this.setState({scenarios})
+      })
+  },
+
   _renderDiff (scenario) {
     if (scenario.hasDiff) {
       return scenario.diff
     }
+  },
+
+  _renderScreenshot (url) {
+    return <div style={{paddingTop: 20}}>
+      <img src={url} />
+    </div>
   }
 })
 

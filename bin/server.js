@@ -12,10 +12,15 @@ const ejs = require('ejs')
 const {
   readSnapshot,
   writeSnapshot,
-  buildFailed,
-  writeFailed,
-  deleteFailed
+  buildPage
 } = require('./_lib/snapshots')
+const {
+  connectToBrowser,
+  createScreenshot,
+  disconnectFromBrowser,
+  deleteScreenshot,
+  diffScreenshots
+} = require('./_lib/screenshots')
 const collectStylesFromSnapshot = require('./_lib/collectStylesFromSnapshot')
 const formatHTML = require('./_lib/formatHTML')
 const {
@@ -109,6 +114,7 @@ app.post('/snapshots-list', async (req, res) => {
 
       let diffPatch
       let css
+      let screenshotData
 
       if (options.css) {
         css = collectStylesFromSnapshot(styles, html, shouldCacheCSS, styleHash)
@@ -122,13 +128,16 @@ app.post('/snapshots-list', async (req, res) => {
           diffSnapshots('HTML', oldHTML, html),
           diffSnapshots('CSS', oldCSS, css)
         ].filter(x => x).join('\n')
+
+        if (options.screenshot && diffPatch) {
+          screenshotData = {
+            before: buildPage(oldHTML, oldCSS),
+            after: buildPage(html, css)
+          }
+        }
       } else {
         const oldHTML = await readSnapshot(name, context, 'html')
         diffPatch = diffSnapshots('HTML', oldHTML, html)
-      }
-
-      if (diffPatch) {
-        await writeFailed(buildFailed(html, css), name, context, 'html')
       }
 
       const diff = diffToHTML(diffPatch)
@@ -138,7 +147,8 @@ app.post('/snapshots-list', async (req, res) => {
         context,
         diff,
         snapshot: html,
-        snapshotCSS: css
+        snapshotCSS: css,
+        screenshotData
       })
     }))
   )
@@ -151,17 +161,38 @@ app.post('/snapshots', async (req, res) => {
   if (snapshotCSS) {
     await Promise.all([
       writeSnapshot(snapshot, name, context, 'html'),
-      writeSnapshot(snapshotCSS, name, context, 'css'),
-      deleteFailed(name, context, 'html')
+      writeSnapshot(snapshotCSS, name, context, 'css')
     ])
   } else {
-    await Promise.all([
-      writeSnapshot(snapshot, name, context, 'html'),
-      deleteFailed(name, context, 'html')
-    ])
+    await writeSnapshot(snapshot, name, context, 'html')
   }
 
   res.send('OK')
+})
+
+app.options('/screenshots', cors())
+app.post('/screenshots', async (req, res) => {
+  const {before, after} = req.body
+  const beforeURL = `data:text/html;charset=utf-8,${encodeURIComponent(before)}`
+  const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
+
+  const options = {
+    width: config.screenshot_width || 320,
+    height: config.screenshot_height || 568
+  }
+
+  const chrome = connectToBrowser()
+  const beforeScreenshotPath = await createScreenshot(chrome, beforeURL, options)
+  const afterScreenshotPath = await createScreenshot(chrome, afterURL, options)
+  disconnectFromBrowser(chrome)
+
+  const diffPath = await diffScreenshots(beforeScreenshotPath, afterScreenshotPath)
+
+  res.sendFile(diffPath, () => {
+    deleteScreenshot(beforeScreenshotPath)
+    deleteScreenshot(afterScreenshotPath)
+    deleteScreenshot(diffPath)
+  })
 })
 
 app.listen(config.port, function () {

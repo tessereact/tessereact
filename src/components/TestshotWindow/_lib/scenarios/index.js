@@ -125,8 +125,33 @@ export function resolveScenario (scenarios, scenario) {
       hasDiff: scenario.diff,
       snapshot: scenario.snapshot,
       snapshotCSS: scenario.snapshotCSS,
-      status: 'resolved'
+      status: 'resolved',
+      screenshotData: scenario.screenshotData
     }
+  })
+}
+
+/**
+ * Set screenshotData.url to a specific scenario and return the resulting scenario array.
+ *
+ * @param {Array<Scenario>} scenarios
+ * @param {Scenario} scenario
+ * @param {String} url
+ * @returns {Array<Scenario>} new scenario array
+ */
+export function addScreenshotToScenario (scenarios, scenario, url) {
+  const storedScenarioIndex = findScenarioIndex(
+    scenarios,
+    scenario.context,
+    scenario.name
+  )
+
+  const storedScenario = scenarios[storedScenarioIndex]
+
+  return Object.assign([], scenarios, {
+    [storedScenarioIndex]: Object.assign({}, storedScenario, {
+      screenshotData: Object.assign({}, storedScenario.screenshotData, {url})
+    })
   })
 }
 
@@ -142,7 +167,8 @@ export function requestScenarioAcceptance (scenario) {
     name: scenario.name,
     context: scenario.context,
     snapshot: scenario.snapshot,
-    snapshotCSS: scenario.snapshotCSS
+    snapshotCSS: scenario.snapshotCSS,
+    screenshotData: scenario.screenshotData
   }
 
   return payload

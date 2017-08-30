@@ -7,7 +7,7 @@
  */
 export default function postJSON (url, body) {
   return window.fetch(url, {
-    method: 'post',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },

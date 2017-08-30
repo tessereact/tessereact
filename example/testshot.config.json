@@ -1,6 +1,7 @@
 {
   "port": 5001,
   "snapshots_path": "example/snapshots",
-  "failed_path": "example/failed",
-  "cache_css_policy": "cache"
+  "cache_css_policy": "cache",
+  "screenshot_width": 1024,
+  "screenshot_height": 768
 }
