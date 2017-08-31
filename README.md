@@ -59,7 +59,7 @@ context('Text', () => {
 
 ## Contributors
 
-[See here](https://github.com/toptal/tessereact/graphs/contributors)
+[See here](https://github.com/tessereact/tessereact/graphs/contributors)
 
 Special thanks to:
   - Team Portal Toptal Team
