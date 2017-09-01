@@ -2,20 +2,19 @@ const fs = require('fs')
 const fsp = require('fs-promise')
 const path = require('path')
 
-const config = require(path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json'))
-const defaultSnapshotsDir = path.resolve(process.cwd(), config.snapshots_path)
 const CONTEXT_DELIMITER = ' - '
 
 /**
  * Read snapshot from the file system.
  *
+ * @param {String} snapshotsDir
  * @param {String} name - snapshot name
  * @param {String} context - context name
  * @param {String} [extension='html'] - file extension
  * @returns {Promise<String>} promise with snapshot
  */
-function readSnapshot (name, context, extension = 'html') {
-  const snapshotPath = getSnapshotPath(name, context, extension)
+function readSnapshot (snapshotsDir, name, context, extension = 'html') {
+  const snapshotPath = getSnapshotPath(snapshotsDir, name, context, extension)
 
   return fsp
     .readFile(snapshotPath)
@@ -28,15 +27,16 @@ function readSnapshot (name, context, extension = 'html') {
 /**
  * Write snapshot to the file system.
  *
+ * @param {String} snapshotsDir
  * @param {String} snapshot - snapshot to be writtn
  * @param {String} name - snapshot name
  * @param {String} context - context name
  * @param {String} [extension='html'] - file extension
  * @returns {Promise}
  */
-function writeSnapshot (snapshot, name, context, extension = 'html') {
-  const dir = path.join(defaultSnapshotsDir, context || '')
-  const snapshotPath = getSnapshotPath(name, context, extension)
+function writeSnapshot (snapshotsDir, snapshot, name, context, extension = 'html') {
+  const dir = path.join(snapshotsDir, context || '')
+  const snapshotPath = getSnapshotPath(snapshotsDir, name, context, extension)
 
   return fsp
     .ensureDir(dir)
@@ -63,8 +63,8 @@ function buildPage (html, css) {
     .join('\n')
 }
 
-function getSnapshotPath (scenarioName, contextName, extension) {
-  const dir = path.join(defaultSnapshotsDir, contextName || '')
+function getSnapshotPath (snapshotsDir, scenarioName, contextName, extension) {
+  const dir = path.join(snapshotsDir, contextName || '')
   return `${dir}/${composeScenarioFileName(scenarioName, contextName, extension)}`
 }
 
