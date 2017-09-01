@@ -9,4 +9,7 @@ process.on(
   'unhandledRejection', e => console.log(e)
 )
 
-server(process.cwd(), config)
+server(process.cwd(), config, function () {
+  console.log('Snapshot server is running on ' + config.port)
+  console.log('Config: ', config)
+})

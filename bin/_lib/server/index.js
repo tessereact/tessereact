@@ -196,13 +196,7 @@ module.exports = function server (cwd, config, callback) {
     })
   })
 
-  app.listen(config.port, function () {
-    console.log('Snapshot server is running on ' + config.port)
-    console.log('Config: ', config)
-    if (callback) {
-      callback()
-    }
-  })
+  app.listen(config.port, callback)
 }
 
 function rescue (err) {
