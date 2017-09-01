@@ -3,9 +3,11 @@
 import init from './init'
 import Testshot, {scenario, context} from './Testshot'
 
-module.exports = {
+const T = {
   init,
   scenario,
   context,
   Testshot
 }
+
+export default T
