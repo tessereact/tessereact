@@ -1,2 +1,2 @@
-const Testshot = require('./src')
+const Testshot = require('./lib')
 Testshot.init({className: 'testshot'})
