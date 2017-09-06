@@ -56,7 +56,8 @@ module.exports = function server (cwd, config, callback) {
           : path.resolve(__dirname, './index.ejs')
         const locals = {
           entryPath: process.env.CI ? config.built_entry_path : config.entry_url,
-          wsURL
+          wsURL,
+          tessereactServerPort: config.port
         }
 
         ejs.renderFile(templatePath, locals, {}, (err, templateHTML) => {

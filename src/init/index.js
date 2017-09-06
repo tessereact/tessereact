@@ -7,7 +7,7 @@ export default function init (userOptions = {}) {
   const options = Object.assign({
     server: {
       host: 'localhost',
-      port: '5001'
+      port: String(window.__tessereactServerPort) || '5001'
     }
   }, userOptions)
   const wrapperElement = document.createElement('div')
