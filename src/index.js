@@ -3,7 +3,7 @@
 import init from './init'
 import Testshot, {scenario, context} from './Testshot'
 
-module.exports = {
+export {
   init,
   scenario,
   context,

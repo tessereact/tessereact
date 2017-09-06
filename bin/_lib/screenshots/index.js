@@ -6,7 +6,6 @@ const crypto = require('crypto')
 const exec = require('child_process').exec
 
 const port = 1337
-const defaultScreenshotsDir = path.resolve(process.cwd(), 'tmp')
 
 const args = [
   '--url-base=wd/hub',
@@ -50,6 +49,7 @@ function disconnectFromBrowser (client) {
 /**
  * Create a screenshot of a web-page on a specific URL.
  *
+ * @param {String} screenshotsDir
  * @param {Client} client - webdriverio object
  * @param {String} url
  * @param {Object} [options]
@@ -57,9 +57,9 @@ function disconnectFromBrowser (client) {
  * @param {Number} [options.height]
  * @returns {Promise<String>} promise with a screenshot path
  */
-function createScreenshot (client, url, {width = 1024, height = 768} = {}) {
+function createScreenshot (screenshotsDir, client, url, {width = 1024, height = 768} = {}) {
   const filePath = path.join(
-    defaultScreenshotsDir,
+    screenshotsDir,
     `${crypto.createHash('md5').update(url).digest('hex')}.png`
   )
 
@@ -90,14 +90,15 @@ function deleteScreenshot (filePath) {
 /**
  * Create a screenshot diff.
  *
+ * @param {String} screenshotsDir
  * @param {String} pathA
  * @param {String} pathB
  * @returns {Promise<String>} promise with full path of the resulting diff
  */
-function diffScreenshots (pathA, pathB) {
+function diffScreenshots (screenshotsDir, pathA, pathB) {
   return new Promise((resolve, reject) => {
     const pathDiff = path.join(
-      defaultScreenshotsDir,
+      screenshotsDir,
       `${crypto.createHash('md5').update(pathA + ':' + pathB).digest('hex')}.gif`
     )
     const cmd = `convert -delay 50 ${pathA} ${pathB} -loop 0 ${pathDiff}`
