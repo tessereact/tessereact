@@ -188,7 +188,7 @@ module.exports = function server (cwd, config, callback) {
     const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, options)
     disconnectFromBrowser(chrome)
 
-    const diffPath = await diffScreenshots(beforeScreenshotPath, afterScreenshotPath)
+    const diffPath = await diffScreenshots(screenshotsDir, beforeScreenshotPath, afterScreenshotPath)
 
     res.sendFile(diffPath, () => {
       deleteScreenshot(beforeScreenshotPath)
