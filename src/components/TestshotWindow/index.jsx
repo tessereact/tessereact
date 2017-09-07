@@ -254,7 +254,7 @@ const TestshotWindow = React.createClass({
               key={index}
               onClick={() => this._requestScreenshot(scenario, {width, height})}
             >
-              {alias || `${width} ⨯ ${height}`}
+              {alias || `${width} × ${height}`}
             </SmallButton>
           )}
         </span>
