@@ -209,10 +209,19 @@ const TestshotWindow = React.createClass({
     })
   },
 
-  _requestScreenshot (scenario, size) {
+  _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshots`
-    const {before, after} = scenario.screenshotData
+    const {before, after, screenshotSizes} = scenario.screenshotData
+
+    const size = screenshotSizes[screenshotSizeIndex]
+    this.setState({
+      scenarios: changeScenarioScreenshotData(
+        this.state.scenarios,
+        scenario,
+        () => ({selectedScreenshotSizeIndex: screenshotSizeIndex})
+      )
+    })
 
     postJSON(url, {before, after, size})
       .then((response) => {
@@ -252,7 +261,8 @@ const TestshotWindow = React.createClass({
           {screenshotData.screenshotSizes.map(({alias, width, height}, index) =>
             <SmallButton
               key={index}
-              onClick={() => this._requestScreenshot(scenario, {width, height})}
+              onClick={() => this._requestScreenshot(scenario, index)}
+              style={index === screenshotData.selectedScreenshotSizeIndex ? {backgroundColor: '#1abc9c'} : {}}
             >
               {alias || `${width} × ${height}`}
             </SmallButton>
