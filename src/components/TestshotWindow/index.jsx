@@ -28,6 +28,7 @@ import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
 import AcceptButton from '../../styled/AcceptButton'
 import Button from '../../styled/Button'
+import SmallButton from '../../styled/SmallButton'
 import Text from '../../styled/Text'
 import './diff2html.css'
 
@@ -141,14 +142,6 @@ const TestshotWindow = React.createClass({
       <Header>
         <span>{scenario.name}</span>
         <div>
-          {
-            scenario.screenshotData
-              && scenario.screenshotData.screenshotSizes.map(({alias, width, height}, index) =>
-                <Button key={index} onClick={() => this._requestScreenshot(scenario, {width, height})}>
-                  {alias || `${width} ⨯ ${height}`}
-                </Button>
-              )
-          }
           <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
             <Button>View</Button>
           </a>
@@ -159,7 +152,7 @@ const TestshotWindow = React.createClass({
         {scenario.element}
       </ComponentPreview>
       <div>
-        {scenario.screenshotData && this._renderScreenshotData(scenario.screenshotData)}
+        {this._renderScreenshotData(scenario)}
         <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
       </div>
     </TestshotContent.Wrapper>
@@ -238,7 +231,13 @@ const TestshotWindow = React.createClass({
     }
   },
 
-  _renderScreenshotData (screenshotData) {
+  _renderScreenshotData (scenario) {
+    const {screenshotData} = scenario
+
+    if (!screenshotData) {
+      return null
+    }
+
     return <div className='d2h-file-wrapper'>
       <div className='d2h-file-header'>
         <span className='d2h-file-name-wrapper'>
@@ -250,6 +249,14 @@ const TestshotWindow = React.createClass({
           <span className='d2h-file-name'>
             Screenshots
           </span>
+          {screenshotData.screenshotSizes.map(({alias, width, height}, index) =>
+            <SmallButton
+              key={index}
+              onClick={() => this._requestScreenshot(scenario, {width, height})}
+            >
+              {alias || `${width} ⨯ ${height}`}
+            </SmallButton>
+          )}
         </span>
       </div>
 
