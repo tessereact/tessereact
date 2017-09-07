@@ -27,7 +27,7 @@ const {
 const hash = require('object-hash')
 
 const defaultScreenshotSizes = [
-  {"width": 320, "height": 568, "alias": "iPhone"},
+  {"width": 320, "height": 568, "alias": "iPhone SE"},
   {"width": 1024, "height": 768}
 ]
 
