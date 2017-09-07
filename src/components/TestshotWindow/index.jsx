@@ -141,7 +141,14 @@ const TestshotWindow = React.createClass({
       <Header>
         <span>{scenario.name}</span>
         <div>
-          {scenario.screenshotData && <Button onClick={() => this._requestScreenshot(scenario)}>Get screenshot diff</Button>}
+          {
+            scenario.screenshotData
+              && scenario.screenshotData.screenshotSizes.map(({alias, width, height}, index) =>
+                <Button key={index} onClick={() => this._requestScreenshot(scenario, {width, height})}>
+                  {alias || `${width} ⨯ ${height}`}
+                </Button>
+              )
+          }
           <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
             <Button>View</Button>
           </a>
@@ -209,12 +216,12 @@ const TestshotWindow = React.createClass({
     })
   },
 
-  _requestScreenshot (scenario) {
+  _requestScreenshot (scenario, size) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshots`
     const {before, after} = scenario.screenshotData
 
-    postJSON(url, {before, after})
+    postJSON(url, {before, after, size})
       .then((response) => {
         return response.blob()
       })
