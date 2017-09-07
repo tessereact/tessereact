@@ -223,13 +223,29 @@ const TestshotWindow = React.createClass({
       )
     })
 
+    if (
+      scenario.screenshotData.savedScreenshots
+        && scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
+    ) {
+      // Screenshot is already cached
+      return null
+    }
+
     postJSON(url, {before, after, size})
       .then((response) => {
         return response.blob()
       })
       .then((blob) => {
         const url = URL.createObjectURL(blob)
-        const scenarios = changeScenarioScreenshotData(this.state.scenarios, scenario, () => ({url}))
+        const scenarios = changeScenarioScreenshotData(
+          this.state.scenarios,
+          scenario,
+          ({savedScreenshots}) => ({
+            savedScreenshots: Object.assign([], savedScreenshots, {
+              [screenshotSizeIndex]: url
+            })
+          })
+        )
         this.setState({scenarios})
       })
   },
@@ -247,6 +263,8 @@ const TestshotWindow = React.createClass({
       return null
     }
 
+    const {screenshotSizes, selectedScreenshotSizeIndex, savedScreenshots} = screenshotData
+
     return <div className='d2h-file-wrapper'>
       <div className='d2h-file-header'>
         <span className='d2h-file-name-wrapper'>
@@ -258,11 +276,11 @@ const TestshotWindow = React.createClass({
           <span className='d2h-file-name'>
             Screenshots
           </span>
-          {screenshotData.screenshotSizes.map(({alias, width, height}, index) =>
+          {screenshotSizes.map(({alias, width, height}, index) =>
             <SmallButton
               key={index}
               onClick={() => this._requestScreenshot(scenario, index)}
-              style={index === screenshotData.selectedScreenshotSizeIndex ? {backgroundColor: '#1abc9c'} : {}}
+              style={index === selectedScreenshotSizeIndex ? {backgroundColor: '#1abc9c'} : {}}
             >
               {alias || `${width} × ${height}`}
             </SmallButton>
@@ -270,17 +288,21 @@ const TestshotWindow = React.createClass({
         </span>
       </div>
 
-      {this._renderScreenshot(screenshotData.url)}
+      {this._renderScreenshot(savedScreenshots, selectedScreenshotSizeIndex)}
     </div>
   },
 
-  _renderScreenshot (url) {
-    if (!url) {
+  _renderScreenshot (savedScreenshots, index) {
+    if (index == null) {
       return null
     }
 
+    if (!savedScreenshots || !savedScreenshots[index]) {
+      return <div className='d2h-screenshot-diff'>Spinner</div>
+    }
+
     return <div className='d2h-screenshot-diff'>
-      <img src={url} />
+      <img src={savedScreenshots[index]} />
     </div>
   }
 })
