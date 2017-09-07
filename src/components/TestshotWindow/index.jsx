@@ -298,7 +298,7 @@ const TestshotWindow = React.createClass({
     }
 
     if (!savedScreenshots || !savedScreenshots[index]) {
-      return <div className='d2h-screenshot-diff'>Spinner</div>
+      return <div className='d2h-screenshot-diff'>Loading...</div>
     }
 
     return <div className='d2h-screenshot-diff'>
