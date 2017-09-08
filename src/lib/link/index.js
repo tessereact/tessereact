@@ -1,14 +1,14 @@
-import {Component, createElement, PropTypes} from 'react'
+import {Component, createElement} from 'react'
 import router from '../../routes'
 
-class Link extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-    name: PropTypes.string,
-    params: PropTypes.object,
-    children: PropTypes.node
-  }
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
+class Link extends Component {
   render () {
     const {className, name, params, children} = this.props
 
@@ -19,6 +19,15 @@ class Link extends Component {
         router.navigateToRoute(name, params)
       }
     }, children)
+  }
+}
+
+if (PropTypes) {
+  Link.propTypes = {
+    className: PropTypes.string,
+    name: PropTypes.string,
+    params: PropTypes.object,
+    children: PropTypes.node
   }
 }
 

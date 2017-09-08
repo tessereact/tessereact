@@ -1,8 +1,15 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import List from '../List'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
 import Link from '../../lib/link'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 class Navigation extends React.Component {
   constructor (props, context) {
@@ -57,11 +64,13 @@ class Navigation extends React.Component {
   }
 }
 
-Navigation.propTypes = {
-  loadedScenariosCount: PropTypes.number,
-  failedScenariosCount: PropTypes.number,
-  scenariosCount: PropTypes.number,
-  nodes: PropTypes.array
+if (PropTypes) {
+  Navigation.propTypes = {
+    loadedScenariosCount: PropTypes.number,
+    failedScenariosCount: PropTypes.number,
+    scenariosCount: PropTypes.number,
+    nodes: PropTypes.array
+  }
 }
 
 export default Navigation

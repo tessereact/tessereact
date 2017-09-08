@@ -1,8 +1,15 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import Sidebar from '../../styled/Sidebar'
 import {matchesQuery} from '../_lib/utils'
 import ScenarioNavLink from '../../styled/ScenarioNavLink'
 import routes from '../../routes'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 class Scenario extends React.Component {
   render () {
@@ -35,10 +42,12 @@ class Scenario extends React.Component {
   }
 }
 
-Scenario.propTypes = {
-  node: PropTypes.object,
-  searchQuery: PropTypes.string,
-  child: PropTypes.bool
+if (PropTypes) {
+  Scenario.propTypes = {
+    node: PropTypes.object,
+    searchQuery: PropTypes.string,
+    child: PropTypes.bool
+  }
 }
 
 export default Scenario

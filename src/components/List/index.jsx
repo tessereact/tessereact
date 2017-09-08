@@ -1,7 +1,14 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import Context from '../Context'
 import Scenario from '../Scenario'
 import StyledList from '../../styled/List'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 class List extends React.Component {
   _renderItem (node) {
@@ -46,12 +53,14 @@ class List extends React.Component {
   }
 }
 
-List.propTypes = {
-  nodes: PropTypes.array,
-  child: PropTypes.bool,
-  selectedNode: PropTypes.object,
-  selectNode: PropTypes.func,
-  searchQuery: PropTypes.string
+if (PropTypes) {
+  List.propTypes = {
+    nodes: PropTypes.array,
+    child: PropTypes.bool,
+    selectedNode: PropTypes.object,
+    selectNode: PropTypes.func,
+    searchQuery: PropTypes.string
+  }
 }
 
 export default List

@@ -1,7 +1,14 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import TestshotWindow from './components/TestshotWindow'
 import ScenarioView from './components/ScenarioView'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 const names = []
 const data = []
@@ -55,13 +62,15 @@ class Testshot extends React.Component {
   }
 }
 
-Testshot.propTypes = {
-  data: PropTypes.array,
-  server: PropTypes.shape({
-    host: PropTypes.string,
-    port: PropTypes.string
-  }),
-  routeData: PropTypes.object
+if (PropTypes) {
+  Testshot.propTypes = {
+    data: PropTypes.array,
+    server: PropTypes.shape({
+      host: PropTypes.string,
+      port: PropTypes.string
+    }),
+    routeData: PropTypes.object
+  }
 }
 
 export default Testshot

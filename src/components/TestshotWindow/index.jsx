@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
 import postJSON from './_lib/postJSON'
@@ -18,6 +18,13 @@ import {
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -304,11 +311,13 @@ class TestshotWindow extends React.Component {
   }
 }
 
-TestshotWindow.propTypes = {
-  data: PropTypes.array.isRequired,
-  host: PropTypes.string.isRequired,
-  port: PropTypes.string.isRequired,
-  routeData: PropTypes.object
+if (PropTypes) {
+  TestshotWindow.propTypes = {
+    data: PropTypes.array.isRequired,
+    host: PropTypes.string.isRequired,
+    port: PropTypes.string.isRequired,
+    routeData: PropTypes.object
+  }
 }
 
 export default TestshotWindow

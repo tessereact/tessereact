@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import {some} from 'lodash'
 import List from '../List'
 import Sidebar from '../../styled/Sidebar'
@@ -6,6 +6,13 @@ import Arrow from '../../styled/Arrow'
 import ContextNavLink from '../../styled/ContextNavLink'
 import {matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
 import routes from '../../routes'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 class Context extends React.Component {
   _hasFailingChildren () {
@@ -71,12 +78,14 @@ class Context extends React.Component {
   }
 }
 
-Context.propTypes = {
-  node: PropTypes.object,
-  selectedNode: PropTypes.object,
-  selectNode: PropTypes.func,
-  searchQuery: PropTypes.string,
-  location: PropTypes.object
+if (PropTypes) {
+  Context.propTypes = {
+    node: PropTypes.object,
+    selectedNode: PropTypes.object,
+    selectNode: PropTypes.func,
+    searchQuery: PropTypes.string,
+    location: PropTypes.object
+  }
 }
 
 export default Context

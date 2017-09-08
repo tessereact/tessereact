@@ -1,5 +1,12 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { find } from 'lodash'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 class ScenarioView extends React.Component {
   getInitialState () {
@@ -28,9 +35,11 @@ class ScenarioView extends React.Component {
   }
 }
 
-ScenarioView.propTypes = {
-  data: PropTypes.array.isRequired,
-  routeData: PropTypes.object
+if (PropTypes) {
+  ScenarioView.propTypes = {
+    data: PropTypes.array.isRequired,
+    routeData: PropTypes.object
+  }
 }
 
 export default ScenarioView
