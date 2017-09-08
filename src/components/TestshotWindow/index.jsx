@@ -288,11 +288,11 @@ const TestshotWindow = React.createClass({
         </span>
       </div>
 
-      {this._renderScreenshot(savedScreenshots, selectedScreenshotSizeIndex)}
+      {this._renderScreenshot(screenshotSizes, savedScreenshots, selectedScreenshotSizeIndex)}
     </div>
   },
 
-  _renderScreenshot (savedScreenshots, index) {
+  _renderScreenshot (screenshotSizes, savedScreenshots, index) {
     if (index == null) {
       return null
     }
@@ -301,8 +301,10 @@ const TestshotWindow = React.createClass({
       return <div className='d2h-screenshot-diff'>Loading...</div>
     }
 
+    const {height, width} = screenshotSizes[index]
+
     return <div className='d2h-screenshot-diff'>
-      <img src={savedScreenshots[index]} />
+      <img style={{height, width}} src={savedScreenshots[index]} />
     </div>
   }
 })
