@@ -7,41 +7,33 @@ import ContextNavLink from '../../styled/ContextNavLink'
 import {matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
 import routes from '../../routes'
 
-const Context = React.createClass({
-  propTypes: {
-    node: PropTypes.object,
-    selectedNode: PropTypes.object,
-    selectNode: PropTypes.func,
-    searchQuery: PropTypes.string,
-    location: PropTypes.object
-  },
-
+class Context extends React.Component {
   _hasFailingChildren () {
     return this.props.node.children.find(({hasDiff}) => hasDiff)
-  },
+  }
 
   _shouldExpand () {
     return window.location.pathname.match(`/contexts/${this.props.node.name}`) ||
       this._hasFailingChildren() || (this._applyFilter() && this._searchMatchChildren())
-  },
+  }
 
   _applyFilter () {
     return this.props.searchQuery.length >= SEARCH_LIMIT
-  },
+  }
 
   _matchFilter () {
     return matchesQuery(this.props.searchQuery, this.props.node.name)
-  },
+  }
 
   _searchMatchChildren () {
     return some(this.props.node.children, child => (
       matchesQuery(this.props.searchQuery, child.name)
     ))
-  },
+  }
 
   _renderIcon () {
     return this._shouldExpand() ? <Arrow.Down /> : <Arrow.Right />
-  },
+  }
 
   render () {
     const {name, children} = this.props.node
@@ -77,6 +69,14 @@ const Context = React.createClass({
         {this._shouldExpand() && <List nodes={filteredChildren} child />}
       </Sidebar.ListItem>
   }
-})
+}
+
+Context.propTypes = {
+  node: PropTypes.object,
+  selectedNode: PropTypes.object,
+  selectNode: PropTypes.func,
+  searchQuery: PropTypes.string,
+  location: PropTypes.object
+}
 
 export default Context

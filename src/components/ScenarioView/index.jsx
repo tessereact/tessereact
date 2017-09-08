@@ -1,17 +1,12 @@
 import React, { PropTypes } from 'react'
 import { find } from 'lodash'
 
-const ScenarioView = React.createClass({
-  propTypes: {
-    data: PropTypes.array.isRequired,
-    routeData: PropTypes.object
-  },
-
+class ScenarioView extends React.Component {
   getInitialState () {
     return {
       element: null
     }
-  },
+  }
 
   componentWillMount () {
     const {
@@ -25,12 +20,17 @@ const ScenarioView = React.createClass({
     this.setState({
       element: scenario.getElement()
     })
-  },
+  }
 
   render () {
     const {element} = this.state
     return element
   }
-})
+}
+
+ScenarioView.propTypes = {
+  data: PropTypes.array.isRequired,
+  routeData: PropTypes.object
+}
 
 export default ScenarioView

@@ -4,13 +4,7 @@ import {matchesQuery} from '../_lib/utils'
 import ScenarioNavLink from '../../styled/ScenarioNavLink'
 import routes from '../../routes'
 
-const Scenario = React.createClass({
-  propTypes: {
-    node: PropTypes.object,
-    searchQuery: PropTypes.string,
-    child: PropTypes.bool
-  },
-
+class Scenario extends React.Component {
   render () {
     const {
       searchQuery,
@@ -39,7 +33,12 @@ const Scenario = React.createClass({
         </ScenarioNavLink>
       </Sidebar.ListItem>
   }
+}
 
-})
+Scenario.propTypes = {
+  node: PropTypes.object,
+  searchQuery: PropTypes.string,
+  child: PropTypes.bool
+}
 
 export default Scenario

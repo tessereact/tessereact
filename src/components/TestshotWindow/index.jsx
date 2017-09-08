@@ -34,19 +34,14 @@ import './diff2html.css'
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
-const TestshotWindow = React.createClass({
-  propTypes: {
-    data: PropTypes.array.isRequired,
-    host: PropTypes.string.isRequired,
-    port: PropTypes.string.isRequired,
-    routeData: PropTypes.object
-  },
+class TestshotWindow extends React.Component {
+  constructor (props, context) {
+    super(props, context)
 
-  getInitialState () {
-    return {
-      scenarios: this.props.data
+    this.state = {
+      scenarios: props.data
     }
-  },
+  }
 
   componentWillMount () {
     const { routeData } = this.props
@@ -106,11 +101,11 @@ const TestshotWindow = React.createClass({
       .catch(e => {
         console.log('Unexpected error!', e)
       })
-  },
+  }
 
   componentWillReceiveProps (nextProps) {
     checkForHomeRoute(nextProps.routeData, this.state.scenarios)
-  },
+  }
 
   render () {
     const {
@@ -134,7 +129,7 @@ const TestshotWindow = React.createClass({
         </TestshotContent>
       </TestshotContainer>
     )
-  },
+  }
 
   _renderScenario (scenario) {
     if (!scenario) return null
@@ -156,7 +151,7 @@ const TestshotWindow = React.createClass({
         <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
       </div>
     </TestshotContent.Wrapper>
-  },
+  }
 
   _renderContext (contextName) {
     const scenarios = this.state.scenarios
@@ -176,13 +171,13 @@ const TestshotWindow = React.createClass({
         </ScenarioBlock>))}
       </ComponentPreview>
     </TestshotContent.Wrapper>
-  },
+  }
 
   _renderSectionHeader (s) {
     return s.hasDiff
       ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text>
       : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
-  },
+  }
 
   _renderContent (node) {
     if (node.isScenario) {
@@ -196,7 +191,7 @@ const TestshotWindow = React.createClass({
         </ScenarioBlockContent>
       </ScenarioBlock>))
     }
-  },
+  }
 
   _acceptSnapshot (scenario) {
     const {host, port} = this.props
@@ -207,7 +202,7 @@ const TestshotWindow = React.createClass({
       this.setState({scenarios})
       redirectToFirstFailingScenario(scenarios)
     })
-  },
+  }
 
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
@@ -248,13 +243,13 @@ const TestshotWindow = React.createClass({
         )
         this.setState({scenarios})
       })
-  },
+  }
 
   _renderDiff (scenario) {
     if (scenario.hasDiff) {
       return scenario.diff
     }
-  },
+  }
 
   _renderScreenshotData (scenario) {
     const {screenshotData} = scenario
@@ -290,7 +285,7 @@ const TestshotWindow = React.createClass({
 
       {this._renderScreenshot(screenshotSizes, savedScreenshots, selectedScreenshotSizeIndex)}
     </div>
-  },
+  }
 
   _renderScreenshot (screenshotSizes, savedScreenshots, index) {
     if (index == null) {
@@ -307,6 +302,13 @@ const TestshotWindow = React.createClass({
       <img style={{height, width}} src={savedScreenshots[index]} />
     </div>
   }
-})
+}
+
+TestshotWindow.propTypes = {
+  data: PropTypes.array.isRequired,
+  host: PropTypes.string.isRequired,
+  port: PropTypes.string.isRequired,
+  routeData: PropTypes.object
+}
 
 export default TestshotWindow

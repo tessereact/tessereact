@@ -7,7 +7,7 @@ import {init, scenario, context} from 'src/index'
 console.log('--- WELCOME TO TESTSHOT DEVELOPMENT ---')
 
 // TODO: Fix linter issues and get rid of comments
-export const Service = React.createClass({
+class Service extends React.Component {
   render () {
     return (
       /* eslint-disable react/prop-types */
@@ -16,15 +16,17 @@ export const Service = React.createClass({
       </p>
     )
   }
-})
+}
 
-const Cart = React.createClass({
-  getInitialState () {
-    return {
-      items: this.props.items,
-      total: this.props.items.filter(i => i.selected).map(i => i.price).reduce((x, i) => x + i, 0)
+class Cart extends React.Component {
+  constructor (props, context) {
+    super(props, context)
+
+    this.state = {
+      items: props.items,
+      total: props.items.filter(i => i.selected).map(i => i.price).reduce((x, i) => x + i, 0)
     }
-  },
+  }
 
   addTotal (service) {
     let items = this.state.items.slice(0)
@@ -38,7 +40,7 @@ const Cart = React.createClass({
     } else {
       this.setState({items: items, total: this.state.total + service.price})
     }
-  },
+  }
 
   render () {
     /* eslint-disable react/prop-types */
@@ -62,9 +64,9 @@ const Cart = React.createClass({
       </div>
     </div>
   }
-})
+}
 
-const App = React.createClass({
+class App extends React.Component {
   render () {
     const services = [
       { name: 'Web Development', price: 300 },
@@ -76,7 +78,7 @@ const App = React.createClass({
       <Cart items={services} />
     )
   }
-})
+}
 
 // TODO: Move to snapshots.js file
 context('Cart', () => {

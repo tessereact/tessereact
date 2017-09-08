@@ -4,23 +4,18 @@ import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
 import Link from '../../lib/link'
 
-const Navigation = React.createClass({
-  propTypes: {
-    loadedScenariosCount: PropTypes.number,
-    failedScenariosCount: PropTypes.number,
-    scenariosCount: PropTypes.number,
-    nodes: PropTypes.array
-  },
+class Navigation extends React.Component {
+  constructor (props, context) {
+    super(props, context)
 
-  getInitialState () {
-    return {
+    this.state = {
       searchQuery: ''
     }
-  },
+  }
 
   _handleFilter (event) {
     this.setState({searchQuery: event.target.value})
-  },
+  }
 
   _renderLoading () {
     const {loadedScenariosCount, scenariosCount} = this.props
@@ -28,7 +23,7 @@ const Navigation = React.createClass({
     return loadedScenariosCount !== scenariosCount && <Sidebar.Progress>
       LOADING ({loadedScenariosCount}/{scenariosCount})
     </Sidebar.Progress>
-  },
+  }
 
   _renderFailed () {
     const {failedScenariosCount, loadedScenariosCount, scenariosCount} = this.props
@@ -37,7 +32,7 @@ const Navigation = React.createClass({
     return showFailed && <Sidebar.Progress>
       FAILED ({failedScenariosCount}/{scenariosCount})
     </Sidebar.Progress>
-  },
+  }
 
   render () {
     const {searchQuery} = this.state
@@ -60,6 +55,13 @@ const Navigation = React.createClass({
       </Sidebar>
     )
   }
-})
+}
+
+Navigation.propTypes = {
+  loadedScenariosCount: PropTypes.number,
+  failedScenariosCount: PropTypes.number,
+  scenariosCount: PropTypes.number,
+  nodes: PropTypes.array
+}
 
 export default Navigation

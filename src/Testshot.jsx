@@ -36,16 +36,7 @@ export function context (contextName, func) {
   currentContext = null
 }
 
-const Testshot = React.createClass({
-  propTypes: {
-    data: PropTypes.array,
-    server: PropTypes.shape({
-      host: PropTypes.string,
-      port: PropTypes.string
-    }),
-    routeData: PropTypes.object
-  },
-
+class Testshot extends React.Component {
   render () {
     if (!data.length) {
       // TODO: Replace with nice and stylish welcome page :)
@@ -62,6 +53,15 @@ const Testshot = React.createClass({
 
     return <TestshotWindow host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
   }
-})
+}
+
+Testshot.propTypes = {
+  data: PropTypes.array,
+  server: PropTypes.shape({
+    host: PropTypes.string,
+    port: PropTypes.string
+  }),
+  routeData: PropTypes.object
+}
 
 export default Testshot
