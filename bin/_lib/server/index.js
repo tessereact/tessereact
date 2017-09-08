@@ -13,6 +13,7 @@ const {
 } = require('../snapshots')
 const {
   connectToBrowser,
+  ensureScreenshotDir,
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,
@@ -186,6 +187,7 @@ module.exports = function server (cwd, config, callback) {
     const beforeURL = `data:text/html;charset=utf-8,${encodeURIComponent(before)}`
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
 
+    await ensureScreenshotDir(screenshotsDir)
     const chrome = connectToBrowser()
     const beforeScreenshotPath = await createScreenshot(screenshotsDir, chrome, beforeURL, size)
     const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, size)
