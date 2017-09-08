@@ -178,7 +178,7 @@ module.exports = function server (cwd, config, callback) {
       await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
     }
 
-    res.send('OK')
+    res.send({status: 'OK'})
   })
 
   app.options('/screenshots', cors())

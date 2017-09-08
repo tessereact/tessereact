@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
-import postJSON from './_lib/postJSON'
+import { fetchJSON, fetchFile } from './_lib/requests'
 import onLoad from './_lib/onLoad'
 import {
   checkIfRouteExists,
@@ -70,8 +70,7 @@ const TestshotWindow = React.createClass({
 
         return Promise.all(
           chunks.map(scenariosChunk =>
-            postJSON(url, { scenarios: scenariosChunk, styles })
-              .then(response => response.json())
+            fetchJSON(url, { scenarios: scenariosChunk, styles })
               .then(({scenarios: responseScenarios}) =>
                 this.setState({
                   scenarios: responseScenarios.reduce(resolveScenario, scenarios)
@@ -202,7 +201,7 @@ const TestshotWindow = React.createClass({
     const {host, port} = this.props
     const url = `//${host}:${port}/snapshots`
 
-    postJSON(url, requestScenarioAcceptance(scenario)).then(() => {
+    fetchJSON(url, requestScenarioAcceptance(scenario)).then(() => {
       const scenarios = acceptScenario(this.state.scenarios, scenario)
       this.setState({scenarios})
       redirectToFirstFailingScenario(scenarios)
@@ -231,10 +230,7 @@ const TestshotWindow = React.createClass({
       return null
     }
 
-    postJSON(url, {before, after, size})
-      .then((response) => {
-        return response.blob()
-      })
+    fetchFile(url, {before, after, size})
       .then((blob) => {
         const url = URL.createObjectURL(blob)
         const scenarios = changeScenarioScreenshotData(
