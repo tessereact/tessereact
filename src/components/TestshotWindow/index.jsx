@@ -13,7 +13,7 @@ import {
   getScenariosToLoad,
   acceptScenario,
   resolveScenario,
-  addScreenshotToScenario,
+  changeScenarioScreenshotData,
   requestScenarioAcceptance,
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
@@ -28,6 +28,7 @@ import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
 import AcceptButton from '../../styled/AcceptButton'
 import Button from '../../styled/Button'
+import SmallButton from '../../styled/SmallButton'
 import Text from '../../styled/Text'
 import './diff2html.css'
 
@@ -141,7 +142,6 @@ const TestshotWindow = React.createClass({
       <Header>
         <span>{scenario.name}</span>
         <div>
-          {scenario.screenshotData && <Button onClick={() => this._requestScreenshot(scenario)}>Get screenshot diff</Button>}
           <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
             <Button>View</Button>
           </a>
@@ -151,10 +151,10 @@ const TestshotWindow = React.createClass({
       <ComponentPreview>
         {scenario.element}
       </ComponentPreview>
-      <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
-      {scenario.screenshotData
-        && scenario.screenshotData.url
-        && this._renderScreenshot(scenario.screenshotData.url)}
+      <div>
+        {this._renderScreenshotData(scenario)}
+        <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
+      </div>
     </TestshotContent.Wrapper>
   },
 
@@ -209,18 +209,43 @@ const TestshotWindow = React.createClass({
     })
   },
 
-  _requestScreenshot (scenario) {
+  _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshots`
-    const {before, after} = scenario.screenshotData
+    const {before, after, screenshotSizes} = scenario.screenshotData
 
-    postJSON(url, {before, after})
+    const size = screenshotSizes[screenshotSizeIndex]
+    this.setState({
+      scenarios: changeScenarioScreenshotData(
+        this.state.scenarios,
+        scenario,
+        () => ({selectedScreenshotSizeIndex: screenshotSizeIndex})
+      )
+    })
+
+    if (
+      scenario.screenshotData.savedScreenshots
+        && scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
+    ) {
+      // Screenshot is already cached
+      return null
+    }
+
+    postJSON(url, {before, after, size})
       .then((response) => {
         return response.blob()
       })
       .then((blob) => {
         const url = URL.createObjectURL(blob)
-        const scenarios = addScreenshotToScenario(this.state.scenarios, scenario, url)
+        const scenarios = changeScenarioScreenshotData(
+          this.state.scenarios,
+          scenario,
+          ({savedScreenshots}) => ({
+            savedScreenshots: Object.assign([], savedScreenshots, {
+              [screenshotSizeIndex]: url
+            })
+          })
+        )
         this.setState({scenarios})
       })
   },
@@ -231,9 +256,55 @@ const TestshotWindow = React.createClass({
     }
   },
 
-  _renderScreenshot (url) {
-    return <div style={{paddingTop: 20}}>
-      <img src={url} />
+  _renderScreenshotData (scenario) {
+    const {screenshotData} = scenario
+
+    if (!screenshotData) {
+      return null
+    }
+
+    const {screenshotSizes, selectedScreenshotSizeIndex, savedScreenshots} = screenshotData
+
+    return <div className='d2h-file-wrapper'>
+      <div className='d2h-file-header'>
+        <span className='d2h-file-name-wrapper'>
+          <span className='d2h-icon-wrapper'>
+            <svg className='d2h-icon' height='16' version='1.1' viewBox='0 0 12 16' width='12'>
+              <path d='M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z'></path>
+            </svg>
+          </span>
+          <span className='d2h-file-name'>
+            Screenshots
+          </span>
+          {screenshotSizes.map(({alias, width, height}, index) =>
+            <SmallButton
+              key={index}
+              onClick={() => this._requestScreenshot(scenario, index)}
+              style={index === selectedScreenshotSizeIndex ? {backgroundColor: '#1abc9c'} : {}}
+            >
+              {alias || `${width} × ${height}`}
+            </SmallButton>
+          )}
+        </span>
+      </div>
+
+      {this._renderScreenshot(screenshotSizes, savedScreenshots, selectedScreenshotSizeIndex)}
+    </div>
+  },
+
+  _renderScreenshot (screenshotSizes, savedScreenshots, index) {
+    if (index == null) {
+      return null
+    }
+
+    if (!savedScreenshots || !savedScreenshots[index]) {
+      return <div className='d2h-screenshot-diff'>Loading...</div>
+    }
+
+    const {height, width} = screenshotSizes[index]
+
+    return <div className='d2h-screenshot-diff'>
+      <img style={{height, width}} src={savedScreenshots[index]} />
     </div>
   }
 })

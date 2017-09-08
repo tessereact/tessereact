@@ -2,6 +2,10 @@
   "port": 5001,
   "snapshots_path": "example/snapshots",
   "cache_css_policy": "cache",
-  "screenshot_width": 1024,
-  "screenshot_height": 768
+  "screenshot_sizes": [
+    {"width": 320, "height": 568, "alias": "iPhone SE"},
+    {"width": 640, "height": 480},
+    {"width": 800, "height": 600},
+    {"width": 1024, "height": 768}
+  ]
 }

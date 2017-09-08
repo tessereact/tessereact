@@ -13,6 +13,7 @@ const {
 } = require('../snapshots')
 const {
   connectToBrowser,
+  ensureScreenshotDir,
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,
@@ -26,6 +27,11 @@ const {
 } = require('../diff')
 const hash = require('object-hash')
 
+const defaultScreenshotSizes = [
+  {"width": 320, "height": 568, "alias": "iPhone SE"},
+  {"width": 1024, "height": 768}
+]
+
 /**
  * Start the server.
  *
@@ -38,6 +44,8 @@ module.exports = function server (cwd, config, callback) {
   const snapshotsDir = path.resolve(cwd, config.snapshots_path)
 
   const shouldCacheCSS = config.cache_css_policy === 'cache'
+
+  const screenshotSizes = config.screenshot_sizes || defaultScreenshotSizes
 
   const app = express()
   app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
@@ -134,7 +142,8 @@ module.exports = function server (cwd, config, callback) {
           if (options.screenshot && diffPatch) {
             screenshotData = {
               before: buildPage(oldHTML, oldCSS),
-              after: buildPage(html, css)
+              after: buildPage(html, css),
+              screenshotSizes
             }
           }
         } else {
@@ -174,21 +183,17 @@ module.exports = function server (cwd, config, callback) {
 
   app.options('/screenshots', cors())
   app.post('/screenshots', async (req, res) => {
-    const {before, after} = req.body
+    const {before, after, size} = req.body
     const beforeURL = `data:text/html;charset=utf-8,${encodeURIComponent(before)}`
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
 
-    const options = {
-      width: config.screenshot_width || 320,
-      height: config.screenshot_height || 568
-    }
-
+    await ensureScreenshotDir(screenshotsDir)
     const chrome = connectToBrowser()
-    const beforeScreenshotPath = await createScreenshot(screenshotsDir, chrome, beforeURL, options)
-    const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, options)
+    const beforeScreenshotPath = await createScreenshot(screenshotsDir, chrome, beforeURL, size)
+    const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, size)
     disconnectFromBrowser(chrome)
 
-    const diffPath = await diffScreenshots(beforeScreenshotPath, afterScreenshotPath)
+    const diffPath = await diffScreenshots(screenshotsDir, beforeScreenshotPath, afterScreenshotPath)
 
     res.sendFile(diffPath, () => {
       deleteScreenshot(beforeScreenshotPath)

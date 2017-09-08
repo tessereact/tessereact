@@ -47,6 +47,16 @@ function disconnectFromBrowser (client) {
 }
 
 /**
+ * Create screenshotsDir if it doesn't exist.
+ *
+ * @param {String} screenshotsDir
+ * @returns {Promise}
+ */
+function ensureScreenshotDir (screenshotsDir) {
+  return fsp.ensureDir(screenshotsDir)
+}
+
+/**
  * Create a screenshot of a web-page on a specific URL.
  *
  * @param {String} screenshotsDir
@@ -116,6 +126,7 @@ function diffScreenshots (screenshotsDir, pathA, pathB) {
 
 module.exports = {
   connectToBrowser,
+  ensureScreenshotDir,
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,

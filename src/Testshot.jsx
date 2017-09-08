@@ -7,7 +7,7 @@ const names = []
 const data = []
 var currentContext = null
 
-export function scenario (name, type, options = {}) {
+export function scenario (name, type, {css, screenshot} = {}) {
   const contextCopy = currentContext
   if (names.some(([existingName, existingContext]) =>
     name === existingName && currentContext === existingContext
@@ -23,7 +23,10 @@ export function scenario (name, type, options = {}) {
     // store and then display it
     getSnapshot: () => ReactDOMServer.renderToStaticMarkup(React.createElement(type, {key: name})),
     context: contextCopy,
-    options
+    options: {
+      css: css || screenshot,
+      screenshot
+    }
   })
 }
 

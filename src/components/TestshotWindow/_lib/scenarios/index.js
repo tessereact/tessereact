@@ -132,14 +132,16 @@ export function resolveScenario (scenarios, scenario) {
 }
 
 /**
- * Set screenshotData.url to a specific scenario and return the resulting scenario array.
+ * Run callback on screenshotData of a specific scenario,
+ * merge the result of the function with screenshotData
+ * and return the resulting scenario array.
  *
  * @param {Array<Scenario>} scenarios
  * @param {Scenario} scenario
- * @param {String} url
+ * @param {Function} callback
  * @returns {Array<Scenario>} new scenario array
  */
-export function addScreenshotToScenario (scenarios, scenario, url) {
+export function changeScenarioScreenshotData (scenarios, scenario, callback) {
   const storedScenarioIndex = findScenarioIndex(
     scenarios,
     scenario.context,
@@ -150,7 +152,11 @@ export function addScreenshotToScenario (scenarios, scenario, url) {
 
   return Object.assign([], scenarios, {
     [storedScenarioIndex]: Object.assign({}, storedScenario, {
-      screenshotData: Object.assign({}, storedScenario.screenshotData, {url})
+      screenshotData: Object.assign(
+        {},
+        storedScenario.screenshotData,
+        callback(storedScenario.screenshotData)
+      )
     })
   })
 }
