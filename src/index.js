@@ -3,6 +3,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactDOMServer from 'react-dom/server'
+import WelcomeView from './components/WelcomeView'
 import MainView from './components/MainView'
 import ScenarioView from './components/ScenarioView'
 import routes from './routes'
@@ -72,19 +73,22 @@ export function context (contextName, func) {
 export class UI extends React.Component {
   render () {
     if (!data.length) {
-      // TODO: Replace with nice and stylish welcome page :)
-      return <div style={{'text-align': 'center'}}>
-        <h1>Welcome to Tessereact</h1>
-        <p>It's time to add your first scenario.</p>
-        <p>Don't know how? Have a look <a href='https://github.com/tessereact/tessereact/blob/master/docs/usage.md'>here</a>.</p>
-      </div>
+      return React.createElement(WelcomeView)
     }
 
     if (this.props.routeData.route.name === 'view') {
-      return <ScenarioView data={data} routeData={this.props.routeData} />
+      return React.createElement(ScenarioView, {
+        data,
+        routeData: this.props.routeData
+      })
     }
 
-    return <MainView host={this.props.server.host} port={this.props.server.port} data={data} routeData={this.props.routeData} />
+    return React.createElement(MainView, {
+      host: this.props.server.host,
+      port: this.props.server.port,
+      data,
+      routeData: this.props.routeData
+    })
   }
 }
 
