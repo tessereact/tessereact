@@ -3,7 +3,7 @@
 'use strict'
 const path = require('path')
 const config = require(path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json'))
-const server = require('./_lib/server')
+const server = require('../server')
 
 process.on(
   'unhandledRejection', e => console.log(e)
