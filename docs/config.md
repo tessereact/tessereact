@@ -6,8 +6,12 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 
 `port` — a port of your Tessereact server, 5001 by default
 
-`snapshots_path` — a path to directory where Tessereact is going to store snapshots
+`snapshotsPath` — a path to directory where Tessereact is going to store snapshots
 
-`entry_url` — a url to Tessereact Webpack entry
+`entryURL` — an URL to Tessereact Webpack entry
 
-`template_path` — a path to Tessereact template
+`templatePath` — a path to Tessereact template
+
+`cacheCSS` — should server cache CSS diffs
+
+`screenshotSizes` — a list of sizes for screenshot diff

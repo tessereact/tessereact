@@ -41,11 +41,11 @@ const defaultScreenshotSizes = [
  */
 module.exports = function server (cwd, config, callback) {
   const screenshotsDir = path.resolve(cwd, 'tmp')
-  const snapshotsDir = path.resolve(cwd, config.snapshots_path)
+  const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
 
-  const shouldCacheCSS = config.cache_css_policy === 'cache'
+  const shouldCacheCSS = config.cacheCSS
 
-  const screenshotSizes = config.screenshot_sizes || defaultScreenshotSizes
+  const screenshotSizes = config.screenshotSizes || defaultScreenshotSizes
 
   const app = express()
   app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
@@ -59,11 +59,11 @@ module.exports = function server (cwd, config, callback) {
       const wsURL = `ws://localhost:${wsPort}`
 
       const renderIndex = (req, res) => {
-        const templatePath = config.template_path
-          ? path.resolve(cwd, config.template_path)
+        const templatePath = config.templatePath
+          ? path.resolve(cwd, config.templatePath)
           : path.resolve(__dirname, './index.ejs')
         const locals = {
-          entryPath: process.env.CI ? config.built_entry_path : config.entry_url,
+          entryPath: process.env.CI ? config.builtEntryPath : config.entryURL,
           wsURL,
           tessereactServerPort: config.port
         }
@@ -82,7 +82,7 @@ module.exports = function server (cwd, config, callback) {
       app.get('/', renderIndex)
 
       if (process.env.CI) {
-        app.use(express.static(path.resolve(cwd, config.build_path)))
+        app.use(express.static(path.resolve(cwd, config.buildPath)))
 
         const wss = new WebSocket.Server({port: wsPort})
 

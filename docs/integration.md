@@ -115,9 +115,9 @@ with following content
 ```
 {
   "port": 5001,
-  "snapshots_path": "snapshots",
-  "entry_url": "http://localhost:5000/assets/js/init.js",
-  "template_path": "tessereact/template.ejs"
+  "snapshotsPath": "snapshots",
+  "entryURL": "http://localhost:5000/assets/js/init.js",
+  "templatePath": "tessereact/template.ejs"
 }
 ```
 
