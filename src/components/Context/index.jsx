@@ -4,7 +4,13 @@ import List from '../List'
 import Sidebar from '../../styled/Sidebar'
 import Arrow from '../../styled/Arrow'
 import ContextNavLink from '../../styled/ContextNavLink'
-import {matchesQuery, SEARCH_LIMIT} from '../_lib/utils'
+import {
+  SEARCH_LIMIT,
+  matchesQuery,
+  isContextSelected,
+  isScenarioSelected,
+  areContextChildrenSelected
+} from '../_lib/utils'
 import routes from '../../routes'
 
 let PropTypes
@@ -18,6 +24,7 @@ try {
  * Component which represents context node of the node tree in sidebar.
  * @extends React.Component
  * @property {ContextObject} props.node
+ * @property {Object} props.selectedRoute - scenario and context name of selected route
  * @property {String} [props.searchQuery]
  */
 class Context extends React.Component {
@@ -49,6 +56,7 @@ class Context extends React.Component {
   }
 
   render () {
+    const {selectedRoute} = this.props
     const {name, children} = this.props.node
     const path = routes.hrefTo('context', {context: name})
 
@@ -59,11 +67,11 @@ class Context extends React.Component {
       : children.filter(scenario => {
         const childPath = routes.hrefTo('scenario', {context: name, scenario: scenario.name})
         return matchesQuery(this.props.searchQuery, scenario.name) ||
-          routes.isPathMatchesRouteOrParents(childPath)
+          isScenarioSelected(selectedRoute, name, scenario.name)
       })
 
-    const hasSelectedChildren = routes.isPathMatchesRouteOrParentsOrChildren(path)
-    const active = routes.isPathMatchesRouteOrParents(path)
+    const hasSelectedChildren = areContextChildrenSelected(selectedRoute, name)
+    const active = isContextSelected(selectedRoute, name)
 
     return (hasSelectedChildren || filteredChildren.length > 0) &&
       <Sidebar.ListItem key={name}>
@@ -79,7 +87,7 @@ class Context extends React.Component {
             {name}
           </span>
         </ContextNavLink>
-        {this._shouldExpand() && <List nodes={filteredChildren} child />}
+        {this._shouldExpand() && <List nodes={filteredChildren} selectedRoute={selectedRoute} child />}
       </Sidebar.ListItem>
   }
 }
@@ -87,7 +95,8 @@ class Context extends React.Component {
 if (PropTypes) {
   Context.propTypes = {
     node: PropTypes.object.isRequired,
-    searchQuery: PropTypes.string
+    searchQuery: PropTypes.string,
+    selectedRoute: PropTypes.object.isRequired
   }
 }
 

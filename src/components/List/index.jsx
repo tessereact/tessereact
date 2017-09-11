@@ -14,6 +14,7 @@ try {
  * Component which represents the nodes tree in sidebar.
  * @extends React.Component
  * @property {Array<ContextObject|ScenarioObject>} props.nodes - tree of contexts and scenarios
+ * @property {Object} props.selectedRoute - scenario and context name of selected route
  * @property {String} [props.searchQuery]
  * @property {Boolean} [props.child] - is the tree a subtree
  */
@@ -23,23 +24,25 @@ class List extends React.Component {
   }
 
   _renderContext (node) {
-    const {searchQuery} = this.props
+    const {searchQuery, selectedRoute} = this.props
 
     return <Context
       key={node.name}
       node={node}
       searchQuery={searchQuery}
+      selectedRoute={selectedRoute}
     />
   }
 
   _renderScenario (node) {
-    const {searchQuery, child} = this.props
+    const {searchQuery, child, selectedRoute} = this.props
 
     return <Scenario
       key={[node.context, node.name].join(' - ')}
       node={node}
       searchQuery={searchQuery}
       child={child}
+      selectedRoute={selectedRoute}
     />
   }
 
@@ -62,6 +65,7 @@ if (PropTypes) {
   List.propTypes = {
     nodes: PropTypes.array.isRequired,
     child: PropTypes.bool,
+    selectedRoute: PropTypes.object.isRequired,
     searchQuery: PropTypes.string
   }
 }
