@@ -2,7 +2,6 @@ import React from 'react'
 import Sidebar from '../../styled/Sidebar'
 import {matchesQuery, isScenarioSelected} from '../_lib/utils'
 import ScenarioNavLink from '../../styled/ScenarioNavLink'
-import routes from '../../routes'
 
 let PropTypes
 try {

@@ -11,7 +11,6 @@ import {
   isScenarioSelected,
   areContextChildrenSelected
 } from '../_lib/utils'
-import routes from '../../routes'
 
 let PropTypes
 try {
@@ -58,14 +57,12 @@ class Context extends React.Component {
   render () {
     const {selectedRoute} = this.props
     const {name, children} = this.props.node
-    const path = routes.hrefTo('context', {context: name})
 
     // If context's name matches filter, render all children.
     // Otherwise, filter them by query or selected
     const filteredChildren = this._matchFilter()
       ? children
       : children.filter(scenario => {
-        const childPath = routes.hrefTo('scenario', {context: name, scenario: scenario.name})
         return matchesQuery(this.props.searchQuery, scenario.name) ||
           isScenarioSelected(selectedRoute, name, scenario.name)
       })

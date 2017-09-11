@@ -98,7 +98,6 @@ if (PropTypes) {
   }
 }
 
-
 /**
  * Run Tessereact UI.
  * @param {Object} [userOptions]
