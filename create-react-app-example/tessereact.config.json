@@ -1,0 +1,9 @@
+{
+  "port": 5001,
+  "snapshots_path": "snapshots",
+  "failed_path": "failed",
+  "entry_url": "http://localhost:5000/static/js/tessereact.js",
+  "template_path": "tessereact/scenarios.ejs",
+  "build_path": "build",
+  "built_entry_path": "static/js/tessereact.js"
+}

@@ -1,6 +1,6 @@
 # Testshot configuration
 
-Testshot config should be named as `testshot.config.json` and located in root directory of your app.
+Tessereact config should be named as `tessereact.config.json` and located in root directory of your app.
 
 ## Configuration options
 

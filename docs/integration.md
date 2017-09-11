@@ -108,7 +108,7 @@ Change config variable like that:
 
 Add Testshot config
 
-`touch testshot.config.json`
+`touch tessereact.config.json`
 
 with following content
 

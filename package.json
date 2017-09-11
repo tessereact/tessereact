@@ -77,7 +77,7 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development node devServer.js",
-    "dev-server": "TESTSHOT_CONFIG='./example/testshot.config.json' node bin/server.js",
+    "dev-server": "TESSEREACT_CONFIG='./example/tessereact.config.json' node bin/server.js",
     "build": "babel src --source-root src --out-dir lib --ignore test.js",
     "lint": "esw src '*.js' --ext '.js,.jsx'  --ignore-pattern 'lib'",
     "lint-watch": "yarn run lint -- --watch",
