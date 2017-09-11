@@ -3,7 +3,7 @@ const express = require('express')
 const WebSocket = require('ws')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const {startChromeDriver} = require('../../../lib/lib/chromeDriver')
+const {startChromeDriver} = require('../chromeDriver')
 const getPort = require('get-port')
 const ejs = require('ejs')
 const {
