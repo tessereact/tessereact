@@ -46,7 +46,7 @@ module.exports = {
     // We ship a few polyfills by default:
     require.resolve('./polyfills'),
     // Finally, this is your app's code:
-    paths.testshot
+    paths.tessereact
     // We include the app code last so that if there is a runtime error during
     // initialization, it doesn't blow up the WebpackDevServer client, and
     // changing JS code would still trigger a refresh.
@@ -59,7 +59,7 @@ module.exports = {
     // This does not produce a real file. It's just the virtual path that is
     // served by WebpackDevServer in development. This is the JS bundle
     // containing code from all our entry points, and the Webpack runtime.
-    filename: 'static/js/testshot.js',
+    filename: 'static/js/tessereact.js',
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath
   },

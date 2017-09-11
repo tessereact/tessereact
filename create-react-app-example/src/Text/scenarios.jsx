@@ -1,5 +1,5 @@
 import React from 'react'
-import {context, scenario} from 'testshot'
+import {context, scenario} from 'tessereact'
 import Text from '.'
 
 context('Text', () => {

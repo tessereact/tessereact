@@ -41,7 +41,7 @@ module.exports = {
     path: path.join(process.cwd(), 'dist'),
     publicPath: '/assets/',
     filename: '[name].js',
-    library: 'testshot',
+    library: 'tessereact',
     libraryTarget: 'umd'
   },
   resolve: {
