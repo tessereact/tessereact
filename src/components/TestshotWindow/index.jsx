@@ -41,6 +41,14 @@ import './diff2html.css'
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
+/**
+ * UI of main Tessereact window.
+ * @extends React.Component
+ * @property {Array<ScenarioObject>} props.data - list of scenarios created by user
+ * @property {String} props.host - host of the Tessereact server
+ * @property {String} props.port - port of the Tessereact server
+ * @property {RouteData} props.routeData
+ */
 class TestshotWindow extends React.Component {
   constructor (props, context) {
     super(props, context)
@@ -50,6 +58,9 @@ class TestshotWindow extends React.Component {
     }
   }
 
+  /**
+   * Load snapshots from the server
+   */
   componentWillMount () {
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
@@ -138,6 +149,11 @@ class TestshotWindow extends React.Component {
     )
   }
 
+  /**
+   * Render UI element, which contains header, scenario and diffs.
+   * Represents selected scenario.
+   * @param {ScenarioObject} scenario
+   */
   _renderScenario (scenario) {
     if (!scenario) return null
     return <TestshotContent.Wrapper>
@@ -160,6 +176,10 @@ class TestshotWindow extends React.Component {
     </TestshotContent.Wrapper>
   }
 
+  /**
+   * Render UI element, which contains header and scenarios of the selected context.
+   * @param {String} contextName
+   */
   _renderContext (contextName) {
     const scenarios = this.state.scenarios
       .filter(s => s.context === contextName)
@@ -180,26 +200,22 @@ class TestshotWindow extends React.Component {
     </TestshotContent.Wrapper>
   }
 
+  /**
+   * Render scenario header inside the selected context.
+   * @param {ScenarioObject} scenario
+   */
   _renderSectionHeader (s) {
     return s.hasDiff
       ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text>
       : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   }
 
-  _renderContent (node) {
-    if (node.isScenario) {
-      return node.element
-    } else {
-      const scenarios = this.state.scenarios.filter(s => (s.context === node.name))
-      return scenarios.map(s => (<ScenarioBlock>
-        {this._renderSectionHeader(s)}
-        <ScenarioBlockContent key={s.name}>
-          {s.element}
-        </ScenarioBlockContent>
-      </ScenarioBlock>))
-    }
-  }
-
+  /**
+   * Mark the selected scenario as accepted.
+   * Request the server to accept the snapshot.
+   * Redirect to the next failing scenario.
+   * @param {ScenarioObject} scenario
+   */
   _acceptSnapshot (scenario) {
     const {host, port} = this.props
     const url = `//${host}:${port}/snapshots`
@@ -211,6 +227,12 @@ class TestshotWindow extends React.Component {
     })
   }
 
+  /**
+   * Request the server to send a screenshot diff of the selected scenario and dimensions.
+   * Cache the screenshot when it arrives.
+   * @param {ScenarioObject} scenario
+   * @param {Number} screenshotSizeIndex
+   */
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshots`
@@ -252,12 +274,20 @@ class TestshotWindow extends React.Component {
       })
   }
 
+  /**
+   * Render diff of a scenario if it exists.
+   * @param {ScenarioObject} scenario
+   */
   _renderDiff (scenario) {
     if (scenario.hasDiff) {
       return scenario.diff
     }
   }
 
+  /**
+   * Render screenshot header and diff of the scenario.
+   * @param {ScenarioObject} scenario
+   */
   _renderScreenshotData (scenario) {
     const {screenshotData} = scenario
 
@@ -294,6 +324,12 @@ class TestshotWindow extends React.Component {
     </div>
   }
 
+  /**
+   * Render the selected screenshot if it is cached.
+   * @param {Array<Object>} screenshotSizes
+   * @param {Array<String>} savedScreenshots
+   * @param {Number} selectedScreenshotSizeIndex
+   */
   _renderScreenshot (screenshotSizes, savedScreenshots, index) {
     if (index == null) {
       return null
@@ -316,7 +352,7 @@ if (PropTypes) {
     data: PropTypes.array.isRequired,
     host: PropTypes.string.isRequired,
     port: PropTypes.string.isRequired,
-    routeData: PropTypes.object
+    routeData: PropTypes.object.isRequired
   }
 }
 

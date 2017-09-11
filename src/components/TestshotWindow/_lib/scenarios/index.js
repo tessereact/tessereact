@@ -1,10 +1,10 @@
 /**
  * Find a scenario by the name of the scenario and the name of its context.
  *
- * @param {Array<Scenario>} scenarios
+ * @param {Array<ScenarioObject>} scenarios
  * @param {String} contextName
  * @param {String} scenarioName
- * @returns {Scenario} wanted scenario
+ * @returns {ScenarioObject} wanted scenario
  */
 export function findScenario (scenarios, contextName, scenarioName) {
   return scenarios.find(s => {
@@ -31,8 +31,8 @@ function findScenarioIndex (scenarios, contextName, scenarioName) {
  * move selected scenario(s) to the start of the array if there are any.
  *
  * @param {RouteData} routeData
- * @param {Array<Scenario>} scenarios
- * @returns {Array<Scenario>} scenario array prepared to be sent to server
+ * @param {Array<ScenarioObject>} scenarios
+ * @returns {Array<ScenarioObject>} scenario array prepared to be sent to server
  */
 export function getScenariosToLoad (routeData, scenarios) {
   const {
@@ -77,9 +77,9 @@ function shiftContext (scenarios, contextName) {
 /**
  * Accept the scenario in the given scenario array and return the array.
  *
- * @param {Array<Scenario>} scenarios
- * @param {Scenario} acceptedScenario
- * @returns {Array<Scenario>} new scenario array
+ * @param {Array<ScenarioObject>} scenarios
+ * @param {ScenarioObject} acceptedScenario
+ * @returns {Array<ScenarioObject>} new scenario array
  */
 export function acceptScenario (scenarios, acceptedScenario) {
   const scenarioIndex = findScenarioIndex(
@@ -103,9 +103,9 @@ export function acceptScenario (scenarios, acceptedScenario) {
  * Replace scenario with the new version sent by the server
  * in the given scenario array and return the array.
  *
- * @param {Array<Scenario>} scenarios
- * @param {Scenario} scenario - scenario sent by the server
- * @returns {Array<Scenario>} new scenario array
+ * @param {Array<ScenarioObject>} scenarios
+ * @param {ScenarioObject} scenario - scenario sent by the server
+ * @returns {Array<ScenarioObject>} new scenario array
  */
 export function resolveScenario (scenarios, scenario) {
   const storedScenarioIndex = findScenarioIndex(
@@ -136,10 +136,10 @@ export function resolveScenario (scenarios, scenario) {
  * merge the result of the function with screenshotData
  * and return the resulting scenario array.
  *
- * @param {Array<Scenario>} scenarios
- * @param {Scenario} scenario
+ * @param {Array<ScenarioObject>} scenarios
+ * @param {ScenarioObject} scenario
  * @param {Function} callback
- * @returns {Array<Scenario>} new scenario array
+ * @returns {Array<ScenarioObject>} new scenario array
  */
 export function changeScenarioScreenshotData (scenarios, scenario, callback) {
   const storedScenarioIndex = findScenarioIndex(
@@ -165,8 +165,8 @@ export function changeScenarioScreenshotData (scenarios, scenario, callback) {
  * Prepare scenario to be sent to server for acceptance:
  * return only those fields of scenario object which are required by the server.
  *
- * @param {Scenario} scenario
- * @returns {Scenario} scenario prepared to be sent to server
+ * @param {ScenarioObject} scenario
+ * @returns {ScenarioObject} scenario prepared to be sent to server
  */
 export function requestScenarioAcceptance (scenario) {
   const payload = {

@@ -11,6 +11,14 @@ try {
   // Ignore optional peer dependency
 }
 
+/**
+ * Component which represents the sidebar element of Tessereact UI.
+ * @extends React.Component
+ * @property {Array<ContextObject|ScenarioObject>} props.nodes - tree of contexts and scenarios
+ * @property {Number} props.scenariosCount - total number of scenarios created by user
+ * @property {Number} props.loadedScenariosCount - number of scenarios sent by the server
+ * @property {Number} props.failedScenariosCount - number of scenarios that have diff
+ */
 class Navigation extends React.Component {
   constructor (props, context) {
     super(props, context)
@@ -66,10 +74,10 @@ class Navigation extends React.Component {
 
 if (PropTypes) {
   Navigation.propTypes = {
-    loadedScenariosCount: PropTypes.number,
-    failedScenariosCount: PropTypes.number,
-    scenariosCount: PropTypes.number,
-    nodes: PropTypes.array
+    loadedScenariosCount: PropTypes.number.isRequired,
+    failedScenariosCount: PropTypes.number.isRequired,
+    scenariosCount: PropTypes.number.isRequired,
+    nodes: PropTypes.array.isRequired
   }
 }
 

@@ -11,6 +11,13 @@ try {
   // Ignore optional peer dependency
 }
 
+/**
+ * Component which represents scenario node of the node tree in sidebar.
+ * @extends React.Component
+ * @property {ScenarioObject} props.node
+ * @property {String} [props.searchQuery]
+ * @property {Boolean} [props.child] - is the scenarios is inside a context
+ */
 class Scenario extends React.Component {
   render () {
     const {
@@ -44,7 +51,7 @@ class Scenario extends React.Component {
 
 if (PropTypes) {
   Scenario.propTypes = {
-    node: PropTypes.object,
+    node: PropTypes.object.isRequired,
     searchQuery: PropTypes.string,
     child: PropTypes.bool
   }

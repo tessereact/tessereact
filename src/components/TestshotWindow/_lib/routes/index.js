@@ -6,7 +6,7 @@ import { findScenario } from '../scenarios'
  * In that case, redirect to the correct route.
  *
  * @param {RouteData} routeData
- * @param {Array<Scenario>} scenarios
+ * @param {Array<ScenarioObject>} scenarios
  */
 export function checkIfRouteExists (routeData, scenarios) {
   const {
@@ -34,7 +34,7 @@ export function checkIfRouteExists (routeData, scenarios) {
  * Check if the current route is home (/) and redirect to the first failing scenario.
  *
  * @param {RouteData} routeData
- * @param {Array<Scenario>} scenarios
+ * @param {Array<ScenarioObject>} scenarios
  */
 export function checkForHomeRoute (routeData, scenarios) {
   const routeName = routeData.route.name
@@ -55,7 +55,7 @@ function redirectToFirstScenario (scenarios) {
  * In the case when none of the scenarios is failing, redirect to the first scenario.
  *
  * @param {RouteData} routeData
- * @param {Array<Scenario>} scenarios
+ * @param {Array<ScenarioObject>} scenarios
  */
 export function redirectToFirstFailingScenario (scenarios) {
   const scenario = scenarios.find(s => s.hasDiff)

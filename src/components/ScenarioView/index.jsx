@@ -8,6 +8,12 @@ try {
   // Ignore optional peer dependency
 }
 
+/**
+ * Component which renders a single scenario in isolation mode.
+ * @extends React.Component
+ * @property {Array<ScenarioObject>} props.data - list of scenarios created by user
+ * @property {RouteData} props.routeData
+ */
 class ScenarioView extends React.Component {
   getInitialState () {
     return {
@@ -38,7 +44,7 @@ class ScenarioView extends React.Component {
 if (PropTypes) {
   ScenarioView.propTypes = {
     data: PropTypes.array.isRequired,
-    routeData: PropTypes.object
+    routeData: PropTypes.object.isRequired
   }
 }
 

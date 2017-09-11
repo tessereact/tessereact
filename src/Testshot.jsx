@@ -14,6 +14,15 @@ const names = []
 const data = []
 var currentContext = null
 
+/**
+ * Create a scenario.
+ * @param {String} name - name of the scenario
+ * @param {React.Component} type - component to create a scenario from
+ * @param {Object} [options]
+ * @param {Boolean} [options.css] - enable CSS diff
+ * @param {Boolean} [options.screenshot] - enable CSS and screenshot diff.
+ *   When true, ignore the value of `options.css`
+ */
 export function scenario (name, type, {css, screenshot} = {}) {
   const contextCopy = currentContext
   if (names.some(([existingName, existingContext]) =>
@@ -37,12 +46,25 @@ export function scenario (name, type, {css, screenshot} = {}) {
   })
 }
 
+/**
+ * Recieves the name of context and a function.
+ * Any scenarios created inside the function would have that context.
+ * @param {String} contextName
+ * @param {Function} func
+ */
 export function context (contextName, func) {
   currentContext = contextName
   func()
   currentContext = null
 }
 
+/**
+ * UI of Tessereact.
+ * @extends React.Component
+ * @property {String} props.host - host of the Tessereact server
+ * @property {String} props.port - port of the Tessereact server
+ * @property {RouteData} props.routeData
+ */
 class Testshot extends React.Component {
   render () {
     if (!data.length) {
@@ -64,12 +86,11 @@ class Testshot extends React.Component {
 
 if (PropTypes) {
   Testshot.propTypes = {
-    data: PropTypes.array,
     server: PropTypes.shape({
-      host: PropTypes.string,
-      port: PropTypes.string
+      host: PropTypes.string.isRequired,
+      port: PropTypes.string.isRequired
     }),
-    routeData: PropTypes.object
+    routeData: PropTypes.object.isRequired
   }
 }
 

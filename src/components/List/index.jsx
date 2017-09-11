@@ -10,19 +10,24 @@ try {
   // Ignore optional peer dependency
 }
 
+/**
+ * Component which represents the nodes tree in sidebar.
+ * @extends React.Component
+ * @property {Array<ContextObject|ScenarioObject>} props.nodes - tree of contexts and scenarios
+ * @property {String} [props.searchQuery]
+ * @property {Boolean} [props.child] - is the tree a subtree
+ */
 class List extends React.Component {
   _renderItem (node) {
     return node.children ? this._renderContext(node) : this._renderScenario(node)
   }
 
   _renderContext (node) {
-    const {selectedNode, searchQuery, selectNode} = this.props
+    const {searchQuery} = this.props
 
     return <Context
       key={node.name}
       node={node}
-      selectedNode={selectedNode}
-      selectNode={selectNode}
       searchQuery={searchQuery}
     />
   }
@@ -55,10 +60,8 @@ class List extends React.Component {
 
 if (PropTypes) {
   List.propTypes = {
-    nodes: PropTypes.array,
+    nodes: PropTypes.array.isRequired,
     child: PropTypes.bool,
-    selectedNode: PropTypes.object,
-    selectNode: PropTypes.func,
     searchQuery: PropTypes.string
   }
 }

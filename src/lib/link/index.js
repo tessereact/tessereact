@@ -8,6 +8,14 @@ try {
   // Ignore optional peer dependency
 }
 
+/**
+ * Component which renders a single-page application style link to a route.
+ * @extends React.Component
+ * @property {String} props.name - name of the route
+ * @property {Object} props.params - search params of the route
+ * @property {Node} props.children - children nodes of the element
+ * @property {RouteData} [props.className] - CSS class name of the resulting element
+ */
 class Link extends Component {
   render () {
     const {className, name, params, children} = this.props

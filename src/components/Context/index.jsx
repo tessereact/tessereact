@@ -14,6 +14,12 @@ try {
   // Ignore optional peer dependency
 }
 
+/**
+ * Component which represents context node of the node tree in sidebar.
+ * @extends React.Component
+ * @property {ContextObject} props.node
+ * @property {String} [props.searchQuery]
+ */
 class Context extends React.Component {
   _hasFailingChildren () {
     return this.props.node.children.find(({hasDiff}) => hasDiff)
@@ -80,11 +86,8 @@ class Context extends React.Component {
 
 if (PropTypes) {
   Context.propTypes = {
-    node: PropTypes.object,
-    selectedNode: PropTypes.object,
-    selectNode: PropTypes.func,
-    searchQuery: PropTypes.string,
-    location: PropTypes.object
+    node: PropTypes.object.isRequired,
+    searchQuery: PropTypes.string
   }
 }
 
