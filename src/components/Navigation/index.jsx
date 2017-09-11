@@ -55,7 +55,7 @@ class Navigation extends React.Component {
 
     return (
       <Sidebar>
-        <Link name='home' style={{textDecoration: 'none'}}><Sidebar.Header>Testshot</Sidebar.Header></Link>
+        <Link name='home' style={{textDecoration: 'none'}}><Sidebar.Header>Tessereact</Sidebar.Header></Link>
         <Sidebar.SearchBox>
           <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter.bind(this)} />
         </Sidebar.SearchBox>

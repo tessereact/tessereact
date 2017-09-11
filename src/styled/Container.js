@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const TestshotContainer = styled.div`
+const Container = styled.div`
   display: flex;
   min-height: 100vh;
   position: fixed;
@@ -10,5 +10,5 @@ const TestshotContainer = styled.div`
   background: #32363d;
 `
 
-export default TestshotContainer
+export default Container
 

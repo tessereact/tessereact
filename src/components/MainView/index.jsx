@@ -27,9 +27,9 @@ try {
 }
 
 // styled components
-import TestshotContainer from '../../styled/TestshotContainer'
+import Container from '../../styled/Container'
 import Header from '../../styled/Header'
-import TestshotContent from '../../styled/TestshotContent'
+import Content from '../../styled/Content'
 import ComponentPreview from '../../styled/ComponentPreview'
 import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
@@ -49,7 +49,7 @@ const SCENARIO_CHUNK_SIZE = Infinity
  * @property {String} props.port - port of the Tessereact server
  * @property {RouteData} props.routeData
  */
-class TestshotWindow extends React.Component {
+class MainView extends React.Component {
   constructor (props, context) {
     super(props, context)
 
@@ -101,12 +101,12 @@ class TestshotWindow extends React.Component {
         checkIfRouteExists(routeData, scenarios)
 
         // Report to CI
-        if (window.__testshotWSURL) {
+        if (window.__tessereactWSURL) {
           const failingScenarios = scenarios
             .filter(({hasDiff}) => hasDiff)
             .map(({context, name}) => ({context, name}))
 
-          const ws = new window.WebSocket(window.__testshotWSURL)
+          const ws = new window.WebSocket(window.__tessereactWSURL)
           ws.addEventListener('open', () => {
             if (failingScenarios.length > 0) {
               ws.send(JSON.stringify(failingScenarios))
@@ -134,18 +134,18 @@ class TestshotWindow extends React.Component {
     const { scenarios } = this.state
 
     return (
-      <TestshotContainer>
+      <Container>
         <Navigation
           loadedScenariosCount={scenarios.filter(c => c.status === 'resolved').length}
           failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
           scenariosCount={scenarios.length}
           nodes={generateTreeNodes(scenarios.filter(c => c.status === 'resolved'))}
         />
-        <TestshotContent>
+        <Content>
           {routeName === 'context' && this._renderContext(context)}
           {routeName === 'scenario' && this._renderScenario(findScenario(scenarios, context, scenario))}
-        </TestshotContent>
-      </TestshotContainer>
+        </Content>
+      </Container>
     )
   }
 
@@ -156,7 +156,7 @@ class TestshotWindow extends React.Component {
    */
   _renderScenario (scenario) {
     if (!scenario) return null
-    return <TestshotContent.Wrapper>
+    return <Content.Wrapper>
       <Header>
         <span>{scenario.name}</span>
         <div>
@@ -173,7 +173,7 @@ class TestshotWindow extends React.Component {
         {this._renderScreenshotData(scenario)}
         <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
       </div>
-    </TestshotContent.Wrapper>
+    </Content.Wrapper>
   }
 
   /**
@@ -185,7 +185,7 @@ class TestshotWindow extends React.Component {
       .filter(s => s.context === contextName)
       .sort((a, b) => a.name.localeCompare(b.name))
 
-    return <TestshotContent.Wrapper>
+    return <Content.Wrapper>
       <Header>
         <span>{contextName}</span>
       </Header>
@@ -197,7 +197,7 @@ class TestshotWindow extends React.Component {
           </ScenarioBlockContent>
         </ScenarioBlock>))}
       </ComponentPreview>
-    </TestshotContent.Wrapper>
+    </Content.Wrapper>
   }
 
   /**
@@ -312,7 +312,7 @@ class TestshotWindow extends React.Component {
             <SmallButton
               key={index}
               onClick={() => this._requestScreenshot(scenario, index)}
-              style={index === selectedScreenshotSizeIndex ? {backgroundColor: '#1abc9c'} : {}}
+              selected={index === selectedScreenshotSizeIndex}
             >
               {alias || `${width} × ${height}`}
             </SmallButton>
@@ -348,7 +348,7 @@ class TestshotWindow extends React.Component {
 }
 
 if (PropTypes) {
-  TestshotWindow.propTypes = {
+  MainView.propTypes = {
     data: PropTypes.array.isRequired,
     host: PropTypes.string.isRequired,
     port: PropTypes.string.isRequired,
@@ -356,4 +356,4 @@ if (PropTypes) {
   }
 }
 
-export default TestshotWindow
+export default MainView

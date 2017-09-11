@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const TestshotContent = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -11,11 +11,11 @@ const TestshotContent = styled.div`
   overflow-y: auto;
 `
 
-TestshotContent.Wrapper = styled.div`
+Content.Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
 `
 
-export default TestshotContent
+export default Content
