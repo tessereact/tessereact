@@ -3,8 +3,8 @@ import { map, sortBy, groupBy, pickBy, pick, some } from 'lodash'
 /**
  * Convert scenario array to the tree consumed by Navigation or List element.
  *
- * @param {Array<Scenario>} scenarios
- * @returns {Array<Context|Scenario>} tree of context and scenarios
+ * @param {Array<ScenarioObject>} scenarios
+ * @returns {Array<ContextObject|ScenarioObject>} tree of contexts and scenarios
  */
 export default function generateTreeNodes (scenarios) {
   const groupedByContext = groupBy(scenarios, 'context')

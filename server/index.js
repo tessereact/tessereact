@@ -3,14 +3,14 @@ const express = require('express')
 const WebSocket = require('ws')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const {startChromeDriver} = require('../../../lib/lib/chromeDriver')
+const {startChromeDriver} = require('./_lib/chromeDriver')
 const getPort = require('get-port')
 const ejs = require('ejs')
 const {
   readSnapshot,
   writeSnapshot,
   buildPage
-} = require('../snapshots')
+} = require('./_lib/snapshots')
 const {
   connectToBrowser,
   ensureScreenshotDir,
@@ -18,13 +18,13 @@ const {
   disconnectFromBrowser,
   deleteScreenshot,
   diffScreenshots
-} = require('../screenshots')
-const collectStylesFromSnapshot = require('../collectStylesFromSnapshot')
-const formatHTML = require('../formatHTML')
+} = require('./_lib/screenshots')
+const collectStylesFromSnapshot = require('./_lib/collectStylesFromSnapshot')
+const formatHTML = require('./_lib/formatHTML')
 const {
   diffSnapshots,
   diffToHTML
-} = require('../diff')
+} = require('./_lib/diff')
 const hash = require('object-hash')
 
 const defaultScreenshotSizes = [

@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom'
 import TestshotComponent from '../Testshot'
 import routes from '../routes'
 
+/**
+ * Run Tessereact UI.
+ * @param {Object} [userOptions]
+ * @param {String} [userOptions.className] - CSS class of Tessereact UI wrapper elemtn
+ */
 export default function init (userOptions = {}) {
   const options = Object.assign({
     server: {

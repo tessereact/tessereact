@@ -1,26 +1,36 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import List from '../List'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
 import Link from '../../lib/link'
 
-const Navigation = React.createClass({
-  propTypes: {
-    loadedScenariosCount: PropTypes.number,
-    failedScenariosCount: PropTypes.number,
-    scenariosCount: PropTypes.number,
-    nodes: PropTypes.array
-  },
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
-  getInitialState () {
-    return {
+/**
+ * Component which represents the sidebar element of Tessereact UI.
+ * @extends React.Component
+ * @property {Array<ContextObject|ScenarioObject>} props.nodes - tree of contexts and scenarios
+ * @property {Number} props.scenariosCount - total number of scenarios created by user
+ * @property {Number} props.loadedScenariosCount - number of scenarios sent by the server
+ * @property {Number} props.failedScenariosCount - number of scenarios that have diff
+ */
+class Navigation extends React.Component {
+  constructor (props, context) {
+    super(props, context)
+
+    this.state = {
       searchQuery: ''
     }
-  },
+  }
 
   _handleFilter (event) {
     this.setState({searchQuery: event.target.value})
-  },
+  }
 
   _renderLoading () {
     const {loadedScenariosCount, scenariosCount} = this.props
@@ -28,7 +38,7 @@ const Navigation = React.createClass({
     return loadedScenariosCount !== scenariosCount && <Sidebar.Progress>
       LOADING ({loadedScenariosCount}/{scenariosCount})
     </Sidebar.Progress>
-  },
+  }
 
   _renderFailed () {
     const {failedScenariosCount, loadedScenariosCount, scenariosCount} = this.props
@@ -37,7 +47,7 @@ const Navigation = React.createClass({
     return showFailed && <Sidebar.Progress>
       FAILED ({failedScenariosCount}/{scenariosCount})
     </Sidebar.Progress>
-  },
+  }
 
   render () {
     const {searchQuery} = this.state
@@ -47,7 +57,7 @@ const Navigation = React.createClass({
       <Sidebar>
         <Link name='home' style={{textDecoration: 'none'}}><Sidebar.Header>Testshot</Sidebar.Header></Link>
         <Sidebar.SearchBox>
-          <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter} />
+          <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter.bind(this)} />
         </Sidebar.SearchBox>
         <Sidebar.List>
           {this._renderLoading()}
@@ -60,6 +70,15 @@ const Navigation = React.createClass({
       </Sidebar>
     )
   }
-})
+}
+
+if (PropTypes) {
+  Navigation.propTypes = {
+    loadedScenariosCount: PropTypes.number.isRequired,
+    failedScenariosCount: PropTypes.number.isRequired,
+    scenariosCount: PropTypes.number.isRequired,
+    nodes: PropTypes.array.isRequired
+  }
+}
 
 export default Navigation

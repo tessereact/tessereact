@@ -1,16 +1,24 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import Sidebar from '../../styled/Sidebar'
 import {matchesQuery} from '../_lib/utils'
 import ScenarioNavLink from '../../styled/ScenarioNavLink'
 import routes from '../../routes'
 
-const Scenario = React.createClass({
-  propTypes: {
-    node: PropTypes.object,
-    searchQuery: PropTypes.string,
-    child: PropTypes.bool
-  },
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
+/**
+ * Component which represents scenario node of the node tree in sidebar.
+ * @extends React.Component
+ * @property {ScenarioObject} props.node
+ * @property {String} [props.searchQuery]
+ * @property {Boolean} [props.child] - is the scenarios is inside a context
+ */
+class Scenario extends React.Component {
   render () {
     const {
       searchQuery,
@@ -39,7 +47,14 @@ const Scenario = React.createClass({
         </ScenarioNavLink>
       </Sidebar.ListItem>
   }
+}
 
-})
+if (PropTypes) {
+  Scenario.propTypes = {
+    node: PropTypes.object.isRequired,
+    searchQuery: PropTypes.string,
+    child: PropTypes.bool
+  }
+}
 
 export default Scenario

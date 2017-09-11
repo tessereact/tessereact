@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
 import postJSON from './_lib/postJSON'
@@ -14,10 +14,17 @@ import {
   acceptScenario,
   resolveScenario,
   changeScenarioScreenshotData,
-  requestScenarioAcceptance,
+  requestScenarioAcceptance
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 // styled components
 import TestshotContainer from '../../styled/TestshotContainer'
@@ -34,20 +41,26 @@ import './diff2html.css'
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
-const TestshotWindow = React.createClass({
-  propTypes: {
-    data: PropTypes.array.isRequired,
-    host: PropTypes.string.isRequired,
-    port: PropTypes.string.isRequired,
-    routeData: PropTypes.object
-  },
+/**
+ * UI of main Tessereact window.
+ * @extends React.Component
+ * @property {Array<ScenarioObject>} props.data - list of scenarios created by user
+ * @property {String} props.host - host of the Tessereact server
+ * @property {String} props.port - port of the Tessereact server
+ * @property {RouteData} props.routeData
+ */
+class TestshotWindow extends React.Component {
+  constructor (props, context) {
+    super(props, context)
 
-  getInitialState () {
-    return {
-      scenarios: this.props.data
+    this.state = {
+      scenarios: props.data
     }
-  },
+  }
 
+  /**
+   * Load snapshots from the server
+   */
   componentWillMount () {
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
@@ -106,11 +119,11 @@ const TestshotWindow = React.createClass({
       .catch(e => {
         console.log('Unexpected error!', e)
       })
-  },
+  }
 
   componentWillReceiveProps (nextProps) {
     checkForHomeRoute(nextProps.routeData, this.state.scenarios)
-  },
+  }
 
   render () {
     const {
@@ -134,8 +147,13 @@ const TestshotWindow = React.createClass({
         </TestshotContent>
       </TestshotContainer>
     )
-  },
+  }
 
+  /**
+   * Render UI element, which contains header, scenario and diffs.
+   * Represents selected scenario.
+   * @param {ScenarioObject} scenario
+   */
   _renderScenario (scenario) {
     if (!scenario) return null
     return <TestshotContent.Wrapper>
@@ -156,8 +174,12 @@ const TestshotWindow = React.createClass({
         <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
       </div>
     </TestshotContent.Wrapper>
-  },
+  }
 
+  /**
+   * Render UI element, which contains header and scenarios of the selected context.
+   * @param {String} contextName
+   */
   _renderContext (contextName) {
     const scenarios = this.state.scenarios
       .filter(s => s.context === contextName)
@@ -176,28 +198,24 @@ const TestshotWindow = React.createClass({
         </ScenarioBlock>))}
       </ComponentPreview>
     </TestshotContent.Wrapper>
-  },
+  }
 
+  /**
+   * Render scenario header inside the selected context.
+   * @param {ScenarioObject} scenario
+   */
   _renderSectionHeader (s) {
     return s.hasDiff
       ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text>
       : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
-  },
+  }
 
-  _renderContent (node) {
-    if (node.isScenario) {
-      return node.element
-    } else {
-      const scenarios = this.state.scenarios.filter(s => (s.context === node.name))
-      return scenarios.map(s => (<ScenarioBlock>
-        {this._renderSectionHeader(s)}
-        <ScenarioBlockContent key={s.name}>
-          {s.element}
-        </ScenarioBlockContent>
-      </ScenarioBlock>))
-    }
-  },
-
+  /**
+   * Mark the selected scenario as accepted.
+   * Request the server to accept the snapshot.
+   * Redirect to the next failing scenario.
+   * @param {ScenarioObject} scenario
+   */
   _acceptSnapshot (scenario) {
     const {host, port} = this.props
     const url = `//${host}:${port}/snapshots`
@@ -207,8 +225,14 @@ const TestshotWindow = React.createClass({
       this.setState({scenarios})
       redirectToFirstFailingScenario(scenarios)
     })
-  },
+  }
 
+  /**
+   * Request the server to send a screenshot diff of the selected scenario and dimensions.
+   * Cache the screenshot when it arrives.
+   * @param {ScenarioObject} scenario
+   * @param {Number} screenshotSizeIndex
+   */
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshots`
@@ -224,8 +248,8 @@ const TestshotWindow = React.createClass({
     })
 
     if (
-      scenario.screenshotData.savedScreenshots
-        && scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
+      scenario.screenshotData.savedScreenshots &&
+        scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
     ) {
       // Screenshot is already cached
       return null
@@ -236,7 +260,7 @@ const TestshotWindow = React.createClass({
         return response.blob()
       })
       .then((blob) => {
-        const url = URL.createObjectURL(blob)
+        const url = URL.createObjectURL(blob) // eslint-disable-line no-undef
         const scenarios = changeScenarioScreenshotData(
           this.state.scenarios,
           scenario,
@@ -248,14 +272,22 @@ const TestshotWindow = React.createClass({
         )
         this.setState({scenarios})
       })
-  },
+  }
 
+  /**
+   * Render diff of a scenario if it exists.
+   * @param {ScenarioObject} scenario
+   */
   _renderDiff (scenario) {
     if (scenario.hasDiff) {
       return scenario.diff
     }
-  },
+  }
 
+  /**
+   * Render screenshot header and diff of the scenario.
+   * @param {ScenarioObject} scenario
+   */
   _renderScreenshotData (scenario) {
     const {screenshotData} = scenario
 
@@ -270,7 +302,7 @@ const TestshotWindow = React.createClass({
         <span className='d2h-file-name-wrapper'>
           <span className='d2h-icon-wrapper'>
             <svg className='d2h-icon' height='16' version='1.1' viewBox='0 0 12 16' width='12'>
-              <path d='M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z'></path>
+              <path d='M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z' />
             </svg>
           </span>
           <span className='d2h-file-name'>
@@ -290,8 +322,14 @@ const TestshotWindow = React.createClass({
 
       {this._renderScreenshot(screenshotSizes, savedScreenshots, selectedScreenshotSizeIndex)}
     </div>
-  },
+  }
 
+  /**
+   * Render the selected screenshot if it is cached.
+   * @param {Array<Object>} screenshotSizes
+   * @param {Array<String>} savedScreenshots
+   * @param {Number} selectedScreenshotSizeIndex
+   */
   _renderScreenshot (screenshotSizes, savedScreenshots, index) {
     if (index == null) {
       return null
@@ -307,6 +345,15 @@ const TestshotWindow = React.createClass({
       <img style={{height, width}} src={savedScreenshots[index]} />
     </div>
   }
-})
+}
+
+if (PropTypes) {
+  TestshotWindow.propTypes = {
+    data: PropTypes.array.isRequired,
+    host: PropTypes.string.isRequired,
+    port: PropTypes.string.isRequired,
+    routeData: PropTypes.object.isRequired
+  }
+}
 
 export default TestshotWindow
