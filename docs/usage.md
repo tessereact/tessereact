@@ -1,6 +1,6 @@
 # Usage
 
-Let's write a Testshot scenario for this dummy `Text` component.
+Let's write a Tessereact scenario for this dummy `Text` component.
 
 ``` js
 // src/Text/index.jsx
@@ -24,7 +24,7 @@ export default class Text extends Component {
 // src/Text/scenarios.jsx
 
 import React from 'react'
-import {scenario} from '@toptal/testshot'
+import {scenario} from 'tessereact'
 import Text from '.'
 
 scenario('Default', () => (
@@ -32,7 +32,7 @@ scenario('Default', () => (
 ))
 ```
 
-When you open Testshot you are going to see the following screen.
+When you open Tessereact you are going to see the following screen.
 
 ![screen](images/failing_scenario.png)
 
@@ -55,7 +55,7 @@ group them into a context to not bloat the navigation bar.
 // src/Text/scenarios.jsx
 
 import React from 'react'
-import {context, scenario} from '@toptal/testshot'
+import {context, scenario} from 'tessereact'
 import Text from '.'
 
 context('Text', () => {
