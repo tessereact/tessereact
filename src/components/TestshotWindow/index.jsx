@@ -14,7 +14,7 @@ import {
   acceptScenario,
   resolveScenario,
   changeScenarioScreenshotData,
-  requestScenarioAcceptance,
+  requestScenarioAcceptance
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
@@ -248,8 +248,8 @@ class TestshotWindow extends React.Component {
     })
 
     if (
-      scenario.screenshotData.savedScreenshots
-        && scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
+      scenario.screenshotData.savedScreenshots &&
+        scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
     ) {
       // Screenshot is already cached
       return null
@@ -260,7 +260,7 @@ class TestshotWindow extends React.Component {
         return response.blob()
       })
       .then((blob) => {
-        const url = URL.createObjectURL(blob)
+        const url = URL.createObjectURL(blob) // eslint-disable-line no-undef
         const scenarios = changeScenarioScreenshotData(
           this.state.scenarios,
           scenario,
@@ -302,7 +302,7 @@ class TestshotWindow extends React.Component {
         <span className='d2h-file-name-wrapper'>
           <span className='d2h-icon-wrapper'>
             <svg className='d2h-icon' height='16' version='1.1' viewBox='0 0 12 16' width='12'>
-              <path d='M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z'></path>
+              <path d='M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z' />
             </svg>
           </span>
           <span className='d2h-file-name'>
