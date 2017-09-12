@@ -1,2 +1,2 @@
-const Testshot = require('./lib')
-Testshot.init({className: 'testshot'})
+const Tessereact = require('./lib')
+Tessereact.init({className: 'tessereact'})

@@ -5,7 +5,7 @@ const fsp = require('fs-promise')
 const crypto = require('crypto')
 const exec = require('child_process').exec
 
-const port = 1337
+const port = 1339
 
 const args = [
   '--url-base=wd/hub',

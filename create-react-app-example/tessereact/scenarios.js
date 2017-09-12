@@ -1,8 +1,8 @@
 require('../src/index.css')
 
-const Testshot = require('testshot')
+const Tessereact = require('tessereact')
 
 const scenariosContext = require.context('../src', true, /\/scenarios\.jsx?$/)
 scenariosContext.keys().forEach(scenariosContext)
 
-Testshot.init({className: 'testshot'})
+Tessereact.init({className: 'tessereact'})

@@ -77,5 +77,5 @@ module.exports = {
   nodePaths: nodePaths,
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
-  testshot: resolveApp('testshot/scenarios.js')
+  tessereact: resolveApp('tessereact/scenarios.js')
 };

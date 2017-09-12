@@ -1,2 +1,0 @@
-webpack: TESTSHOT=true PORT=5000 yarn start
-testshot: node node_modules/.bin/testshot-server

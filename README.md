@@ -1,6 +1,6 @@
 # Tessereact
 
-Presentational snapshot testing for React components. 
+Presentational snapshot testing for React components.
 
 Tessereact is ![Testshot](https://github.com/toptal/testshot) fork which supports CSS and screen snapshots based on resolutions you choose.
 
@@ -26,13 +26,13 @@ Then open [`localhost:5000`](http://localhost:5000) in a browser.
 
 ```
 cd create-react-app-example
-yarn start-testshot
+yarn start-tessereact
 ```
 
 ## Installation
 
 ```
-yarn add @toptal/testshot
+yarn add -D https://github.com/tessereact/tessereact.git
 ```
 
 [Configuring Webpack](docs/integration.md)
@@ -43,7 +43,7 @@ For the complete usage guide take a look [here](docs/usage.md).
 
 ``` js
 import React from 'react'
-import {context, scenario} from '@toptal/testshot'
+import {context, scenario} from 'tessereact'
 import Text from '.'
 
 context('Text', () => {

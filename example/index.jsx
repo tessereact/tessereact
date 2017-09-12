@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import {init, scenario, context} from 'src/index'
 
-console.log('--- WELCOME TO TESTSHOT DEVELOPMENT ---')
+console.log('--- WELCOME TO TESSEREACT DEVELOPMENT ---')
 
 // TODO: Fix linter issues and get rid of comments
 class Service extends React.Component {

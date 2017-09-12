@@ -2,7 +2,7 @@
 
 'use strict'
 const path = require('path')
-const config = require(path.join(process.cwd(), process.env.TESTSHOT_CONFIG || 'testshot.config.json'))
+const config = require(path.join(process.cwd(), process.env.TESSEREACT_CONFIG || 'tessereact.config.json'))
 const server = require('../server')
 
 process.on(

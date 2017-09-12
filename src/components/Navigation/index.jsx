@@ -18,6 +18,7 @@ try {
  * @property {Number} props.scenariosCount - total number of scenarios created by user
  * @property {Number} props.loadedScenariosCount - number of scenarios sent by the server
  * @property {Number} props.failedScenariosCount - number of scenarios that have diff
+ * @property {Object} props.selectedRoute - scenario and context name of selected route
  */
 class Navigation extends React.Component {
   constructor (props, context) {
@@ -51,11 +52,11 @@ class Navigation extends React.Component {
 
   render () {
     const {searchQuery} = this.state
-    const {nodes} = this.props
+    const {nodes, selectedRoute} = this.props
 
     return (
       <Sidebar>
-        <Link name='home' style={{textDecoration: 'none'}}><Sidebar.Header>Testshot</Sidebar.Header></Link>
+        <Link name='home' style={{textDecoration: 'none'}}><Sidebar.Header>Tessereact</Sidebar.Header></Link>
         <Sidebar.SearchBox>
           <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter.bind(this)} />
         </Sidebar.SearchBox>
@@ -65,6 +66,7 @@ class Navigation extends React.Component {
           <List
             nodes={nodes}
             searchQuery={searchQuery}
+            selectedRoute={selectedRoute}
           />
         </Sidebar.List>
       </Sidebar>
@@ -77,7 +79,8 @@ if (PropTypes) {
     loadedScenariosCount: PropTypes.number.isRequired,
     failedScenariosCount: PropTypes.number.isRequired,
     scenariosCount: PropTypes.number.isRequired,
-    nodes: PropTypes.array.isRequired
+    nodes: PropTypes.array.isRequired,
+    selectedRoute: PropTypes.object.isRequired
   }
 }
 

@@ -46,13 +46,13 @@
     "webpack-manifest-plugin": "1.1.0",
     "whatwg-fetch": "2.0.2",
     "foreman": "^2.0.0",
-    "testshot": "toptal/testshot"
+    "tessereact": "https://github.com/tessereact/tessereact.git"
   },
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test_runner.js --env=jsdom",
-    "start-testshot": "nf start --procfile ./Procfile.testshot"
+    "start-tessereact": "nf start --procfile ./Procfile.tessereact"
   },
   "jest": {
     "collectCoverageFrom": [
