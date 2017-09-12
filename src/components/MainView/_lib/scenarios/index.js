@@ -94,7 +94,8 @@ export function acceptScenario (scenarios, acceptedScenario) {
     [scenarioIndex]: Object.assign({}, acceptedScenario, {
       previousSnapshot: scenario.snapshot,
       snapshot: scenario.snapshot,
-      hasDiff: false
+      hasDiff: false,
+      screenshotData: null
     })
   })
 }
