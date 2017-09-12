@@ -68,7 +68,7 @@ const Tessereact = require('tessereact')
 const scenariosContext = require.context('../src', true, /\/scenarios\.jsx?$/)
 scenariosContext.keys().forEach(scenariosContext)
 
-Tessereact.init({className: 'tessereat'})
+Tessereact.init({className: 'tessereact'})
 ```
 
 
@@ -94,7 +94,7 @@ Let's copy it from the development one:
 Open `config/webpack.config.tessereact.js`
 
 - Change `output.filename` to `static/js/tessereact.js`.
-- Replace `paths.appIndexJs` with `paths.tessereat`.
+- Replace `paths.appIndexJs` with `paths.tessereact`.
 
 ### 4. Adjust starting script of your app
 
