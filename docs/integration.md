@@ -21,7 +21,7 @@ Luckily `create-react-app` provides command for that called `eject`.
 
 ## Actual Integration
 
-You can have a look on this [commit](https://github.com/toptal/testshot/commit/118575ba8a5e95530b2fe5f169fc69131e22addd) or continue reading this document.
+You can have a look on this [commit](https://github.com/tessereact/tessereact/commit/118575ba8a5e95530b2fe5f169fc69131e22addd) or continue reading this document.
 
 ### 1. Add Tessereact to your project
 
