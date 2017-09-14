@@ -172,7 +172,8 @@ class MainView extends React.Component {
       </ComponentPreview>
       <div>
         {this._renderScreenshotData(scenario)}
-        <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
+        <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario.diff) }} />
+        <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario.diffCSS) }} />
       </div>
     </Content.Wrapper>
   }
@@ -279,12 +280,12 @@ class MainView extends React.Component {
   }
 
   /**
-   * Render diff of a scenario if it exists.
-   * @param {ScenarioObject} scenario
+   * Render diff if it not null.
+   * @param {String} diff
    */
-  _renderDiff (scenario) {
-    if (scenario.hasDiff) {
-      return scenario.diff
+  _renderDiff (diff) {
+    if (diff) {
+      return diff
     }
   }
 

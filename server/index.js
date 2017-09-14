@@ -121,42 +121,31 @@ module.exports = function server (cwd, config, callback) {
     const payload = await Promise.all(
       scenarios.map(({ name, context, snapshot, options = {} }) => new Promise(async resolve => {
         const html = formatHTML(snapshot)
+        const oldHTML = await readSnapshot(snapshotsDir, name, context, 'html')
+        const diff = diffToHTML(diffSnapshots('HTML', oldHTML, html))
 
-        let diffPatch
         let css
+        let diffCSS
         let screenshotData
-
         if (options.css) {
           css = collectStylesFromSnapshot(styles, html, shouldCacheCSS, styleHash)
+          const oldCSS = await readSnapshot(snapshotsDir, name, context, 'css')
+          diffCSS = diffToHTML(diffSnapshots('CSS', oldCSS, css))
 
-          const [oldHTML, oldCSS] = await Promise.all([
-            readSnapshot(snapshotsDir, name, context, 'html'),
-            readSnapshot(snapshotsDir, name, context, 'css')
-          ])
-
-          diffPatch = [
-            diffSnapshots('HTML', oldHTML, html),
-            diffSnapshots('CSS', oldCSS, css)
-          ].filter(x => x).join('\n')
-
-          if (options.screenshot && diffPatch) {
+          if (options.screenshot && (diff || diffCSS)) {
             screenshotData = {
               before: buildScreenshotPage(oldHTML, oldCSS),
               after: buildScreenshotPage(html, css),
               screenshotSizes
             }
           }
-        } else {
-          const oldHTML = await readSnapshot(snapshotsDir, name, context, 'html')
-          diffPatch = diffSnapshots('HTML', oldHTML, html)
         }
-
-        const diff = diffToHTML(diffPatch)
 
         return resolve({
           name,
           context,
           diff,
+          diffCSS,
           snapshot: html,
           snapshotCSS: css,
           screenshotData
