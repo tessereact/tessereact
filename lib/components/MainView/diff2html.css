@@ -76,6 +76,8 @@
 }
 
 .d2h-screenshot-diff {
+  display: flex;
+  justify-content: start;
   padding: 20px;
 }
 
