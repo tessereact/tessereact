@@ -244,7 +244,10 @@ class MainView extends React.Component {
       scenarios: changeScenarioScreenshotData(
         this.state.scenarios,
         scenario,
-        () => ({selectedScreenshotSizeIndex: screenshotSizeIndex})
+        ({selectedScreenshotSizeIndex}) =>
+          selectedScreenshotSizeIndex === screenshotSizeIndex
+            ? {selectedScreenshotSizeIndex: null}
+            : {selectedScreenshotSizeIndex: screenshotSizeIndex}
       )
     })
 
