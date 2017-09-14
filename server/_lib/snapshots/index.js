@@ -43,26 +43,6 @@ function writeSnapshot (snapshotsDir, snapshot, name, context, extension = 'html
     .then(() => fsp.writeFile(snapshotPath, snapshot))
 }
 
-/**
- * Build full page snapshot from HTML and CSS snapshots.
- *
- * @param {String} html
- * @param {String} css
- * @returns {String} HTML and CSS snapshots combined
- */
-function buildPage (html, css) {
-  if (!css) {
-    return html
-  }
-
-  return ['<style>']
-    .concat(css)
-    .concat('</style>')
-    .concat('')
-    .concat(html)
-    .join('\n')
-}
-
 function getSnapshotPath (snapshotsDir, scenarioName, contextName, extension) {
   const dir = path.join(snapshotsDir, contextName || '')
   return `${dir}/${composeScenarioFileName(scenarioName, contextName, extension)}`
@@ -75,6 +55,5 @@ function composeScenarioFileName (name, context, extension) {
 
 module.exports = {
   readSnapshot,
-  writeSnapshot,
-  buildPage
+  writeSnapshot
 }

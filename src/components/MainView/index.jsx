@@ -292,7 +292,7 @@ class MainView extends React.Component {
   _renderScreenshotData (scenario) {
     const {screenshotData} = scenario
 
-    if (!screenshotData) {
+    if (!screenshotData || !screenshotData.before || !screenshotData.after) {
       return null
     }
 

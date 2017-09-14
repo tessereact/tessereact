@@ -8,8 +8,7 @@ const getPort = require('get-port')
 const ejs = require('ejs')
 const {
   readSnapshot,
-  writeSnapshot,
-  buildPage
+  writeSnapshot
 } = require('./_lib/snapshots')
 const {
   connectToBrowser,
@@ -17,7 +16,8 @@ const {
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,
-  diffScreenshots
+  diffScreenshots,
+  buildScreenshotPage
 } = require('./_lib/screenshots')
 const collectStylesFromSnapshot = require('./_lib/collectStylesFromSnapshot')
 const formatHTML = require('./_lib/formatHTML')
@@ -141,8 +141,8 @@ module.exports = function server (cwd, config, callback) {
 
           if (options.screenshot && diffPatch) {
             screenshotData = {
-              before: buildPage(oldHTML, oldCSS),
-              after: buildPage(html, css),
+              before: buildScreenshotPage(oldHTML, oldCSS),
+              after: buildScreenshotPage(html, css),
               screenshotSizes
             }
           }
