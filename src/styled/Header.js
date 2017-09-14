@@ -16,7 +16,7 @@ const Header = styled.div`
   background: #f5f6f8;
   border: 1px solid #e2e2e2;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-  z-index: 1;
+  z-index: 9999;
 `
 
 export default defaultMixin(Header)
