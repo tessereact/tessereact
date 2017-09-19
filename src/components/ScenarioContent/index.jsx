@@ -5,7 +5,7 @@ import ComponentPreview from '../../styled/ComponentPreview'
 import AcceptButton from '../../styled/AcceptButton'
 import Button from '../../styled/Button'
 import SmallButton from '../../styled/SmallButton'
-import Frame from 'react-frame-component'
+import ScenarioFrame from '../ScenarioFrame'
 import PanelGroup from './PanelGroup'
 import './style.css'
 
@@ -140,14 +140,15 @@ class ScenarioContent extends React.Component {
       default:
         return <div className='component-iframe_container'>
           {tab === 'resizingComponent' && <div className='component-iframe_overlay' />}
-          <Frame
+          <ScenarioFrame className='component-iframe' context={scenario.context} name={scenario.name} />
+          {/*<Frame
             className='component-iframe'
             head={<div
               dangerouslySetInnerHTML={{ __html: document.getElementsByTagName('head')[0].innerHTML }}
             />}
           >
             {scenario.element}
-          </Frame>
+          </Frame>*/}
         </div>
     }
   }

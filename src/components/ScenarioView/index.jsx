@@ -1,5 +1,6 @@
 import React from 'react'
 import { find } from 'lodash'
+import router from '../../routes'
 
 let PropTypes
 try {
@@ -15,13 +16,25 @@ try {
  * @property {RouteData} props.routeData
  */
 class ScenarioView extends React.Component {
-  getInitialState () {
-    return {
+  constructor (props, context) {
+    super(props, context)
+    this.state = {
       element: null
     }
   }
 
   componentWillMount () {
+    window.addEventListener('message', (event) => {
+      console.log(event.data)
+      router.navigateToRoute('view', event.data)
+    }, false)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('message')
+  }
+
+  render () {
     const {
       routeData: {
         params: { context: contextName, scenario: name }
@@ -30,13 +43,7 @@ class ScenarioView extends React.Component {
     const scenarios = this.props.data
     const context = contextName === 'null' ? null : contextName
     const scenario = find(scenarios, { name, context })
-    this.setState({
-      element: scenario.getElement()
-    })
-  }
-
-  render () {
-    const {element} = this.state
+    const element = scenario.getElement()
     return element
   }
 }
