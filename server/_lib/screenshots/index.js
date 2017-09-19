@@ -5,7 +5,7 @@ const fsp = require('fs-promise')
 const crypto = require('crypto')
 const exec = require('child_process').exec
 
-const port = 1339
+const port = 1340
 
 const args = [
   '--url-base=wd/hub',
@@ -121,7 +121,26 @@ function diffScreenshots (screenshotsDir, pathA, pathB) {
       return resolve(pathDiff)
     })
   })
+}
 
+/**
+ * Build full page snapshot from HTML and CSS snapshots.
+ *
+ * @param {String} html
+ * @param {String} css
+ * @returns {String} HTML and CSS snapshots combined
+ */
+function buildScreenshotPage (html, css) {
+  if (!css || !html) {
+    return null
+  }
+
+  return ['<style>']
+    .concat(css)
+    .concat('</style>')
+    .concat('')
+    .concat(html)
+    .join('\n')
 }
 
 module.exports = {
@@ -130,5 +149,6 @@ module.exports = {
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,
-  diffScreenshots
+  diffScreenshots,
+  buildScreenshotPage
 }

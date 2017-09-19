@@ -26,6 +26,9 @@ try {
   // Ignore optional peer dependency
 }
 
+// react components
+import ScenarioContent from '../ScenarioContent'
+
 // styled components
 import Container from '../../styled/Container'
 import Header from '../../styled/Header'
@@ -33,11 +36,7 @@ import Content from '../../styled/Content'
 import ComponentPreview from '../../styled/ComponentPreview'
 import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
-import AcceptButton from '../../styled/AcceptButton'
-import Button from '../../styled/Button'
-import SmallButton from '../../styled/SmallButton'
 import Text from '../../styled/Text'
-import './diff2html.css'
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
@@ -156,25 +155,11 @@ class MainView extends React.Component {
    * @param {ScenarioObject} scenario
    */
   _renderScenario (scenario) {
-    if (!scenario) return null
-    return <Content.Wrapper>
-      <Header>
-        <span>{scenario.name}</span>
-        <div>
-          <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
-            <Button>View</Button>
-          </a>
-          {scenario.hasDiff && <AcceptButton onClick={() => this._acceptSnapshot(scenario)}>Accept & next</AcceptButton>}
-        </div>
-      </Header>
-      <ComponentPreview>
-        {scenario.element}
-      </ComponentPreview>
-      <div>
-        {this._renderScreenshotData(scenario)}
-        <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario) }} />
-      </div>
-    </Content.Wrapper>
+    return <ScenarioContent
+      scenario={scenario}
+      onAcceptSnapshot={() => this._acceptSnapshot(scenario)}
+      onRequestScreenshot={(sizeIndex) => this._requestScreenshot(scenario, sizeIndex)}
+    />
   }
 
   /**
@@ -244,7 +229,10 @@ class MainView extends React.Component {
       scenarios: changeScenarioScreenshotData(
         this.state.scenarios,
         scenario,
-        () => ({selectedScreenshotSizeIndex: screenshotSizeIndex})
+        ({selectedScreenshotSizeIndex}) =>
+          selectedScreenshotSizeIndex === screenshotSizeIndex
+            ? {selectedScreenshotSizeIndex: null}
+            : {selectedScreenshotSizeIndex: screenshotSizeIndex}
       )
     })
 
@@ -273,78 +261,6 @@ class MainView extends React.Component {
         )
         this.setState({scenarios})
       })
-  }
-
-  /**
-   * Render diff of a scenario if it exists.
-   * @param {ScenarioObject} scenario
-   */
-  _renderDiff (scenario) {
-    if (scenario.hasDiff) {
-      return scenario.diff
-    }
-  }
-
-  /**
-   * Render screenshot header and diff of the scenario.
-   * @param {ScenarioObject} scenario
-   */
-  _renderScreenshotData (scenario) {
-    const {screenshotData} = scenario
-
-    if (!screenshotData) {
-      return null
-    }
-
-    const {screenshotSizes, selectedScreenshotSizeIndex, savedScreenshots} = screenshotData
-
-    return <div className='d2h-file-wrapper'>
-      <div className='d2h-file-header'>
-        <span className='d2h-file-name-wrapper'>
-          <span className='d2h-icon-wrapper'>
-            <svg className='d2h-icon' height='16' version='1.1' viewBox='0 0 12 16' width='12'>
-              <path d='M6 5H2v-1h4v1zM2 8h7v-1H2v1z m0 2h7v-1H2v1z m0 2h7v-1H2v1z m10-7.5v9.5c0 0.55-0.45 1-1 1H1c-0.55 0-1-0.45-1-1V2c0-0.55 0.45-1 1-1h7.5l3.5 3.5z m-1 0.5L8 2H1v12h10V5z' />
-            </svg>
-          </span>
-          <span className='d2h-file-name'>
-            Screenshots
-          </span>
-          {screenshotSizes.map(({alias, width, height}, index) =>
-            <SmallButton
-              key={index}
-              onClick={() => this._requestScreenshot(scenario, index)}
-              selected={index === selectedScreenshotSizeIndex}
-            >
-              {alias || `${width} × ${height}`}
-            </SmallButton>
-          )}
-        </span>
-      </div>
-
-      {this._renderScreenshot(screenshotSizes, savedScreenshots, selectedScreenshotSizeIndex)}
-    </div>
-  }
-
-  /**
-   * Render the selected screenshot if it is cached.
-   * @param {Array<Object>} screenshotSizes
-   * @param {Array<String>} savedScreenshots
-   * @param {Number} selectedScreenshotSizeIndex
-   */
-  _renderScreenshot (screenshotSizes, savedScreenshots, index) {
-    if (index == null) {
-      return null
-    }
-
-    if (!savedScreenshots || !savedScreenshots[index]) {
-      return <div className='d2h-screenshot-diff'>Loading...</div>
-    }
-
-    const {height, width} = screenshotSizes[index]
-
-    return <div className='d2h-screenshot-diff'>
-      <img style={{height, width}} src={savedScreenshots[index]} />
-    </div>
   }
 }
 

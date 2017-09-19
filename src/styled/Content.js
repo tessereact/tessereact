@@ -4,18 +4,17 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
   flex-basis: 80%;
   background: white;
-  max-height: 100vh;
-  overflow-y: auto;
+  overflow: hidden;
+  height: 100%;
 `
 
 Content.Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
+  height: 100%;
 `
 
 export default Content
