@@ -215,7 +215,7 @@ class ScenarioContent extends React.Component {
       return null
     }
 
-    if (!savedScreenshots || !savedScreenshots[index]) {
+    if (!savedScreenshots || savedScreenshots[index] === 'loading') {
       return <div className='d2h-screenshot-diff'>Loading...</div>
     }
 

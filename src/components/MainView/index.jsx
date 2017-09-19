@@ -224,23 +224,28 @@ class MainView extends React.Component {
     const url = `//${host}:${port}/screenshots`
     const {before, after, screenshotSizes} = scenario.screenshotData
 
+    const screenshotIsAlreadyCached = scenario.screenshotData.savedScreenshots &&
+      scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
+
     const size = screenshotSizes[screenshotSizeIndex]
     this.setState({
       scenarios: changeScenarioScreenshotData(
         this.state.scenarios,
         scenario,
-        ({selectedScreenshotSizeIndex}) =>
-          selectedScreenshotSizeIndex === screenshotSizeIndex
-            ? {selectedScreenshotSizeIndex: null}
-            : {selectedScreenshotSizeIndex: screenshotSizeIndex}
+        ({selectedScreenshotSizeIndex, savedScreenshots}) => ({
+          selectedScreenshotSizeIndex: selectedScreenshotSizeIndex === screenshotSizeIndex
+            ? null
+            : screenshotSizeIndex,
+          savedScreenshots: screenshotIsAlreadyCached
+            ? savedScreenshots
+            : Object.assign({
+              [screenshotSizeIndex]: 'loading'
+            })
+        })
       )
     })
 
-    if (
-      scenario.screenshotData.savedScreenshots &&
-        scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
-    ) {
-      // Screenshot is already cached
+    if (screenshotIsAlreadyCached) {
       return null
     }
 
