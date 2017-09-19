@@ -1,38 +1,16 @@
 const webdriverio = require('webdriverio')
-const chromedriver = require('chromedriver')
 const path = require('path')
 const fsp = require('fs-promise')
 const crypto = require('crypto')
 const exec = require('child_process').exec
 
-const port = 1340
-
-const args = [
-  '--url-base=wd/hub',
-  `--port=${port}`
-]
-chromedriver.start(args)
-
-const options = {
-  port,
-  desiredCapabilities: {
-    browserName: 'chrome',
-    chromeOptions: {
-      args: [
-        'headless',
-        'disable-gpu',
-        'hide-scrollbars'
-      ]
-    }
-  }
-}
-
 /**
  * Connect to a browser using Chrome Debugging Protocol.
  *
+ * @param {Object} options - webdriver options object
  * @returns {Promise<Client>} promise with webdriverio object
  */
-function connectToBrowser () {
+function connectToBrowser (options) {
   return webdriverio.remote(options).init()
 }
 

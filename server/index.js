@@ -26,11 +26,15 @@ const {
   diffToHTML
 } = require('./_lib/diff')
 const hash = require('object-hash')
+const chromedriver = require('chromedriver')
 
 const defaultScreenshotSizes = [
   {"width": 320, "height": 568, "alias": "iPhone SE"},
   {"width": 1024, "height": 768}
 ]
+
+const defaultPort = 5001
+const defaultChromedriverPort = 5003
 
 /**
  * Start the server.
@@ -53,6 +57,25 @@ module.exports = function server (cwd, config, callback) {
   app.use(cors({
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
   }))
+
+  const chromedriverPort = config.chromedriverPort || defaultChromedriverPort
+  chromedriver.start([
+    '--url-base=wd/hub',
+    `--port=${chromedriverPort}`
+  ])
+  const webdriverOptions = {
+    port: chromedriverPort,
+    desiredCapabilities: {
+      browserName: 'chrome',
+      chromeOptions: {
+        args: [
+          'headless',
+          'disable-gpu',
+          'hide-scrollbars'
+        ]
+      }
+    }
+  }
 
   getPort()
     .then(wsPort => {
@@ -177,7 +200,7 @@ module.exports = function server (cwd, config, callback) {
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
 
     await ensureScreenshotDir(screenshotsDir)
-    const chrome = connectToBrowser()
+    const chrome = connectToBrowser(webdriverOptions)
     const beforeScreenshotPath = await createScreenshot(screenshotsDir, chrome, beforeURL, size)
     const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, size)
     disconnectFromBrowser(chrome)
@@ -191,7 +214,7 @@ module.exports = function server (cwd, config, callback) {
     })
   })
 
-  app.listen(config.port, callback)
+  app.listen(config.port || defaultPort, callback)
 }
 
 function rescue (err) {
