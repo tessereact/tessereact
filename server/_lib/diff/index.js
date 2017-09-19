@@ -32,7 +32,7 @@ function diffToHTML (diff) {
     return ''
   }
 
-  return Diff2Html.getPrettyHtml(diff, {outputFormat: 'side-by-side'})
+  return Diff2Html.getPrettyHtml(diff)
 }
 
 module.exports = {
