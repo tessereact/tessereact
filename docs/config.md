@@ -6,6 +6,8 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 
 `port` — a port of your Tessereact server, 5001 by default
 
+`chromedriverPort` — chromedriver port for making screenshots, 5003 by default
+
 `snapshotsPath` — a path to directory where Tessereact is going to store snapshots
 
 `entryURL` — an URL to Tessereact Webpack entry
