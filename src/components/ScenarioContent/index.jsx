@@ -141,14 +141,6 @@ class ScenarioContent extends React.Component {
         return <div className='component-iframe_container'>
           {tab === 'resizingComponent' && <div className='component-iframe_overlay' />}
           <ScenarioFrame className='component-iframe' context={scenario.context} name={scenario.name} />
-          {/*<Frame
-            className='component-iframe'
-            head={<div
-              dangerouslySetInnerHTML={{ __html: document.getElementsByTagName('head')[0].innerHTML }}
-            />}
-          >
-            {scenario.element}
-          </Frame>*/}
         </div>
     }
   }
