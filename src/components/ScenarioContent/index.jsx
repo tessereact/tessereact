@@ -141,14 +141,6 @@ class ScenarioContent extends React.Component {
         return <div className='component-iframe_container'>
           {tab === 'resizingComponent' && <div className='component-iframe_overlay' />}
           <ScenarioFrame className='component-iframe' context={scenario.context} name={scenario.name} />
-          {/*<Frame
-            className='component-iframe'
-            head={<div
-              dangerouslySetInnerHTML={{ __html: document.getElementsByTagName('head')[0].innerHTML }}
-            />}
-          >
-            {scenario.element}
-          </Frame>*/}
         </div>
     }
   }
@@ -215,14 +207,14 @@ class ScenarioContent extends React.Component {
       return null
     }
 
-    if (!savedScreenshots || !savedScreenshots[index]) {
+    if (!savedScreenshots || !savedScreenshots[index] || savedScreenshots[index].status === 'loading') {
       return <div className='d2h-screenshot-diff'>Loading...</div>
     }
 
     const {height, width} = screenshotSizes[index]
 
     return <div className='d2h-screenshot-diff'>
-      <img style={{height, width, minWidth: width}} src={savedScreenshots[index]} />
+      <img style={{height, width, minWidth: width}} src={savedScreenshots[index].url} />
     </div>
   }
 
