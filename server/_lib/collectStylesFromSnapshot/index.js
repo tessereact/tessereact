@@ -69,9 +69,9 @@ function getMatchingStylesFromNodeArray (styles, nodes) {
 
     // Ignore @charset, @import and @namespace rules
     if (
-      rule.atRuleType === 'charset'
-        || rule.atRuleType === 'import'
-        || rule.atRuleType === 'namespace'
+      rule.atRuleType === 'charset' ||
+        rule.atRuleType === 'import' ||
+        rule.atRuleType === 'namespace'
     ) {
       return null
     }
@@ -83,7 +83,7 @@ function getMatchingStylesFromNodeArray (styles, nodes) {
     }
 
     // Strip all pseudoclasses and pseudoelements from the selector
-    const selectorText = rule.selectorText.replace(/::?[a-z\-]+(\([^)]*\))?/g, '')
+    const selectorText = rule.selectorText.replace(/::?[a-z-]+(\([^)]*\))?/g, '')
 
     // Check if any node matches the resulting selector and pass the rule if so
     return nodes.some(node => node.matches(selectorText)) && rule

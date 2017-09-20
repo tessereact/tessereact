@@ -5,4 +5,3 @@ const ScenarioBlock = styled.div`
 `
 
 export default ScenarioBlock
-
