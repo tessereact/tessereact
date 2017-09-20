@@ -222,10 +222,9 @@ class MainView extends React.Component {
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshots`
-    const {before, after, screenshotSizes} = scenario.screenshotData
+    const {before, after, screenshotSizes, savedScreenshots} = scenario.screenshotData
 
-    const screenshotIsAlreadyCached = scenario.screenshotData.savedScreenshots &&
-      scenario.screenshotData.savedScreenshots[screenshotSizeIndex]
+    const screenshotIsAlreadyCached = savedScreenshots && savedScreenshots[screenshotSizeIndex]
 
     const size = screenshotSizes[screenshotSizeIndex]
     this.setState({
@@ -238,8 +237,10 @@ class MainView extends React.Component {
             : screenshotSizeIndex,
           savedScreenshots: screenshotIsAlreadyCached
             ? savedScreenshots
-            : Object.assign({
-              [screenshotSizeIndex]: 'loading'
+            : Object.assign({}, savedScreenshots, {
+              [screenshotSizeIndex]: {
+                status: 'loading'
+              }
             })
         })
       )
@@ -260,7 +261,10 @@ class MainView extends React.Component {
           scenario,
           ({savedScreenshots}) => ({
             savedScreenshots: Object.assign([], savedScreenshots, {
-              [screenshotSizeIndex]: url
+              [screenshotSizeIndex]: {
+                status: 'cached',
+                url
+              }
             })
           })
         )

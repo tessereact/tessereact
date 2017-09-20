@@ -207,14 +207,14 @@ class ScenarioContent extends React.Component {
       return null
     }
 
-    if (!savedScreenshots || savedScreenshots[index] === 'loading') {
+    if (!savedScreenshots || !savedScreenshots[index] || savedScreenshots[index].status === 'loading') {
       return <div className='d2h-screenshot-diff'>Loading...</div>
     }
 
     const {height, width} = screenshotSizes[index]
 
     return <div className='d2h-screenshot-diff'>
-      <img style={{height, width, minWidth: width}} src={savedScreenshots[index]} />
+      <img style={{height, width, minWidth: width}} src={savedScreenshots[index].url} />
     </div>
   }
 
