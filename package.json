@@ -50,22 +50,13 @@
     "babel-preset-stage-0": "^6.22.0",
     "browser-env": "^2.0.31",
     "css-loader": "^0.26.1",
-    "eslint": "^3.19.0",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-config-standard-jsx": "^4.0.2",
-    "eslint-config-standard-react": "^4.2.0",
-    "eslint-plugin-mocha": "^4.8.0",
-    "eslint-plugin-react": "^6.10.3",
-    "eslint-plugin-standard": "^2.0.1",
-    "eslint-watch": "^2.1.14",
     "json-loader": "^0.5.4",
     "postcss": "^5.2.11",
     "postcss-loader": "^1.2.2",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "standard": "^8.6.0",
-    "standard-react": "^4.0.0",
+    "standard": "^10.0.3",
     "style-loader": "^0.13.1",
     "webpack": "^1.14.0",
     "webpack-dev-middleware": "^1.9.0",
@@ -79,7 +70,7 @@
     "dev": "NODE_ENV=development node devServer.js",
     "dev-server": "TESSEREACT_CONFIG='./example/tessereact.config.json' node bin/server.js",
     "build": "rm -rf lib/ && babel src --source-root src --out-dir lib --ignore test.js --copy-files",
-    "lint": "esw src '*.js' --ext '.js,.jsx'  --ignore-pattern 'lib'",
+    "lint": "standard",
     "lint-watch": "yarn run lint -- --watch",
     "lint-fix": "yarn run lint -- --fix",
     "test": "NODE_ENV=development ava-webpack --webpack-config ./webpack.config.js ./test.js"
@@ -102,5 +93,12 @@
       "./test/helpers/setup-browser-env.js"
     ],
     "babel": "inherit"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "/lib/",
+      "/create-react-app-example/"
+    ]
   }
 }
