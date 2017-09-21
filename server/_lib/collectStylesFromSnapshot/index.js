@@ -22,7 +22,7 @@ function collectStylesFromSnapshot (styles, snapshot, shouldCacheCSS, styleHash)
   }
 
   const dom = new JSDOM(`<div>${snapshot}</div>`)
-  const css = collectStylesFromNode(styles, dom.window.document.documentElement)
+  const css = collectStylesFromNode(styles, dom.window.document)
 
   if (shouldCacheCSS) {
     styleCache[key] = css
@@ -36,20 +36,10 @@ function collectStylesFromNode (styles, node) {
     return ''
   }
 
-  const nodes = treeIntoArray(node)
-
-  return formatCSS(getMatchingStylesFromNodeArray(styles, nodes))
+  return formatCSS(getMatchingStylesFromNode(styles, node))
 }
 
-function treeIntoArray (node) {
-  return [node]
-    .concat(Array.prototype.slice.call(node.children).reduce(
-      (array, child) => array.concat(treeIntoArray(child)),
-      []
-    ))
-}
-
-function getMatchingStylesFromNodeArray (styles, nodes) {
+function getMatchingStylesFromNode (styles, node) {
   return styles.map(rule => {
     if (rule.cssRules) {
       // Ignore rules with prefixes (e.g. @-webkit-keyframes)
@@ -63,7 +53,7 @@ function getMatchingStylesFromNodeArray (styles, nodes) {
       }
 
       // Filter children in the rule is @media, @supports or @document
-      const cssRules = getMatchingStylesFromNodeArray(rule.cssRules, nodes)
+      const cssRules = getMatchingStylesFromNode(rule.cssRules, node)
       return cssRules.length && Object.assign({}, rule, {cssRules})
     }
 
@@ -86,7 +76,7 @@ function getMatchingStylesFromNodeArray (styles, nodes) {
     const selectorText = rule.selectorText.replace(/::?[a-z\-]+(\([^)]*\))?/g, '')
 
     // Check if any node matches the resulting selector and pass the rule if so
-    return nodes.some(node => node.matches(selectorText)) && rule
+    return node.querySelector(selectorText) && rule
   }).filter(x => x)
 }
 
