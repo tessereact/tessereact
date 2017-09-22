@@ -18,6 +18,7 @@ import {
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
+import Link from '../../lib/link'
 
 let PropTypes
 try {
@@ -176,12 +177,17 @@ class MainView extends React.Component {
         <span>{contextName}</span>
       </Header>
       <ComponentPreview>
-        {scenarios.map(s => (<ScenarioBlock key={s.name}>
-          {this._renderSectionHeader(s)}
-          <ScenarioBlockContent key={s.name}>
-            {s.element}
-          </ScenarioBlockContent>
-        </ScenarioBlock>))}
+        {scenarios.map(s => {
+          const params = {context: s.context || 'null', scenario: s.name}
+          return <Link name='scenario' params={params}>
+            <ScenarioBlock key={s.name}>
+              {this._renderSectionHeader(s)}
+              <ScenarioBlockContent key={s.name}>
+                {s.snapshot && <div dangerouslySetInnerHTML={{__html: s.snapshot}} />}
+              </ScenarioBlockContent>
+            </ScenarioBlock>
+          </Link>
+        })}
       </ComponentPreview>
     </Content.Wrapper>
   }
