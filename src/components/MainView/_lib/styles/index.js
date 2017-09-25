@@ -1,55 +1,70 @@
-const { JSDOM } = require('jsdom')
-
-const styleCache = {}
+/**
+ * Generate a unique CSS ID for a scenario.
+ * @param {ScenarioObject} scenario
+ * @returns {String}
+ */
+export function generateScenarioId (scenario) {
+  return `--tessereact--${scenario.context}/${scenario.name}`
+}
 
 /**
- * Filter only those CSS rules which are used in the provided HTML snapshot
+ * Convert style sheet object to JSON suitable for filtering by `buildSnapshotCSS`.
+ *
+ * @param {StyleSheetList} styleSheets
+ * @returns {Array} preparesStyleSheets
+ */
+export function prepareStyles (styleSheets) {
+  return toArray(styleSheets).reduce(
+    (array, {rules}) =>
+      array.concat(
+        toArray(rules).map(prepareCSSRule)
+      ),
+    []
+  )
+}
+
+function prepareCSSRule (rule) {
+  const matchResult = rule.cssText.match(/^([^{]*){/)
+
+  const preparedRule = {
+    selectorText: matchResult ? matchResult[1] : rule.cssText,
+    cssText: rule.cssText
+  }
+
+  if (rule.cssRules) {
+    preparedRule.cssRules = toArray(rule.cssRules).map(prepareCSSRule)
+  }
+
+  if (preparedRule.selectorText[0] === '@') {
+    preparedRule.atRuleType = preparedRule.selectorText.match(/^@([a-z-]+)/)[1]
+  }
+
+  return preparedRule
+}
+
+function toArray (object) {
+  return Array.prototype.slice.call(object)
+}
+
+/**
+ * Filter only those CSS rules which are used in the provided HTML node
  * and compile them into CSS file.
  *
  * @param {Array} styles - array of styles fetched from frontend
- * @param {String} snapshot
- * @param {Boolean} [shouldCacheCSS=false]
- * @param {String} [styleHash]
- * @returns {String} compiled CSS file
+ * @param {Node} node
+ * @param {Node} documentElement - <html> tag node of the document
+ * @param {Node} body - <body> tag node of the document
+ * @returns {String} compiled CSS snapshot
  */
-function collectStylesFromSnapshot (styles, snapshot, shouldCacheCSS, styleHash) {
-  let key
-  if (shouldCacheCSS) {
-    key = styleHash + ':' + snapshot
-    if (Object.keys(styleCache).includes(key)) {
-      return styleCache[key]
-    }
-  }
-
-  const dom = new JSDOM(`<div>${snapshot}</div>`)
-  const css = collectStylesFromNode(styles, dom.window.document.documentElement)
-
-  if (shouldCacheCSS) {
-    styleCache[key] = css
-  }
-
-  return css
-}
-
-function collectStylesFromNode (styles, node) {
+export function buildSnapshotCSS (styles, node, documentElement, body) {
   if (!node) {
     return ''
   }
 
-  const nodes = treeIntoArray(node)
-
-  return formatCSS(getMatchingStylesFromNodeArray(styles, nodes))
+  return formatCSS(getMatchingStylesFromNode(styles, node, documentElement, body))
 }
 
-function treeIntoArray (node) {
-  return [node]
-    .concat(Array.prototype.slice.call(node.children).reduce(
-      (array, child) => array.concat(treeIntoArray(child)),
-      []
-    ))
-}
-
-function getMatchingStylesFromNodeArray (styles, nodes) {
+function getMatchingStylesFromNode (styles, node, documentElement, body) {
   return styles.map(rule => {
     if (rule.cssRules) {
       // Ignore rules with prefixes (e.g. @-webkit-keyframes)
@@ -63,7 +78,7 @@ function getMatchingStylesFromNodeArray (styles, nodes) {
       }
 
       // Filter children in the rule is @media, @supports or @document
-      const cssRules = getMatchingStylesFromNodeArray(rule.cssRules, nodes)
+      const cssRules = getMatchingStylesFromNode(rule.cssRules, node, documentElement, body)
       return cssRules.length && Object.assign({}, rule, {cssRules})
     }
 
@@ -86,7 +101,7 @@ function getMatchingStylesFromNodeArray (styles, nodes) {
     const selectorText = rule.selectorText.replace(/::?[a-z-]+(\([^)]*\))?/g, '')
 
     // Check if any node matches the resulting selector and pass the rule if so
-    return nodes.some(node => node.matches(selectorText)) && rule
+    return (node.querySelector(selectorText) || documentElement.matches(selectorText) || body.matches(selectorText)) && rule
   }).filter(x => x)
 }
 
@@ -124,5 +139,3 @@ function formatCSSRule (rule, indent = 0) {
     .concat(`${outerIndent}}`)
     .join('\n')
 }
-
-module.exports = collectStylesFromSnapshot

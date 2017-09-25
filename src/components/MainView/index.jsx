@@ -17,10 +17,15 @@ import {
   requestScenarioAcceptance
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
-import prepareStyles from './_lib/prepareStyles'
-import Link from '../../lib/link'
+import formatHTML from './_lib/formatHTML'
+import {
+  generateScenarioId,
+  prepareStyles,
+  buildSnapshotCSS
+} from './_lib/styles'
 
 // react components
+import Link from '../../lib/link'
 import ScenarioContent from '../ScenarioContent'
 
 // styled components
@@ -41,6 +46,10 @@ try {
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
+// We don't need the component to update right away when `cssLoaded` is changed
+// so we keep it as an external variable instead of state.
+let cssLoaded = false
+
 /**
  * UI of main Tessereact window.
  * @extends React.Component
@@ -59,7 +68,7 @@ class MainView extends React.Component {
   }
 
   /**
-   * Load snapshots from the server
+   * Load snapshot diffs from the server
    */
   componentWillMount () {
     const { routeData } = this.props
@@ -68,22 +77,35 @@ class MainView extends React.Component {
     onLoad()
       .then(() => {
         const { scenarios } = this.state
-
         const styles = prepareStyles(document.styleSheets)
 
         const scenariosToLoad = getScenariosToLoad(routeData, scenarios)
-          .map(scenario => ({
-            name: scenario.name,
-            context: scenario.context,
-            snapshot: scenario.getSnapshot(),
-            options: scenario.options
-          }))
+          .map(scenario => {
+            const snapshotCSS = scenario.options.css
+              ? buildSnapshotCSS(
+                  styles,
+                  document.getElementById(generateScenarioId(scenario)),
+                  document.documentElement,
+                  document.body
+                )
+              : null
+
+            return {
+              name: scenario.name,
+              context: scenario.context,
+              snapshot: formatHTML(scenario.getSnapshot()),
+              snapshotCSS,
+              options: scenario.options
+            }
+          })
+
+        cssLoaded = true
 
         const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
 
         return Promise.all(
           chunks.map(scenariosChunk =>
-            postJSON(url, { scenarios: scenariosChunk, styles })
+            postJSON(url, { scenarios: scenariosChunk })
               .then(response => response.json())
               .then(({scenarios: responseScenarios}) =>
                 this.setState({
@@ -121,6 +143,10 @@ class MainView extends React.Component {
       })
   }
 
+  componentWillUnmount () {
+    cssLoaded = false
+  }
+
   componentWillReceiveProps (nextProps) {
     checkForHomeRoute(nextProps.routeData, this.state.scenarios)
   }
@@ -135,6 +161,7 @@ class MainView extends React.Component {
 
     return (
       <Container>
+        {this._renderFetchCSS()}
         <Navigation
           loadedScenariosCount={scenarios.filter(c => c.status === 'resolved').length}
           failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
@@ -148,6 +175,28 @@ class MainView extends React.Component {
         </Content>
       </Container>
     )
+  }
+
+  /**
+   * Render UI element, which contains all of the scenarios with option `css`=true.
+   * From it we will fetch the css snapshots
+   */
+  _renderFetchCSS () {
+    if (cssLoaded) {
+      return null
+    }
+
+    const scenarios = this.props.data.filter(({options: {css}}) => css)
+    return <div style={{display: 'none'}}>
+      {
+        scenarios.map((scenario, index) =>
+          <div
+            id={generateScenarioId(scenario)}
+            key={index}
+            dangerouslySetInnerHTML={{ __html: scenario.getSnapshot() }}
+          />)
+      }
+    </div>
   }
 
   /**

@@ -1,4 +1,4 @@
-const {html} = require('js-beautify')
+import { html } from 'js-beautify'
 
 const htmlFormatterOptions = {
   indent_size: 2,
@@ -12,8 +12,6 @@ const htmlFormatterOptions = {
  * @param {String} str - unindented HTML
  * @returns {String} - indented HTML
  */
-const formatHTML = str => {
+export default function formatHTML (str) {
   return str ? html(str, htmlFormatterOptions) : ''
 }
-
-module.exports = formatHTML
