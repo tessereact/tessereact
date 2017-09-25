@@ -20,13 +20,6 @@ import generateTreeNodes from './_lib/generateTreeNodes'
 import prepareStyles from './_lib/prepareStyles'
 import Link from '../../lib/link'
 
-let PropTypes
-try {
-  PropTypes = require('prop-types')
-} catch (e) {
-  // Ignore optional peer dependency
-}
-
 // react components
 import ScenarioContent from '../ScenarioContent'
 
@@ -38,6 +31,13 @@ import ComponentPreview from '../../styled/ComponentPreview'
 import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
 import Text from '../../styled/Text'
+
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
 
 const SCENARIO_CHUNK_SIZE = Infinity
 

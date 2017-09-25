@@ -8,4 +8,3 @@ const ScenarioBlockContent = styled.div`
 `
 
 export default ScenarioBlockContent
-

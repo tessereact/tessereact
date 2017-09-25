@@ -15,4 +15,3 @@ const FilterInput = styled.input`
 `
 
 export default defaultMixin(FilterInput)
-

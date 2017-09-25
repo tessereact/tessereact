@@ -18,7 +18,7 @@ class ScenarioFrame extends React.Component {
     return <iframe
       src={this.url}
       className={className}
-      ref={iframe => this.iframe = iframe}
+      ref={iframe => { this.iframe = iframe }}
     />
   }
 }

@@ -29,8 +29,8 @@ const hash = require('object-hash')
 const chromedriver = require('chromedriver')
 
 const defaultScreenshotSizes = [
-  {"width": 320, "height": 568, "alias": "iPhone SE"},
-  {"width": 1024, "height": 768}
+  {width: 320, height: 568, alias: 'iPhone SE'},
+  {width: 1024, height: 768}
 ]
 
 const defaultPort = 5001
@@ -184,7 +184,7 @@ module.exports = function server (cwd, config, callback) {
     if (snapshotCSS) {
       await Promise.all([
         writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
-        writeSnapshot(snapshotsDir,snapshotCSS, name, context, 'css')
+        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css')
       ])
     } else {
       await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')

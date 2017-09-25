@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 
 import './index.css'
 import {init, scenario, context} from 'src/index'
@@ -66,20 +65,6 @@ class Cart extends React.Component {
   }
 }
 
-class App extends React.Component {
-  render () {
-    const services = [
-      { name: 'Web Development', price: 300 },
-      { name: 'Design', price: 400 },
-      { name: 'Training', price: 220 }
-    ]
-
-    return (
-      <Cart items={services} />
-    )
-  }
-}
-
 // TODO: Move to snapshots.js file
 context('Cart', () => {
   scenario('Basic', () => {
@@ -112,7 +97,7 @@ scenario('Single scenario', () => {
 })
 
 scenario('Empty component', () => {
-  return (() => {return null})()
+  return null
 })
 
 document.addEventListener('DOMContentLoaded', () => {
