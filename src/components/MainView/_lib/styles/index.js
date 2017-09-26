@@ -98,7 +98,8 @@ function getMatchingStylesFromNode (styles, node, documentElement, body) {
     }
 
     // Strip all pseudoclasses and pseudoelements from the selector
-    const selectorText = rule.selectorText.replace(/::?[a-z-]+(\([^)]*\))?/g, '')
+    const selectorText = rule.selectorText
+      .replace(/([^\s:]*)(::?[a-z\-]+(\([^)]*\))?)+/g, (_, selector) => selector || '*')
 
     // Check if any node matches the resulting selector and pass the rule if so
     return (node.querySelector(selectorText) || documentElement.matches(selectorText) || body.matches(selectorText)) && rule
