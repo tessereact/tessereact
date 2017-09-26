@@ -23,7 +23,6 @@ const {
   diffSnapshots,
   diffToHTML
 } = require('./_lib/diff')
-const hash = require('object-hash')
 const chromedriver = require('chromedriver')
 
 const defaultScreenshotSizes = [
@@ -44,8 +43,6 @@ const defaultChromedriverPort = 5003
 module.exports = function server (cwd, config, callback) {
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
-
-  const shouldCacheCSS = config.cacheCSS
 
   const screenshotSizes = config.screenshotSizes || defaultScreenshotSizes
 
