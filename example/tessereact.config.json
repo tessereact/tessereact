@@ -1,7 +1,6 @@
 {
   "port": 5001,
   "snapshotsPath": "example/snapshots",
-  "cacheCSS": true,
   "screenshotSizes": [
     {"width": 320, "height": 568, "alias": "iPhone SE"},
     {"width": 640, "height": 480},

@@ -19,13 +19,10 @@ const {
   diffScreenshots,
   buildScreenshotPage
 } = require('./_lib/screenshots')
-const collectStylesFromSnapshot = require('./_lib/collectStylesFromSnapshot')
-const formatHTML = require('./_lib/formatHTML')
 const {
   diffSnapshots,
   diffToHTML
 } = require('./_lib/diff')
-const hash = require('object-hash')
 const chromedriver = require('chromedriver')
 
 const defaultScreenshotSizes = [
@@ -46,8 +43,6 @@ const defaultChromedriverPort = 5003
 module.exports = function server (cwd, config, callback) {
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
-
-  const shouldCacheCSS = config.cacheCSS
 
   const screenshotSizes = config.screenshotSizes || defaultScreenshotSizes
 
@@ -138,27 +133,23 @@ module.exports = function server (cwd, config, callback) {
   // Seems we need just one route (/snapshots) with `get/post` support.
   app.options('/snapshots-list', cors())
   app.post('/snapshots-list', async (req, res) => {
-    const {scenarios, styles} = req.body
-    const styleHash = shouldCacheCSS ? hash(styles) : null
+    const {scenarios} = req.body
 
     const payload = await Promise.all(
-      scenarios.map(({ name, context, snapshot, options = {} }) => new Promise(async resolve => {
-        const html = formatHTML(snapshot)
-        const oldHTML = await readSnapshot(snapshotsDir, name, context, 'html')
-        const diff = diffToHTML(diffSnapshots('HTML', oldHTML, html))
+      scenarios.map(({ name, context, snapshot, snapshotCSS, options = {} }) => new Promise(async resolve => {
+        const oldSnapshot = await readSnapshot(snapshotsDir, name, context, 'html')
+        const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
 
-        let css
         let diffCSS
         let screenshotData
         if (options.css) {
-          css = collectStylesFromSnapshot(styles, html, shouldCacheCSS, styleHash)
-          const oldCSS = await readSnapshot(snapshotsDir, name, context, 'css')
-          diffCSS = diffToHTML(diffSnapshots('CSS', oldCSS, css))
+          const oldSnapshotCSS = await readSnapshot(snapshotsDir, name, context, 'css')
+          diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
 
           if (options.screenshot && (diff || diffCSS)) {
             screenshotData = {
-              before: buildScreenshotPage(oldHTML, oldCSS),
-              after: buildScreenshotPage(html, css),
+              before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
+              after: buildScreenshotPage(snapshot, snapshotCSS),
               screenshotSizes
             }
           }
@@ -169,8 +160,8 @@ module.exports = function server (cwd, config, callback) {
           context,
           diff,
           diffCSS,
-          snapshot: html,
-          snapshotCSS: css,
+          snapshot,
+          snapshotCSS,
           screenshotData
         })
       }))

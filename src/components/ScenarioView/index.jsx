@@ -16,16 +16,8 @@ try {
  * @property {RouteData} props.routeData
  */
 class ScenarioView extends React.Component {
-  constructor (props, context) {
-    super(props, context)
-    this.state = {
-      element: null
-    }
-  }
-
   componentWillMount () {
     window.addEventListener('message', (event) => {
-      console.log(event.data)
       router.navigateToRoute('view', event.data)
     }, false)
   }
