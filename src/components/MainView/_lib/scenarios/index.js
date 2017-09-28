@@ -158,7 +158,9 @@ export function resolveScenario (scenarios, scenario, styles) {
       screenshotData = {
         before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
         after: buildScreenshotPage(snapshot, snapshotCSS),
-        screenshotSizes: defaultScreenshotSizes
+        screenshotSizes:
+          (window.__tessereactConfig && window.__tessereactConfig.screenshotSizes) ||
+            defaultScreenshotSizes
       }
     }
   }

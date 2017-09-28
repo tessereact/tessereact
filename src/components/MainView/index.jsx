@@ -1,7 +1,7 @@
 import React from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
-import postJSON from './_lib/postJSON'
+import { getJSON, postJSON } from './_lib/requests'
 import onLoad from './_lib/onLoad'
 import {
   checkIfRouteExists,
@@ -72,6 +72,16 @@ class MainView extends React.Component {
     const date = Date.now()
 
     onLoad()
+      .then(() => {
+        // Get config from server if not supplied via ejs
+        if (!window.__tessereactConfig) {
+          return getJSON(`//${this.props.host}:${this.props.port}/config`)
+            .then(response => response.json())
+            .then(config => {
+              window.__tessereactConfig = config
+            })
+        }
+      })
       .then(() => {
         const { scenarios } = this.state
         const styles = prepareStyles(document.styleSheets)

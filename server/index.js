@@ -78,7 +78,8 @@ module.exports = function server (cwd, config, callback) {
         const locals = {
           entryPath: process.env.CI ? config.builtEntryPath : config.entryURL,
           wsURL,
-          tessereactServerPort: config.port
+          tessereactServerPort: config.port,
+          config: JSON.stringify(config)
         }
 
         ejs.renderFile(templatePath, locals, {}, (err, templateHTML) => {
@@ -123,6 +124,11 @@ module.exports = function server (cwd, config, callback) {
           .catch(rescue)
       }
     })
+
+  app.options('/config', cors())
+  app.get('/config', async (req, res) => {
+    res.send(config)
+  })
 
   // TODO: Why we are doing `post` instead of `get` here?
   // Seems we need just one route (/snapshots) with `get/post` support.
