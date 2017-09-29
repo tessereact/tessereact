@@ -15,26 +15,20 @@ export default function mockServer (url, { method, body }) {
   }
 
   if (method === 'GET' && url.match(/\/config\/?$/)) {
-    return {
-      json: () => ({})
-    }
+    return {}
   } else if (method === 'POST' && url.match(/\/read-snapshots\/?$/)) {
     return {
-      json: () => ({
-        scenarios: body.scenarios.map(({name, context}) => ({
-          name,
-          context,
-          snapshot: data.snapshots[getSnapshotFileName(context, name, 'html')],
-          snapshotCSS: data.snapshots[getSnapshotFileName(context, name, 'css')]
-        }))
-      })
+      scenarios: body.scenarios.map(({name, context}) => ({
+        name,
+        context,
+        snapshot: data.snapshots[getSnapshotFileName(context, name, 'html')],
+        snapshotCSS: data.snapshots[getSnapshotFileName(context, name, 'css')]
+      }))
     }
   } else if (method === 'POST' && url.match(/\/write-snapshot\/?$/)) {
-    return {
-      json: () => ({status: 'OK'})
-    }
+    return {status: 'OK'}
   } else {
-    throw new Error('Mock server cannot process this request')
+    return data.screenshotURL
   }
 }
 

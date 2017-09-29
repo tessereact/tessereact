@@ -1,7 +1,7 @@
 import React from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
-import { getJSON, postJSON } from './_lib/requests'
+import { getJSON, postJSON, postJSONAndGetURL } from './_lib/requests'
 import onLoad from './_lib/onLoad'
 import {
   checkIfRouteExists,
@@ -78,7 +78,6 @@ class MainView extends React.Component {
         // Get config from server if not supplied via ejs
         if (!window.__tessereactConfig) {
           return getJSON(`//${this.props.host}:${this.props.port}/config`)
-            .then(response => response.json())
             .then(config => {
               window.__tessereactConfig = config
             })
@@ -100,7 +99,6 @@ class MainView extends React.Component {
         return Promise.all(
           chunks.map(scenariosChunk =>
             postJSON(url, { scenarios: scenariosChunk })
-              .then(response => response.json())
               .then(({scenarios: responseScenarios}) => {
                 const newScenarios = responseScenarios.reduce((acc, s) => resolveScenario(acc, s, styles), scenarios)
                 this.setState({scenarios: newScenarios, cssLoaded: true})
@@ -301,12 +299,8 @@ class MainView extends React.Component {
       return null
     }
 
-    postJSON(url, {before, after, size})
-      .then((response) => {
-        return response.blob()
-      })
-      .then((blob) => {
-        const url = URL.createObjectURL(blob) // eslint-disable-line no-undef
+    postJSONAndGetURL(url, {before, after, size})
+      .then((url) => {
         const scenarios = changeScenarioScreenshotData(
           this.state.scenarios,
           scenario,
