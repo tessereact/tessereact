@@ -228,8 +228,8 @@ class MainView extends React.Component {
       <ComponentPreview>
         {scenarios.map(s => {
           const params = {context: s.context || 'null', scenario: s.name}
-          return <Link name='scenario' params={params}>
-            <ScenarioBlock key={s.name}>
+          return <Link key={s.name} name='scenario' params={params}>
+            <ScenarioBlock>
               {this._renderSectionHeader(s)}
               <ScenarioBlockContent key={s.name}>
                 {s.snapshot && <div dangerouslySetInnerHTML={{__html: s.snapshot}} />}
