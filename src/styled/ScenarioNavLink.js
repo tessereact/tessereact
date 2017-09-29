@@ -3,8 +3,8 @@ import defaultMixin from './mixins/default'
 import Link from '../lib/link'
 
 const ScenarioNavLink = styled(Link)`
-  color: ${props => props.active ? '#fff' : (props.hasDiff ? '#e91e63' : '#939599')};
-  background: ${props => !props.active ? '' : props.hasDiff ? '#e91e63' : '#278db5'}
+  color: ${props => props.active ? '#fff' : (props.hasDiff ? '#e91e63 !important' : '#939599')};
+  background: ${props => !props.active ? '' : props.hasDiff ? '#e91e63 !important' : '#278db5'}
   overflow: hidden;
   display: block;
   text-align: left;

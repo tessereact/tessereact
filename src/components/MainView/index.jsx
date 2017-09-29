@@ -243,7 +243,7 @@ class MainView extends React.Component {
    */
   _renderSectionHeader (s) {
     return s.hasDiff
-      ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text>
+      ? <Text color='#e91e63 !important' fontSize='14px'>{s.name}</Text>
       : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   }
 
