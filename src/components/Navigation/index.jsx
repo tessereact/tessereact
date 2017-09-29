@@ -50,6 +50,12 @@ class Navigation extends React.Component {
     </Sidebar.Progress>
   }
 
+  _renderFooter () {
+    return <Sidebar.ListItem>
+      About demo mode
+    </Sidebar.ListItem>
+  }
+
   render () {
     const {searchQuery} = this.state
     const {nodes, selectedRoute} = this.props
@@ -69,6 +75,12 @@ class Navigation extends React.Component {
             selectedRoute={selectedRoute}
           />
         </Sidebar.List>
+        {
+          window.__tessereactDemoMode &&
+            <Sidebar.Footer>
+              {this._renderFooter()}
+            </Sidebar.Footer>
+        }
       </Sidebar>
     )
   }

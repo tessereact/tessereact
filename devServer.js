@@ -28,6 +28,7 @@ function renderIndex (req, res) {
 app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
 app.get('/contexts/:context/scenarios/:scenario', renderIndex)
 app.get('/contexts/:context', renderIndex)
+app.get('/demo', renderIndex)
 app.get('/', renderIndex)
 
 app.listen(port, '0.0.0.0', err => {

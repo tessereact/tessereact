@@ -6,6 +6,7 @@ import onLoad from './_lib/onLoad'
 import {
   checkIfRouteExists,
   checkForHomeRoute,
+  checkForHomeRouteDemoMode,
   redirectToFirstFailingScenario
 } from './_lib/routes'
 import {
@@ -25,6 +26,7 @@ import {
 // react components
 import Link from '../../lib/link'
 import ScenarioContent from '../ScenarioContent'
+import DemoContent from '../DemoContent'
 
 // styled components
 import Container from '../../styled/Container'
@@ -112,8 +114,12 @@ class MainView extends React.Component {
 
         console.log(`Finished loading in ${Date.now() - benchmark}`)
 
-        checkForHomeRoute(routeData, scenarios)
-        checkIfRouteExists(routeData, scenarios)
+        if (window.__tessereactDemoMode) {
+          checkForHomeRouteDemoMode(routeData)
+        } else {
+          checkForHomeRoute(routeData, scenarios)
+          checkIfRouteExists(routeData, scenarios)
+        }
 
         // Report to CI
         if (window.__tessereactWSURL) {
@@ -161,6 +167,7 @@ class MainView extends React.Component {
         <Content>
           {routeName === 'context' && this._renderContext(context)}
           {routeName === 'scenario' && this._renderScenario(findScenario(scenarios, context, scenario))}
+          {routeName === 'demo' && <DemoContent />}
         </Content>
       </Container>
     )

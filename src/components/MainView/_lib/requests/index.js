@@ -1,3 +1,5 @@
+import mockServer from '../mockServer'
+
 /**
  * Fetch url with method GET.
  *
@@ -6,6 +8,10 @@
  * @returns {Promise<Object>} promise with response
  */
 export function getJSON (url) {
+  if (window.__tessereactDemoMode) {
+    return Promise.resolve(mockServer(url, {method: 'GET'}))
+  }
+
   return window.fetch(url, {
     method: 'GET',
     mode: 'cors'
@@ -20,6 +26,10 @@ export function getJSON (url) {
  * @returns {Promise<Object>} promise with response
  */
 export function postJSON (url, body) {
+  if (window.__tessereactDemoMode) {
+    return Promise.resolve(mockServer(url, {method: 'POST', body}))
+  }
+
   return window.fetch(url, {
     method: 'POST',
     headers: {

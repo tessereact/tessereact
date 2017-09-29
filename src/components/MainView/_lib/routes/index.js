@@ -25,6 +25,7 @@ export function checkIfRouteExists (routeData, scenarios) {
         History.push('/')
       break
     case 'home':
+    case 'demo':
       break
     default:
       History.push('/')
@@ -49,6 +50,28 @@ export function checkForHomeRoute (routeData, scenarios) {
 function redirectToFirstScenario (scenarios) {
   const scenario = sortScenarios(scenarios)[0]
   redirectToScenario(scenario)
+}
+
+/**
+ * Check if the current route is home (/) and redirect to /demo.
+ *
+ * @param {RouteData} routeData
+ */
+export function checkForHomeRouteDemoMode (routeData, scenarios) {
+  const routeName = routeData.route.name
+
+  if (routeName === 'home') {
+    History.push('/demo')
+  }
+}
+
+/**
+ * Redirect to home (/).
+ *
+ * @param {RouteData} routeData
+ */
+export function redirectToHome (routeData, scenarios) {
+  History.push('/')
 }
 
 /**

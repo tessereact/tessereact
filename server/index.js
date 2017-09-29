@@ -86,6 +86,7 @@ module.exports = function server (cwd, config, callback) {
       app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
       app.get('/contexts/:context/scenarios/:scenario', renderIndex)
       app.get('/contexts/:context', renderIndex)
+      app.get('/demo', renderIndex)
       app.get('/', renderIndex)
 
       if (process.env.CI) {
