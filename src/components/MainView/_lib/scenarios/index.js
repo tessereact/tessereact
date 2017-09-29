@@ -1,3 +1,19 @@
+import {
+  generateScenarioId,
+  buildSnapshotCSS
+} from '../styles'
+import formatHTML from '../formatHTML'
+import {
+  diffSnapshots,
+  diffToHTML
+} from '../diff'
+import buildScreenshotPage from '../buildScreenshotPage'
+
+const defaultScreenshotSizes = [
+  {width: 320, height: 568, alias: 'iPhone SE'},
+  {width: 1024, height: 768}
+]
+
 /**
  * Find a scenario by the name of the scenario and the name of its context.
  *
@@ -108,27 +124,57 @@ export function acceptScenario (scenarios, acceptedScenario) {
  * @param {ScenarioObject} scenario - scenario sent by the server
  * @returns {Array<ScenarioObject>} new scenario array
  */
-export function resolveScenario (scenarios, scenario) {
+export function resolveScenario (scenarios, scenario, styles) {
+  const {name, context, snapshot: oldSnapshot, snapshotCSS: oldSnapshotCSS} = scenario
+
   const storedScenarioIndex = findScenarioIndex(
     scenarios,
-    scenario.context,
-    scenario.name
+    context,
+    name
   )
 
   const storedScenario = scenarios[storedScenarioIndex]
 
+  const element = storedScenario.getElement()
+
+  const snapshot = formatHTML(storedScenario.getSnapshot())
+  const snapshotCSS = storedScenario.options.css
+    ? buildSnapshotCSS(
+        styles,
+        document.getElementById(generateScenarioId(storedScenario)),
+        document.documentElement,
+        document.body
+      )
+    : null
+
+  const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
+
+  let diffCSS
+  let screenshotData
+  if (storedScenario.options.css) {
+    diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
+
+    if (storedScenario.options.screenshot && (diff || diffCSS)) {
+      screenshotData = {
+        before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
+        after: buildScreenshotPage(snapshot, snapshotCSS),
+        screenshotSizes: defaultScreenshotSizes
+      }
+    }
+  }
+
   return Object.assign([], scenarios, {
     [storedScenarioIndex]: {
-      name: scenario.name,
-      context: scenario.context,
-      element: storedScenario.getElement(),
-      diff: scenario.diff,
-      diffCSS: scenario.diffCSS,
-      hasDiff: scenario.diff || scenario.diffCSS,
-      snapshot: scenario.snapshot,
-      snapshotCSS: scenario.snapshotCSS,
+      name,
+      context,
+      element,
+      diff,
+      diffCSS,
+      hasDiff: diff || diffCSS,
+      snapshot,
+      snapshotCSS,
       status: 'resolved',
-      screenshotData: scenario.screenshotData
+      screenshotData
     }
   })
 }

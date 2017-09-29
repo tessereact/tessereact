@@ -16,13 +16,8 @@ const {
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,
-  diffScreenshots,
-  buildScreenshotPage
+  diffScreenshots
 } = require('./_lib/screenshots')
-const {
-  diffSnapshots,
-  diffToHTML
-} = require('./_lib/diff')
 const chromedriver = require('chromedriver')
 
 const defaultScreenshotSizes = [
@@ -136,33 +131,17 @@ module.exports = function server (cwd, config, callback) {
     const {scenarios} = req.body
 
     const payload = await Promise.all(
-      scenarios.map(({ name, context, snapshot, snapshotCSS, options = {} }) => new Promise(async resolve => {
-        const oldSnapshot = await readSnapshot(snapshotsDir, name, context, 'html')
-        const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
-
-        let diffCSS
-        let screenshotData
-        if (options.css) {
-          const oldSnapshotCSS = await readSnapshot(snapshotsDir, name, context, 'css')
-          diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
-
-          if (options.screenshot && (diff || diffCSS)) {
-            screenshotData = {
-              before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
-              after: buildScreenshotPage(snapshot, snapshotCSS),
-              screenshotSizes
-            }
-          }
-        }
+      scenarios.map(({ name, context, options = {} }) => new Promise(async resolve => {
+        const [snapshot, snapshotCSS] = await Promise.all([
+          readSnapshot(snapshotsDir, name, context, 'html'),
+          readSnapshot(snapshotsDir, name, context, 'css')
+        ])
 
         return resolve({
           name,
           context,
-          diff,
-          diffCSS,
           snapshot,
-          snapshotCSS,
-          screenshotData
+          snapshotCSS
         })
       }))
     )

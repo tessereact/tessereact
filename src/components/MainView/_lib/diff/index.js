@@ -1,5 +1,5 @@
-const difflib = require('difflib')
-const { Diff2Html } = require('diff2html')
+import difflib from 'difflib'
+import { Diff2Html } from 'diff2html'
 
 /**
  * Build a diff patch from two snapshots.
@@ -9,7 +9,7 @@ const { Diff2Html } = require('diff2html')
  * @param {String} snapshotB
  * @returns {String} patch file
  */
-function diffSnapshots (name, snapshotA, snapshotB) {
+export function diffSnapshots (name, snapshotA, snapshotB) {
   return difflib.unifiedDiff(
     snapshotA == null ? null : snapshotA.split('\n'),
     snapshotB == null ? null : snapshotB.split('\n'),
@@ -27,15 +27,10 @@ function diffSnapshots (name, snapshotA, snapshotB) {
  * @param {String} diff - patch file
  * @returns {String} - diff in HTML format
  */
-function diffToHTML (diff) {
+export function diffToHTML (diff) {
   if (!diff) {
     return ''
   }
 
   return Diff2Html.getPrettyHtml(diff)
-}
-
-module.exports = {
-  diffSnapshots,
-  diffToHTML
 }

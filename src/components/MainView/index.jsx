@@ -17,11 +17,9 @@ import {
   requestScenarioAcceptance
 } from './_lib/scenarios'
 import generateTreeNodes from './_lib/generateTreeNodes'
-import formatHTML from './_lib/formatHTML'
 import {
   generateScenarioId,
-  prepareStyles,
-  buildSnapshotCSS
+  prepareStyles
 } from './_lib/styles'
 
 // react components
@@ -46,10 +44,6 @@ try {
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
-// We don't need the component to update right away when `cssLoaded` is changed
-// so we keep it as an external variable instead of state.
-let cssLoaded = false
-
 /**
  * UI of main Tessereact window.
  * @extends React.Component
@@ -63,7 +57,8 @@ class MainView extends React.Component {
     super(props, context)
 
     this.state = {
-      scenarios: props.data
+      scenarios: props.data,
+      cssLoaded: false
     }
   }
 
@@ -74,32 +69,19 @@ class MainView extends React.Component {
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/snapshots-list`
 
+    const date = Date.now()
+
     onLoad()
       .then(() => {
         const { scenarios } = this.state
         const styles = prepareStyles(document.styleSheets)
 
         const scenariosToLoad = getScenariosToLoad(routeData, scenarios)
-          .map(scenario => {
-            const snapshotCSS = scenario.options.css
-              ? buildSnapshotCSS(
-                  styles,
-                  document.getElementById(generateScenarioId(scenario)),
-                  document.documentElement,
-                  document.body
-                )
-              : null
-
-            return {
-              name: scenario.name,
-              context: scenario.context,
-              snapshot: formatHTML(scenario.getSnapshot()),
-              snapshotCSS,
-              options: scenario.options
-            }
-          })
-
-        cssLoaded = true
+          .map(scenario => ({
+            name: scenario.name,
+            context: scenario.context,
+            options: scenario.options
+          }))
 
         const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
 
@@ -107,17 +89,18 @@ class MainView extends React.Component {
           chunks.map(scenariosChunk =>
             postJSON(url, { scenarios: scenariosChunk })
               .then(response => response.json())
-              .then(({scenarios: responseScenarios}) =>
-                this.setState({
-                  scenarios: responseScenarios.reduce(resolveScenario, scenarios)
-                })
-              )
+              .then(({scenarios: responseScenarios}) => {
+                const newScenarios = responseScenarios.reduce((acc, s) => resolveScenario(acc, s, styles), scenarios)
+                this.setState({scenarios: newScenarios, cssLoaded: true})
+              })
               .catch(e => console.log('Snapshot server is not available!', e))
           )
         )
       })
       .then(() => {
         const { scenarios } = this.state
+
+        console.log(`Finished loading in ${Date.now() - date}`)
 
         checkForHomeRoute(routeData, scenarios)
         checkIfRouteExists(routeData, scenarios)
@@ -141,10 +124,6 @@ class MainView extends React.Component {
       .catch(e => {
         console.log('Unexpected error!', e)
       })
-  }
-
-  componentWillUnmount () {
-    cssLoaded = false
   }
 
   componentWillReceiveProps (nextProps) {
@@ -182,7 +161,7 @@ class MainView extends React.Component {
    * From it we will fetch the css snapshots
    */
   _renderFetchCSS () {
-    if (cssLoaded) {
+    if (this.state.cssLoaded) {
       return null
     }
 
