@@ -5,7 +5,7 @@ import ComponentPreview from '../../styled/ComponentPreview'
 import AcceptButton from '../../styled/AcceptButton'
 import Button from '../../styled/Button'
 import SmallButton from '../../styled/SmallButton'
-import ScenarioFrame from '../ScenarioFrame'
+import ScenarioFrame from './ScenarioFrame'
 import PanelGroup from './PanelGroup'
 import './style.css'
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import List from '../List'
+import List from './List'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
 import Link from '../../lib/link'

@@ -1,16 +1,16 @@
 import React from 'react'
 import {some} from 'lodash'
 import List from '../List'
-import Sidebar from '../../styled/Sidebar'
-import Arrow from '../../styled/Arrow'
-import ContextNavLink from '../../styled/ContextNavLink'
+import Sidebar from '../../../styled/Sidebar'
+import Arrow from '../../../styled/Arrow'
+import ContextNavLink from '../../../styled/ContextNavLink'
 import {
   SEARCH_LIMIT,
   matchesQuery,
   isContextSelected,
   isScenarioSelected,
   areContextChildrenSelected
-} from '../_lib/utils'
+} from '../../_lib/utils'
 
 let PropTypes
 try {

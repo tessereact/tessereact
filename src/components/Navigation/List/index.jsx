@@ -1,7 +1,7 @@
 import React from 'react'
 import Context from '../Context'
 import Scenario from '../Scenario'
-import StyledList from '../../styled/List'
+import StyledList from '../../../styled/List'
 
 let PropTypes
 try {
