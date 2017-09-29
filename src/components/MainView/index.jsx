@@ -1,14 +1,14 @@
 import React from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
-import { getJSON, postJSON, postJSONAndGetURL } from './_lib/requests'
-import onLoad from './_lib/onLoad'
+import { getJSON, postJSON, postJSONAndGetURL } from '../_lib/requests'
+import onLoad from '../_lib/onLoad'
 import {
   checkIfRouteExists,
   checkForHomeRoute,
   checkForHomeRouteDemoMode,
   redirectToFirstFailingScenario
-} from './_lib/routes'
+} from '../_lib/routes'
 import {
   findScenario,
   getScenariosToLoad,
@@ -16,12 +16,12 @@ import {
   resolveScenario,
   changeScenarioScreenshotData,
   requestScenarioAcceptance
-} from './_lib/scenarios'
-import generateTreeNodes from './_lib/generateTreeNodes'
+} from '../_lib/scenarios'
+import generateTreeNodes from '../_lib/generateTreeNodes'
 import {
   generateScenarioId,
   prepareStyles
-} from './_lib/styles'
+} from '../_lib/styles'
 
 // react components
 import Link from '../../lib/link'

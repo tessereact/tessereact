@@ -1,4 +1,4 @@
-import History from '../../../../lib/router/history'
+import History from '../../../lib/router/history'
 import { findScenario } from '../scenarios'
 import { sortBy } from 'lodash'
 

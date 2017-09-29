@@ -3,7 +3,7 @@ import Header from '../../styled/Header'
 import StyledContent from '../../styled/Content'
 import ComponentPreview from '../../styled/ComponentPreview'
 
-import { redirectToHome } from '../MainView/_lib/routes'
+import { redirectToHome } from '../_lib/routes'
 
 /**
  * UI element which shows demo page to the user.
