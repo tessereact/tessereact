@@ -20,11 +20,6 @@ const {
 } = require('./_lib/screenshots')
 const chromedriver = require('chromedriver')
 
-const defaultScreenshotSizes = [
-  {width: 320, height: 568, alias: 'iPhone SE'},
-  {width: 1024, height: 768}
-]
-
 const defaultPort = 5001
 const defaultChromedriverPort = 5003
 
@@ -38,8 +33,6 @@ const defaultChromedriverPort = 5003
 module.exports = function server (cwd, config, callback) {
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
-
-  const screenshotSizes = config.screenshotSizes || defaultScreenshotSizes
 
   const app = express()
   app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
@@ -164,7 +157,7 @@ module.exports = function server (cwd, config, callback) {
       await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
     }
 
-    res.send('OK')
+    res.send({status: 'OK'})
   })
 
   app.options('/screenshot', cors())

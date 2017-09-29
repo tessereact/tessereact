@@ -69,7 +69,7 @@ class MainView extends React.Component {
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/read-snapshots`
 
-    const date = Date.now()
+    const benchmark = Date.now()
 
     onLoad()
       .then(() => {
@@ -110,7 +110,7 @@ class MainView extends React.Component {
       .then(() => {
         const { scenarios } = this.state
 
-        console.log(`Finished loading in ${Date.now() - date}`)
+        console.log(`Finished loading in ${Date.now() - benchmark}`)
 
         checkForHomeRoute(routeData, scenarios)
         checkIfRouteExists(routeData, scenarios)

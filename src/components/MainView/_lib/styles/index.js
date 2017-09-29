@@ -11,7 +11,7 @@ export function generateScenarioId (scenario) {
  * Convert style sheet object to JSON suitable for filtering by `buildSnapshotCSS`.
  *
  * @param {StyleSheetList} styleSheets
- * @returns {Array} preparesStyleSheets
+ * @returns {Array<StyleObject>} preparesStyleSheets
  */
 export function prepareStyles (styleSheets) {
   return toArray(styleSheets).reduce(
@@ -50,7 +50,7 @@ function toArray (object) {
  * Filter only those CSS rules which are used in the provided HTML node
  * and compile them into CSS file.
  *
- * @param {Array} styles - array of styles fetched from frontend
+ * @param {Array<StyleObject>} styles - array of styles fetched from frontend
  * @param {Node} node
  * @param {Node} documentElement - <html> tag node of the document
  * @param {Node} body - <body> tag node of the document
@@ -99,7 +99,7 @@ function getMatchingStylesFromNode (styles, node, documentElement, body) {
 
     // Strip all pseudoclasses and pseudoelements from the selector
     const selectorText = rule.selectorText
-      .replace(/([^\s:]*)(::?[a-z\-]+(\([^)]*\))?)+/g, (_, selector) => selector || '*')
+      .replace(/([^\s:]*)(::?[a-z-]+(\([^)]*\))?)+/g, (_, selector) => selector || '*')
 
     // Check if any node matches the resulting selector and pass the rule if so
     return (node.querySelector(selectorText) || documentElement.matches(selectorText) || body.matches(selectorText)) && rule

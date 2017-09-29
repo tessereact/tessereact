@@ -1,12 +1,6 @@
-import {
-  generateScenarioId,
-  buildSnapshotCSS
-} from '../styles'
+import { generateScenarioId, buildSnapshotCSS } from '../styles'
 import formatHTML from '../formatHTML'
-import {
-  diffSnapshots,
-  diffToHTML
-} from '../diff'
+import { diffSnapshots, diffToHTML } from '../diff'
 import buildScreenshotPage from '../buildScreenshotPage'
 
 const defaultScreenshotSizes = [
@@ -117,11 +111,12 @@ export function acceptScenario (scenarios, acceptedScenario) {
 }
 
 /**
- * Replace scenario with the new version sent by the server
- * in the given scenario array and return the array.
+ * Calculate diffs for the scenario, using old snapshots received from the server.
+ * Replace the scenario with the new version in the given scenario array and return the array.
  *
  * @param {Array<ScenarioObject>} scenarios
  * @param {ScenarioObject} scenario - scenario sent by the server
+ * @param {Array<StyleObject>} styles - scenario sent by the server
  * @returns {Array<ScenarioObject>} new scenario array
  */
 export function resolveScenario (scenarios, scenario, styles) {
