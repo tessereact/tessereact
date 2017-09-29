@@ -67,7 +67,7 @@ class MainView extends React.Component {
    */
   componentWillMount () {
     const { routeData } = this.props
-    const url = `//${this.props.host}:${this.props.port}/snapshots-list`
+    const url = `//${this.props.host}:${this.props.port}/read-snapshots`
 
     const date = Date.now()
 
@@ -248,7 +248,7 @@ class MainView extends React.Component {
    */
   _acceptSnapshot (scenario) {
     const {host, port} = this.props
-    const url = `//${host}:${port}/snapshots`
+    const url = `//${host}:${port}/write-snapshot`
 
     postJSON(url, requestScenarioAcceptance(scenario)).then(() => {
       const scenarios = acceptScenario(this.state.scenarios, scenario)
@@ -265,7 +265,7 @@ class MainView extends React.Component {
    */
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
-    const url = `//${host}:${port}/screenshots`
+    const url = `//${host}:${port}/screenshot`
     const {before, after, screenshotSizes, savedScreenshots} = scenario.screenshotData
 
     const screenshotIsAlreadyCached = savedScreenshots && savedScreenshots[screenshotSizeIndex]

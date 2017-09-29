@@ -130,10 +130,8 @@ module.exports = function server (cwd, config, callback) {
     res.send(config)
   })
 
-  // TODO: Why we are doing `post` instead of `get` here?
-  // Seems we need just one route (/snapshots) with `get/post` support.
-  app.options('/snapshots-list', cors())
-  app.post('/snapshots-list', async (req, res) => {
+  app.options('/read-snapshots', cors())
+  app.post('/read-snapshots', async (req, res) => {
     const {scenarios} = req.body
 
     const payload = await Promise.all(
@@ -154,8 +152,8 @@ module.exports = function server (cwd, config, callback) {
     res.send({scenarios: payload})
   })
 
-  app.options('/snapshots', cors())
-  app.post('/snapshots', async (req, res) => {
+  app.options('/write-snapshot', cors())
+  app.post('/write-snapshot', async (req, res) => {
     const {name, context, snapshot, snapshotCSS} = req.body
     if (snapshotCSS) {
       await Promise.all([
@@ -169,8 +167,8 @@ module.exports = function server (cwd, config, callback) {
     res.send('OK')
   })
 
-  app.options('/screenshots', cors())
-  app.post('/screenshots', async (req, res) => {
+  app.options('/screenshot', cors())
+  app.post('/screenshot', async (req, res) => {
     const {before, after, size} = req.body
     const beforeURL = `data:text/html;charset=utf-8,${encodeURIComponent(before)}`
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
