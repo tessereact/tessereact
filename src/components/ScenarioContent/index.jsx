@@ -98,21 +98,23 @@ class ScenarioContent extends React.Component {
   _renderSingleColumn (scenario, tab) {
     const {onAcceptSnapshot} = this.props
 
+    const {name, context, hasDiff, diff, diffCSS, screenshotData} = scenario
+
     return <StyledContent.Wrapper>
       <Header>
         <div>
-          <span>{scenario.name}</span>
-          {scenario.hasDiff && <Button selected={false} onClick={this._toggleTwoColumns.bind(this)}>Two column mode</Button>}
-          {scenario.hasDiff && <Button selected={tab === 'component'} onClick={() => this.setState({tab: 'component'})}>Component</Button>}
-          {scenario.diff && <Button selected={tab === 'html'} onClick={() => this.setState({tab: 'html'})}>HTML</Button>}
-          {scenario.diffCSS && <Button selected={tab === 'css'} onClick={() => this.setState({tab: 'css'})}>CSS</Button>}
-          {scenario.screenshotData && <Button selected={tab === 'screenshot'} onClick={() => this.setState({tab: 'screenshot'})}>Screenshot</Button>}
+          <span>{name}</span>
+          {hasDiff && <Button selected={false} onClick={this._toggleTwoColumns.bind(this)}>Two column mode</Button>}
+          {hasDiff && <Button selected={tab === 'component'} onClick={() => this.setState({tab: 'component'})}>Component</Button>}
+          {hasDiff && diff && <Button selected={tab === 'html'} onClick={() => this.setState({tab: 'html'})}>HTML</Button>}
+          {hasDiff && diffCSS && <Button selected={tab === 'css'} onClick={() => this.setState({tab: 'css'})}>CSS</Button>}
+          {screenshotData && <Button selected={tab === 'screenshot'} onClick={() => this.setState({tab: 'screenshot'})}>Screenshot</Button>}
         </div>
         <div>
-          <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
+          <a href={`/contexts/${context}/scenarios/${name}/view`} target='_blank'>
             <Button>View</Button>
           </a>
-          {scenario.hasDiff && <AcceptButton onClick={onAcceptSnapshot}>Accept & next</AcceptButton>}
+          {hasDiff && <AcceptButton onClick={onAcceptSnapshot}>Accept & next</AcceptButton>}
         </div>
       </Header>
 
