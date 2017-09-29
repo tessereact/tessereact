@@ -162,7 +162,7 @@ class MainView extends React.Component {
           failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
           scenariosCount={scenarios.length}
           nodes={generateTreeNodes(scenarios.filter(c => c.status === 'resolved'))}
-          selectedRoute={{context, scenario}}
+          selectedRoute={{context, scenario, name: routeName}}
         />
         <Content>
           {routeName === 'context' && this._renderContext(context)}

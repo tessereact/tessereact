@@ -23,7 +23,7 @@ try {
  * Component which represents context node of the node tree in sidebar.
  * @extends React.Component
  * @property {ContextObject} props.node
- * @property {Object} props.selectedRoute - scenario and context name of selected route
+ * @property {Object} props.selectedRoute - name of selected route, and if available, selected scenario and context
  * @property {String} [props.searchQuery]
  */
 class Context extends React.Component {

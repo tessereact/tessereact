@@ -14,7 +14,7 @@ try {
  * Component which represents scenario node of the node tree in sidebar.
  * @extends React.Component
  * @property {ScenarioObject} props.node
- * @property {Object} props.selectedRoute - scenario and context name of selected route
+ * @property {Object} props.selectedRoute - name of selected route, and if available, selected scenario and context
  * @property {String} [props.searchQuery]
  * @property {Boolean} [props.child] - is the scenarios is inside a context
  */

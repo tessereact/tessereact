@@ -1,5 +1,6 @@
 import React from 'react'
 import List from './List'
+import Footer from './Footer'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
 import Link from '../../lib/link'
@@ -18,7 +19,7 @@ try {
  * @property {Number} props.scenariosCount - total number of scenarios created by user
  * @property {Number} props.loadedScenariosCount - number of scenarios sent by the server
  * @property {Number} props.failedScenariosCount - number of scenarios that have diff
- * @property {Object} props.selectedRoute - scenario and context name of selected route
+ * @property {Object} props.selectedRoute - name of selected route, and if available, selected scenario and context
  */
 class Navigation extends React.Component {
   constructor (props, context) {
@@ -50,12 +51,6 @@ class Navigation extends React.Component {
     </Sidebar.Progress>
   }
 
-  _renderFooter () {
-    return <Sidebar.ListItem>
-      About demo mode
-    </Sidebar.ListItem>
-  }
-
   render () {
     const {searchQuery} = this.state
     const {nodes, selectedRoute} = this.props
@@ -75,12 +70,7 @@ class Navigation extends React.Component {
             selectedRoute={selectedRoute}
           />
         </Sidebar.List>
-        {
-          window.__tessereactDemoMode &&
-            <Sidebar.Footer>
-              {this._renderFooter()}
-            </Sidebar.Footer>
-        }
+        <Footer selectedRoute={selectedRoute} />
       </Sidebar>
     )
   }
