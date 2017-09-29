@@ -17,13 +17,19 @@ export function prepareStyles (styleSheets) {
   return toArray(styleSheets).reduce(
     (array, {rules}) =>
       array.concat(
-        toArray(rules).map(prepareCSSRule)
+        toArray(rules).map(prepareCSSRule).filter(x => x)
       ),
     []
   )
 }
 
 function prepareCSSRule (rule) {
+  // Filter all rules marked by `.--tessereact--`
+  // They are used inside the Tessereact application
+  if (rule.cssText.includes('.--tessereact--')) {
+    return null
+  }
+
   const matchResult = rule.cssText.match(/^([^{]*){/)
 
   const preparedRule = {
