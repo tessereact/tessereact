@@ -130,6 +130,10 @@ class ScenarioContent extends React.Component {
    * @param {'html'|'css'|'screenshot'|'component'|'resizingComponent'} tab
    */
   _renderContent (scenario, tab) {
+    if (scenario.status !== 'resolved') {
+      return <div>Loading...</div>
+    }
+
     switch (tab) {
       case 'html':
         return <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario.diff) }} />

@@ -229,7 +229,7 @@ class MainView extends React.Component {
             <ScenarioBlock>
               {this._renderSectionHeader(s)}
               <ScenarioBlockContent key={s.name}>
-                {s.snapshot && <div dangerouslySetInnerHTML={{__html: s.snapshot}} />}
+                {s.snapshot ? <div dangerouslySetInnerHTML={{__html: s.snapshot}} /> : <div>Loading...</div>}
               </ScenarioBlockContent>
             </ScenarioBlock>
           </Link>
