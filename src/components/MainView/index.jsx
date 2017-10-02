@@ -71,7 +71,7 @@ class MainView extends React.Component {
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/read-snapshots`
 
-    const benchmark = Date.now()
+    const startDate = Date.now()
 
     onLoad()
       .then(() => {
@@ -110,7 +110,7 @@ class MainView extends React.Component {
       .then(() => {
         const { scenarios } = this.state
 
-        console.log(`Finished loading in ${Date.now() - benchmark}`)
+        console.log(`Finished loading in ${Date.now() - startDate}`)
 
         if (window.__tessereactDemoMode) {
           checkForHomeRouteDemoMode(routeData)
