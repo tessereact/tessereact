@@ -120,6 +120,9 @@ export function acceptScenario (scenarios, acceptedScenario) {
  * @returns {Array<ScenarioObject>} new scenario array
  */
 export function resolveScenario (scenarios, scenario, styles) {
+  let diffCSS
+  let screenshotData
+
   const {name, context, snapshot: oldSnapshot, snapshotCSS: oldSnapshotCSS} = scenario
 
   const storedScenarioIndex = findScenarioIndex(
@@ -144,8 +147,6 @@ export function resolveScenario (scenarios, scenario, styles) {
 
   const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
 
-  let diffCSS
-  let screenshotData
   if (storedScenario.options.css) {
     diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
 
