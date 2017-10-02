@@ -16,19 +16,9 @@ const {
   createScreenshot,
   disconnectFromBrowser,
   deleteScreenshot,
-  diffScreenshots,
-  buildScreenshotPage
+  diffScreenshots
 } = require('./_lib/screenshots')
-const {
-  diffSnapshots,
-  diffToHTML
-} = require('./_lib/diff')
 const chromedriver = require('chromedriver')
-
-const defaultScreenshotSizes = [
-  {width: 320, height: 568, alias: 'iPhone SE'},
-  {width: 1024, height: 768}
-]
 
 const defaultPort = 5001
 const defaultChromedriverPort = 5003
@@ -43,8 +33,6 @@ const defaultChromedriverPort = 5003
 module.exports = function server (cwd, config, callback) {
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
-
-  const screenshotSizes = config.screenshotSizes || defaultScreenshotSizes
 
   const app = express()
   app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
@@ -83,7 +71,8 @@ module.exports = function server (cwd, config, callback) {
         const locals = {
           entryPath: process.env.CI ? config.builtEntryPath : config.entryURL,
           wsURL,
-          tessereactServerPort: config.port
+          tessereactServerPort: config.port,
+          config: JSON.stringify(config)
         }
 
         ejs.renderFile(templatePath, locals, {}, (err, templateHTML) => {
@@ -97,6 +86,7 @@ module.exports = function server (cwd, config, callback) {
       app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
       app.get('/contexts/:context/scenarios/:scenario', renderIndex)
       app.get('/contexts/:context', renderIndex)
+      app.get('/demo', renderIndex)
       app.get('/', renderIndex)
 
       if (process.env.CI) {
@@ -129,48 +119,35 @@ module.exports = function server (cwd, config, callback) {
       }
     })
 
-  // TODO: Why we are doing `post` instead of `get` here?
-  // Seems we need just one route (/snapshots) with `get/post` support.
-  app.options('/snapshots-list', cors())
-  app.post('/snapshots-list', async (req, res) => {
+  app.options('/config', cors())
+  app.get('/config', async (req, res) => {
+    res.send(config)
+  })
+
+  app.options('/read-snapshots', cors())
+  app.post('/read-snapshots', async (req, res) => {
     const {scenarios} = req.body
 
     const payload = await Promise.all(
-      scenarios.map(({ name, context, snapshot, snapshotCSS, options = {} }) => new Promise(async resolve => {
-        const oldSnapshot = await readSnapshot(snapshotsDir, name, context, 'html')
-        const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
-
-        let diffCSS
-        let screenshotData
-        if (options.css) {
-          const oldSnapshotCSS = await readSnapshot(snapshotsDir, name, context, 'css')
-          diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
-
-          if (options.screenshot && (diff || diffCSS)) {
-            screenshotData = {
-              before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
-              after: buildScreenshotPage(snapshot, snapshotCSS),
-              screenshotSizes
-            }
-          }
-        }
+      scenarios.map(({ name, context, options = {} }) => new Promise(async resolve => {
+        const [snapshot, snapshotCSS] = await Promise.all([
+          readSnapshot(snapshotsDir, name, context, 'html'),
+          readSnapshot(snapshotsDir, name, context, 'css')
+        ])
 
         return resolve({
           name,
           context,
-          diff,
-          diffCSS,
           snapshot,
-          snapshotCSS,
-          screenshotData
+          snapshotCSS
         })
       }))
     )
     res.send({scenarios: payload})
   })
 
-  app.options('/snapshots', cors())
-  app.post('/snapshots', async (req, res) => {
+  app.options('/write-snapshot', cors())
+  app.post('/write-snapshot', async (req, res) => {
     const {name, context, snapshot, snapshotCSS} = req.body
     if (snapshotCSS) {
       await Promise.all([
@@ -181,11 +158,11 @@ module.exports = function server (cwd, config, callback) {
       await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
     }
 
-    res.send('OK')
+    res.send({status: 'OK'})
   })
 
-  app.options('/screenshots', cors())
-  app.post('/screenshots', async (req, res) => {
+  app.options('/screenshot', cors())
+  app.post('/screenshot', async (req, res) => {
     const {before, after, size} = req.body
     const beforeURL = `data:text/html;charset=utf-8,${encodeURIComponent(before)}`
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`

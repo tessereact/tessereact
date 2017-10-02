@@ -1,13 +1,14 @@
 import React from 'react'
 import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
-import postJSON from './_lib/postJSON'
-import onLoad from './_lib/onLoad'
+import { getJSON, postJSON, postJSONAndGetURL } from '../_lib/requests'
+import onLoad from '../_lib/onLoad'
 import {
   checkIfRouteExists,
   checkForHomeRoute,
+  checkForHomeRouteDemoMode,
   redirectToFirstFailingScenario
-} from './_lib/routes'
+} from '../_lib/routes'
 import {
   findScenario,
   getScenariosToLoad,
@@ -15,18 +16,17 @@ import {
   resolveScenario,
   changeScenarioScreenshotData,
   requestScenarioAcceptance
-} from './_lib/scenarios'
-import generateTreeNodes from './_lib/generateTreeNodes'
-import formatHTML from './_lib/formatHTML'
+} from '../_lib/scenarios'
+import generateTreeNodes from '../_lib/generateTreeNodes'
 import {
   generateScenarioId,
-  prepareStyles,
-  buildSnapshotCSS
-} from './_lib/styles'
+  prepareStyles
+} from '../_lib/styles'
 
 // react components
 import Link from '../../lib/link'
 import ScenarioContent from '../ScenarioContent'
+import DemoContent from '../DemoContent'
 
 // styled components
 import Container from '../../styled/Container'
@@ -46,10 +46,6 @@ try {
 
 const SCENARIO_CHUNK_SIZE = Infinity
 
-// We don't need the component to update right away when `cssLoaded` is changed
-// so we keep it as an external variable instead of state.
-let cssLoaded = false
-
 /**
  * UI of main Tessereact window.
  * @extends React.Component
@@ -63,7 +59,8 @@ class MainView extends React.Component {
     super(props, context)
 
     this.state = {
-      scenarios: props.data
+      scenarios: props.data,
+      cssLoaded: false
     }
   }
 
@@ -72,46 +69,40 @@ class MainView extends React.Component {
    */
   componentWillMount () {
     const { routeData } = this.props
-    const url = `//${this.props.host}:${this.props.port}/snapshots-list`
+    const url = `//${this.props.host}:${this.props.port}/read-snapshots`
+
+    const startDate = Date.now()
 
     onLoad()
+      .then(() => {
+        // Get config from server if not supplied via ejs
+        if (!window.__tessereactConfig) {
+          return getJSON(`//${this.props.host}:${this.props.port}/config`)
+            .then(config => {
+              window.__tessereactConfig = config
+            })
+        }
+      })
       .then(() => {
         const { scenarios } = this.state
         const styles = prepareStyles(document.styleSheets)
 
         const scenariosToLoad = getScenariosToLoad(routeData, scenarios)
-          .map(scenario => {
-            const snapshotCSS = scenario.options.css
-              ? buildSnapshotCSS(
-                  styles,
-                  document.getElementById(generateScenarioId(scenario)),
-                  document.documentElement,
-                  document.body
-                )
-              : null
-
-            return {
-              name: scenario.name,
-              context: scenario.context,
-              snapshot: formatHTML(scenario.getSnapshot()),
-              snapshotCSS,
-              options: scenario.options
-            }
-          })
-
-        cssLoaded = true
+          .map(scenario => ({
+            name: scenario.name,
+            context: scenario.context,
+            options: scenario.options
+          }))
 
         const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
 
         return Promise.all(
           chunks.map(scenariosChunk =>
             postJSON(url, { scenarios: scenariosChunk })
-              .then(response => response.json())
-              .then(({scenarios: responseScenarios}) =>
-                this.setState({
-                  scenarios: responseScenarios.reduce(resolveScenario, scenarios)
-                })
-              )
+              .then(({scenarios: responseScenarios}) => {
+                const newScenarios = responseScenarios.reduce((acc, s) => resolveScenario(acc, s, styles), scenarios)
+                this.setState({scenarios: newScenarios, cssLoaded: true})
+              })
               .catch(e => console.log('Snapshot server is not available!', e))
           )
         )
@@ -119,8 +110,14 @@ class MainView extends React.Component {
       .then(() => {
         const { scenarios } = this.state
 
-        checkForHomeRoute(routeData, scenarios)
-        checkIfRouteExists(routeData, scenarios)
+        console.log(`Finished loading in ${Date.now() - startDate}`)
+
+        if (window.__tessereactDemoMode) {
+          checkForHomeRouteDemoMode(routeData)
+        } else {
+          checkForHomeRoute(routeData, scenarios)
+          checkIfRouteExists(routeData, scenarios)
+        }
 
         // Report to CI
         if (window.__tessereactWSURL) {
@@ -143,10 +140,6 @@ class MainView extends React.Component {
       })
   }
 
-  componentWillUnmount () {
-    cssLoaded = false
-  }
-
   componentWillReceiveProps (nextProps) {
     checkForHomeRoute(nextProps.routeData, this.state.scenarios)
   }
@@ -167,11 +160,12 @@ class MainView extends React.Component {
           failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
           scenariosCount={scenarios.length}
           nodes={generateTreeNodes(scenarios.filter(c => c.status === 'resolved'))}
-          selectedRoute={{context, scenario}}
+          selectedRoute={{context, scenario, name: routeName}}
         />
         <Content>
           {routeName === 'context' && this._renderContext(context)}
           {routeName === 'scenario' && this._renderScenario(findScenario(scenarios, context, scenario))}
+          {routeName === 'demo' && <DemoContent />}
         </Content>
       </Container>
     )
@@ -182,7 +176,7 @@ class MainView extends React.Component {
    * From it we will fetch the css snapshots
    */
   _renderFetchCSS () {
-    if (cssLoaded) {
+    if (this.state.cssLoaded) {
       return null
     }
 
@@ -247,7 +241,7 @@ class MainView extends React.Component {
    */
   _renderSectionHeader (s) {
     return s.hasDiff
-      ? <Text color='#e91e63' fontSize='14px'>{s.name}</Text>
+      ? <Text color='#e91e63 !important' fontSize='14px'>{s.name}</Text>
       : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   }
 
@@ -259,7 +253,7 @@ class MainView extends React.Component {
    */
   _acceptSnapshot (scenario) {
     const {host, port} = this.props
-    const url = `//${host}:${port}/snapshots`
+    const url = `//${host}:${port}/write-snapshot`
 
     postJSON(url, requestScenarioAcceptance(scenario)).then(() => {
       const scenarios = acceptScenario(this.state.scenarios, scenario)
@@ -276,7 +270,7 @@ class MainView extends React.Component {
    */
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
-    const url = `//${host}:${port}/screenshots`
+    const url = `//${host}:${port}/screenshot`
     const {before, after, screenshotSizes, savedScreenshots} = scenario.screenshotData
 
     const screenshotIsAlreadyCached = savedScreenshots && savedScreenshots[screenshotSizeIndex]
@@ -305,12 +299,8 @@ class MainView extends React.Component {
       return null
     }
 
-    postJSON(url, {before, after, size})
-      .then((response) => {
-        return response.blob()
-      })
-      .then((blob) => {
-        const url = URL.createObjectURL(blob) // eslint-disable-line no-undef
+    postJSONAndGetURL(url, {before, after, size})
+      .then((url) => {
         const scenarios = changeScenarioScreenshotData(
           this.state.scenarios,
           scenario,

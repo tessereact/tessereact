@@ -26,6 +26,7 @@ Sidebar.SearchBox = defaultMixin(styled.div`
 `)
 
 Sidebar.List = defaultMixin(styled.div`
+  flex: auto;
   padding: 20px;
   overflow-y: auto;
 `)
@@ -37,6 +38,11 @@ Sidebar.Progress = defaultMixin(styled.div`
 Sidebar.ListItem = defaultMixin(styled.li`
   list-style: none;
   font-size: 14px;
+`)
+
+Sidebar.Footer = defaultMixin(styled.div`
+  padding: 20px;
+  border-top: 1px solid #4d5056;
 `)
 
 export default defaultMixin(Sidebar)

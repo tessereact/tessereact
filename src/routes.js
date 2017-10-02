@@ -6,6 +6,10 @@ export default new Router([
     name: 'home',
     routes: [
       {
+        path: '/demo',
+        name: 'demo'
+      },
+      {
         path: '/contexts/:context',
         name: 'context',
         routes: [
