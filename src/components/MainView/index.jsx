@@ -11,7 +11,7 @@ import {
 } from '../_lib/routes'
 import {
   findScenario,
-  getScenariosToLoad,
+  getChunksToLoad,
   acceptScenario,
   resolveScenario,
   changeScenarioScreenshotData,
@@ -84,24 +84,25 @@ class MainView extends React.Component {
         }
       })
       .then(() => {
-        const { scenarios } = this.state
         const styles = prepareStyles(document.styleSheets)
 
-        const scenariosToLoad = getScenariosToLoad(routeData, scenarios)
-          .map(scenario => ({
-            name: scenario.name,
-            context: scenario.context,
-            options: scenario.options
-          }))
-
-        const chunks = chunk(scenariosToLoad, SCENARIO_CHUNK_SIZE || Infinity)
+        const chunksToLoad = getChunksToLoad(routeData, this.state.scenarios, SCENARIO_CHUNK_SIZE || Infinity)
+          .map(chunk =>
+            chunk.map(scenario => {
+              return {
+                name: scenario.name,
+                context: scenario.context,
+                options: scenario.options
+              }
+            })
+          )
 
         return Promise.all(
-          chunks.map(scenariosChunk =>
+          chunksToLoad.map(scenariosChunk =>
             postJSON(url, { scenarios: scenariosChunk })
               .then(({scenarios: responseScenarios}) => {
-                const newScenarios = responseScenarios.reduce((acc, s) => resolveScenario(acc, s, styles), scenarios)
-                this.setState({scenarios: newScenarios, cssLoaded: true})
+                const newScenarios = responseScenarios.reduce((acc, s) => resolveScenario(acc, s, styles), this.state.scenarios)
+                this.setState({scenarios: newScenarios})
               })
               .catch(e => console.log('Snapshot server is not available!', e))
           )
@@ -109,6 +110,8 @@ class MainView extends React.Component {
       })
       .then(() => {
         const { scenarios } = this.state
+
+        this.setState({cssLoaded: true})
 
         console.log(`Finished loading in ${Date.now() - startDate}`)
 

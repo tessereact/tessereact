@@ -2,6 +2,7 @@ import { generateScenarioId, buildSnapshotCSS } from '../styles'
 import formatHTML from '../formatHTML'
 import { diffSnapshots, diffToHTML } from '../diff'
 import buildScreenshotPage from '../buildScreenshotPage'
+import { chunk } from 'lodash'
 
 const defaultScreenshotSizes = [
   {width: 320, height: 568, alias: 'iPhone SE'},
@@ -38,13 +39,15 @@ function findScenarioIndex (scenarios, contextName, scenarioName) {
 
 /**
  * Prepare scenario array to be sent to the server,
- * move selected scenario(s) to the start of the array if there are any.
+ * move selected scenario(s) to the start of the array if there are any,
+ * split the array by chunks of the selected size.
  *
  * @param {RouteData} routeData
  * @param {Array<ScenarioObject>} scenarios
+ * @param {Number} [chunkSize]
  * @returns {Array<ScenarioObject>} scenario array prepared to be sent to server
  */
-export function getScenariosToLoad (routeData, scenarios) {
+export function getChunksToLoad (routeData, scenarios, chunkSize = Infinity) {
   const {
     params: { context: contextName, scenario: name },
     route: { name: routeName }
@@ -52,36 +55,47 @@ export function getScenariosToLoad (routeData, scenarios) {
 
   const context = contextName === 'null' ? null : contextName
   if (routeName === 'scenario') {
-    return shiftScenario(scenarios, context, name)
+    return shiftScenario(scenarios, context, name, chunkSize)
   } else if (routeName === 'context') {
-    return shiftContext(scenarios, context)
+    return shiftContext(scenarios, context, chunkSize)
   } else {
-    return scenarios
+    return chunk(scenarios, chunkSize)
   }
 }
 
-function shiftScenario (scenarios, contextName, scenarioName) {
+function shiftScenario (scenarios, contextName, scenarioName, chunkSize) {
   const scenario = findScenario(scenarios, contextName, scenarioName)
 
   if (!scenario) {
     return scenarios
   }
 
-  return [scenario].concat(
-    scenarios.filter(s => {
-      return s.name !== scenarioName || s.context !== contextName
-    })
-  )
+  return [
+    [scenario],
+    ...chunk(
+      scenarios.filter(s => {
+        return s.name !== scenarioName || s.context !== contextName
+      }),
+      chunkSize
+    )
+  ]
 }
 
-function shiftContext (scenarios, contextName) {
-  return scenarios.filter(s => {
-    return s.context === contextName
-  }).concat(
-    scenarios.filter(s => {
-      return s.context !== contextName
-    })
-  )
+function shiftContext (scenarios, contextName, chunkSize) {
+  return [
+    ...chunk(
+      scenarios.filter(s => {
+        return s.context === contextName
+      }),
+      chunkSize
+    ),
+    ...chunk(
+      scenarios.filter(s => {
+        return s.context !== contextName
+      }),
+      chunkSize
+    )
+  ]
 }
 
 /**
