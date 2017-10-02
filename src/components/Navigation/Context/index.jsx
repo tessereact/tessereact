@@ -32,8 +32,7 @@ class Context extends React.Component {
   }
 
   _shouldExpand () {
-    return window.location.pathname.match(`/contexts/${this.props.node.name}`) ||
-      this._hasFailingChildren() || (this._applyFilter() && this._searchMatchChildren())
+    return this._hasFailingChildren() || (this._applyFilter() && this._searchMatchChildren())
   }
 
   _applyFilter () {
@@ -84,7 +83,7 @@ class Context extends React.Component {
             {name}
           </span>
         </ContextNavLink>
-        {this._shouldExpand() && <List nodes={filteredChildren} selectedRoute={selectedRoute} child />}
+        {(active || hasSelectedChildren || this._shouldExpand()) && <List nodes={filteredChildren} selectedRoute={selectedRoute} child />}
       </Sidebar.ListItem>
   }
 }
