@@ -22,6 +22,8 @@ const chromedriver = require('chromedriver')
 
 const defaultPort = 5001
 const defaultChromedriverPort = 5003
+const defaultScreenshotDiffCommand = 'convert -delay 50 $BEFORE $AFTER -loop 0 $RESULT'
+const defaultScreenshotDiffExtension = 'gif'
 
 /**
  * Start the server.
@@ -33,6 +35,9 @@ const defaultChromedriverPort = 5003
 module.exports = function server (cwd, config, callback) {
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
+
+  const screenshotDiffCommand = (config.screenshotDiff && config.screenshotDiff.command) || defaultScreenshotDiffCommand
+  const screenshotDiffExtension = (config.screenshotDiff && config.screenshotDiff.resultExtension) || defaultScreenshotDiffExtension
 
   const app = express()
   app.use(bodyParser.json({limit: '50mb'})) // for parsing application/json
@@ -173,7 +178,7 @@ module.exports = function server (cwd, config, callback) {
     const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, size)
     disconnectFromBrowser(chrome)
 
-    const diffPath = await diffScreenshots(screenshotsDir, beforeScreenshotPath, afterScreenshotPath)
+    const diffPath = await diffScreenshots(screenshotsDir, beforeScreenshotPath, afterScreenshotPath, screenshotDiffCommand, screenshotDiffExtension)
 
     res.sendFile(diffPath, () => {
       deleteScreenshot(beforeScreenshotPath)
