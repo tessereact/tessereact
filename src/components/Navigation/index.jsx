@@ -4,6 +4,7 @@ import Footer from './Footer'
 import FilterInput from '../../styled/FilterInput'
 import Sidebar from '../../styled/Sidebar'
 import Link from '../../lib/link'
+import './style.css'
 
 let PropTypes
 try {
@@ -34,6 +35,11 @@ class Navigation extends React.Component {
     this.setState({searchQuery: event.target.value})
   }
 
+  _renderLoader () {
+    const {loadedScenariosCount, scenariosCount} = this.props
+    return loadedScenariosCount !== scenariosCount && <div className='navigation-loader' />
+  }
+
   _renderLoading () {
     const {loadedScenariosCount, scenariosCount} = this.props
 
@@ -61,6 +67,7 @@ class Navigation extends React.Component {
         <Sidebar.SearchBox>
           <FilterInput placeholder='Search' ref={searchQuery} onChange={this._handleFilter.bind(this)} />
         </Sidebar.SearchBox>
+        {this._renderLoader()}
         <Sidebar.List>
           {this._renderLoading()}
           {this._renderFailed()}
