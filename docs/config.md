@@ -17,3 +17,9 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 `cacheCSS` — should server cache CSS diffs
 
 `screenshotSizes` — a list of sizes for screenshot diff
+
+`screenshotDiffCommand` — a command used to create a visual diff.
+  Default: "convert -delay 50 $BEFORE $AFTER -loop 0 $RESULT".
+  Use $BEFORE, $AFTER and $RESULT variables instead of the respective file names.
+  Example:
+    "convert '(' $BEFORE -flatten -grayscale Rec709Luminance ')' '(' $AFTER -flatten -grayscale Rec709Luminance ')' '(' -clone 0-1 -compose darken -composite ')' -channel RGB -combine $RESULT"

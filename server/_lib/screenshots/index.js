@@ -83,13 +83,16 @@ function deleteScreenshot (filePath) {
  * @param {String} pathB
  * @returns {Promise<String>} promise with full path of the resulting diff
  */
-function diffScreenshots (screenshotsDir, pathA, pathB) {
+function diffScreenshots (screenshotsDir, pathA, pathB, screenshotDiffCommand) {
   return new Promise((resolve, reject) => {
     const pathDiff = path.join(
       screenshotsDir,
       `${crypto.createHash('md5').update(pathA + ':' + pathB).digest('hex')}.gif`
     )
-    const cmd = `convert -delay 50 ${pathA} ${pathB} -loop 0 ${pathDiff}`
+    const cmd = screenshotDiffCommand
+      .replace('$BEFORE', pathA)
+      .replace('$AFTER', pathB)
+      .replace('$RESULT', pathDiff)
 
     exec(cmd, function (error) {
       if (error) {
