@@ -86,9 +86,11 @@ class ScenarioContent extends React.Component {
         </ComponentPreview.LeftPane>
         <ComponentPreview.RightPane>
           <ComponentPreview>
-            {this._renderContent(scenario, 'screenshot')}
+            {/* Move screenshot diff to the end of the list if the demo mode is on */}
+            {!window.__tessereactDemoMode && this._renderContent(scenario, 'screenshot')}
             {this._renderContent(scenario, 'html')}
             {this._renderContent(scenario, 'css')}
+            {window.__tessereactDemoMode && this._renderContent(scenario, 'screenshot')}
           </ComponentPreview>
         </ComponentPreview.RightPane>
       </PanelGroup>
