@@ -36,6 +36,24 @@ When you open Tessereact you are going to see the following screen.
 
 ![screen](images/failing_scenario.png)
 
+You can specify these options as the third argument of `scenario` function:
+
+- `css` — compares CSS, which is used in this particular scenario.
+
+- `screenshot` — allows to request a visual diff from the server.
+  For this option, you have to have [ImageMagick](http://www.imagemagick.org) installed.
+
+``` js
+// src/Text/scenarios.jsx
+
+import React from 'react'
+import {scenario} from 'tessereact'
+import Text from '.'
+
+scenario('Default', () => (
+  <Text>Text</Text>
+), {css: true, screenshot: true})
+```
 
 ### Accept the `snapshot`
 

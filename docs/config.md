@@ -14,8 +14,6 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 
 `templatePath` — a path to Tessereact template
 
-`cacheCSS` — should server cache CSS diffs
-
 `screenshotSizes` — a list of sizes for screenshot diff
 
 `screenshotDiff` — options for visual diffs:
