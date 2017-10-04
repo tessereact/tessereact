@@ -1,3 +1,5 @@
+import { get } from 'lodash'
+
 /**
  * Mock server for Tessereact demo mode.
  *
@@ -28,7 +30,8 @@ export default function mockServer (url, { method, body }) {
   } else if (method === 'POST' && url.match(/\/write-snapshot\/?$/)) {
     return {status: 'OK'}
   } else {
-    return data.screenshotURL
+    return date.screenshots[getScreenshotId(body.context, body.name, body.sizeIndex)] ||
+      data.defaultScreenshotURL
   }
 }
 
@@ -38,4 +41,8 @@ function getSnapshotFileName (context, name, extension) {
   }
 
   return `${context}/${context} - ${name}.${extension}`
+}
+
+function getScreenshotId (context, name, sizeIndex) {
+  return `${context}/${name}/${sizeIndex}`
 }

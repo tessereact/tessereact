@@ -274,6 +274,7 @@ class MainView extends React.Component {
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
     const url = `//${host}:${port}/screenshot`
+    const {name, context} = scenario
     const {before, after, screenshotSizes, savedScreenshots} = scenario.screenshotData
 
     const screenshotIsAlreadyCached = savedScreenshots && savedScreenshots[screenshotSizeIndex]
@@ -302,7 +303,7 @@ class MainView extends React.Component {
       return null
     }
 
-    postJSONAndGetURL(url, {before, after, size})
+    postJSONAndGetURL(url, {name, context, before, after, size, sizeIndex: screenshotSizeIndex})
       .then((url) => {
         const scenarios = changeScenarioScreenshotData(
           this.state.scenarios,
