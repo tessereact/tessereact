@@ -30,7 +30,7 @@ export default function mockServer (url, { method, body }) {
   } else if (method === 'POST' && url.match(/\/write-snapshot\/?$/)) {
     return {status: 'OK'}
   } else {
-    return date.screenshots[getScreenshotId(body.context, body.name, body.sizeIndex)] ||
+    return (data.screenshots && data.screenshots[getScreenshotId(body.context, body.name, body.sizeIndex)]) ||
       data.defaultScreenshotURL
   }
 }
