@@ -24,9 +24,9 @@ export function prepareStyles (styleSheets) {
 }
 
 function prepareCSSRule (rule) {
-  // Filter all rules marked by `.--tessereact--`
+  // Filter all rules marked by `--tessereact--`
   // They are used inside the Tessereact application
-  if (rule.cssText.includes('.--tessereact--')) {
+  if (rule.cssText.includes('--tessereact--')) {
     return null
   }
 
