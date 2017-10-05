@@ -3,6 +3,7 @@ import formatHTML from '../formatHTML'
 import { diffSnapshots, diffToHTML } from '../diff'
 import buildScreenshotPage from '../buildScreenshotPage'
 import { chunk } from 'lodash'
+import { detect } from 'detect-browser'
 
 const defaultScreenshotSizes = [
   {width: 320, height: 568, alias: 'iPhone SE'},
@@ -234,7 +235,8 @@ export function requestScenarioAcceptance (scenario) {
     context: scenario.context,
     snapshot: scenario.snapshot,
     snapshotCSS: scenario.snapshotCSS,
-    screenshotData: scenario.screenshotData
+    screenshotData: scenario.screenshotData,
+    browserData: detect()
   }
 
   return payload

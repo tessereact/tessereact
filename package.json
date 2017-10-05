@@ -17,6 +17,7 @@
     "body-parser": "^1.15.2",
     "chromedriver": "^2.31.0",
     "cors": "^2.8.1",
+    "detect-browser": "^2.0.0",
     "diff2html": "^2.3.0",
     "difflib": "^0.2.4",
     "ejs": "^2.5.5",

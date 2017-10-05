@@ -2090,6 +2090,10 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
 
+detect-browser@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-2.0.0.tgz#efa3089968851c75b0e22277c034c5d0ed029d94"
+
 detect-file@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/detect-file/-/detect-file-0.1.0.tgz#4935dedfd9488648e006b0129566e9386711ea63"

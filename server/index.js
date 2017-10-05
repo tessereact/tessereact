@@ -8,7 +8,8 @@ const getPort = require('get-port')
 const ejs = require('ejs')
 const {
   readSnapshot,
-  writeSnapshot
+  writeSnapshot,
+  writeBrowserData
 } = require('./_lib/snapshots')
 const {
   connectToBrowser,
@@ -164,14 +165,18 @@ module.exports = function server (cwd, config, callback) {
 
   app.options('/write-snapshot', cors())
   app.post('/write-snapshot', async (req, res) => {
-    const {name, context, snapshot, snapshotCSS} = req.body
+    const {name, context, snapshot, snapshotCSS, browserData} = req.body
     if (snapshotCSS) {
       await Promise.all([
         writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
-        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css')
+        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css'),
+        writeBrowserData(snapshotsDir, browserData)
       ])
     } else {
-      await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
+      await Promise.all([
+        writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
+        writeBrowserData(snapshotsDir, browserData)
+      ])
     }
 
     res.send({status: 'OK'})
