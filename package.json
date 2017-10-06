@@ -80,7 +80,9 @@
   "files": [
     "lib",
     "bin",
-    "docs"
+    "docs",
+    "server",
+    "entry.js"
   ],
   "keywords": [
     "react",
