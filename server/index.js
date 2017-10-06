@@ -74,8 +74,8 @@ module.exports = function server (cwd, config, callback) {
           ? path.resolve(cwd, config.templatePath)
           : path.resolve(__dirname, './index.ejs')
         const locals = {
-          entryPath: process.env.CI ? config.builtEntryPath : config.entryURL,
-          wsURL,
+          entryPath: config.entryURL,
+          wsURL: process.env.CI ? wsURL : '',
           tessereactServerPort: config.port,
           config: JSON.stringify(config)
         }
@@ -95,8 +95,6 @@ module.exports = function server (cwd, config, callback) {
       app.get('/', renderIndex)
 
       if (process.env.CI) {
-        app.use(express.static(path.resolve(cwd, config.buildPath)))
-
         const wss = new WebSocket.Server({port: wsPort})
 
         startChromeDriver()
