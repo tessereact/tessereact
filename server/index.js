@@ -65,6 +65,18 @@ module.exports = function server (cwd, config, callback) {
     }
   }
 
+  const cleanup = () => chromedriver.stop()
+  process.stdin.resume()
+  // Catch closing
+  process.on('exit', cleanup)
+  // Catch Ctrl+C
+  process.on('SIGINT', cleanup)
+  // Catch kill
+  process.on('SIGUSR1', cleanup)
+  process.on('SIGUSR2', cleanup)
+  // Catches uncaught exceptions
+  process.on('uncaughtException', cleanup)
+
   getPort()
     .then(wsPort => {
       const wsURL = `ws://localhost:${wsPort}`
@@ -102,15 +114,16 @@ module.exports = function server (cwd, config, callback) {
             wss.on('connection', (ws) => {
               console.log('Connected to WS')
               ws.on('message', (message) => {
-                console.log('Got message from Tessereact runner')
+                console.log('Got a message from Tessereact runner')
                 kill()
 
                 if (message === 'OK') {
+                  console.log('All scenarios are passed')
                   process.exit(0)
                 } else {
                   const failingScenarios = JSON.parse(message)
                   console.error('Failed scenarios:')
-                  failingScenarios.forEach(s => console.log(`- ${s.context} ${s.name}`))
+                  failingScenarios.forEach(s => console.log(`- ${s.context}/${s.name}`))
                   process.exit(1)
                 }
               })
