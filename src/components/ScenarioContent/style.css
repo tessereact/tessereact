@@ -17,6 +17,11 @@
   height: 100%;
 }
 
+.--tessereact--, .single_column-iframe_container {
+  width: 100%;
+  height: calc(100% - 95px);
+}
+
 .--tessereact--, .d2h-wrapper {
   text-align: left;
 }
