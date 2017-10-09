@@ -1,6 +1,5 @@
 import { generateScenarioId, buildSnapshotCSS } from '../styles'
 import formatHTML from '../formatHTML'
-import { diffSnapshots, diffToHTML } from '../diff'
 import buildScreenshotPage from '../buildScreenshotPage'
 import { chunk } from 'lodash'
 import { detect } from 'detect-browser'
@@ -135,7 +134,6 @@ export function acceptScenario (scenarios, acceptedScenario) {
  * @returns {Array<ScenarioObject>} new scenario array
  */
 export function resolveScenario (scenarios, scenario, styles) {
-  let diffCSS
   let screenshotData
 
   const {name, context, snapshot: oldSnapshot, snapshotCSS: oldSnapshotCSS} = scenario
@@ -149,9 +147,10 @@ export function resolveScenario (scenarios, scenario, styles) {
   const storedScenario = scenarios[storedScenarioIndex]
 
   const element = storedScenario.getElement()
+  const options = storedScenario.options
 
   const snapshot = formatHTML(storedScenario.getSnapshot())
-  const snapshotCSS = storedScenario.options.css
+  const snapshotCSS = options.css
     ? buildSnapshotCSS(
         styles,
         document.getElementById(generateScenarioId(storedScenario)),
@@ -160,19 +159,15 @@ export function resolveScenario (scenarios, scenario, styles) {
       )
     : null
 
-  const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
+  const hasDiff = snapshot !== oldSnapshot || (options.css && snapshotCSS !== oldSnapshotCSS)
 
-  if (storedScenario.options.css) {
-    diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
-
-    if (storedScenario.options.screenshot && (diff || diffCSS)) {
-      screenshotData = {
-        before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
-        after: buildScreenshotPage(snapshot, snapshotCSS),
-        screenshotSizes:
-          (window.__tessereactConfig && window.__tessereactConfig.screenshotSizes) ||
-            defaultScreenshotSizes
-      }
+  if (options.screenshot && hasDiff) {
+    screenshotData = {
+      before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
+      after: buildScreenshotPage(snapshot, snapshotCSS),
+      screenshotSizes:
+        (window.__tessereactConfig && window.__tessereactConfig.screenshotSizes) ||
+          defaultScreenshotSizes
     }
   }
 
@@ -181,13 +176,14 @@ export function resolveScenario (scenarios, scenario, styles) {
       name,
       context,
       element,
-      diff,
-      diffCSS,
-      hasDiff: diff || diffCSS,
+      hasDiff,
       snapshot,
       snapshotCSS,
+      oldSnapshot,
+      oldSnapshotCSS,
       status: 'resolved',
-      screenshotData
+      screenshotData,
+      options
     }
   })
 }
