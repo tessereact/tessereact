@@ -1,5 +1,4 @@
 import React from 'react'
-import { chunk } from 'lodash'
 import Navigation from '../../components/Navigation'
 import { getJSON, postJSON, postJSONAndGetURL } from '../_lib/requests'
 import onLoad from '../_lib/onLoad'
@@ -23,7 +22,6 @@ import {
   generateScenarioId,
   prepareStyles
 } from '../_lib/styles'
-import { detect } from 'detect-browser'
 
 // react components
 import Link from '../../lib/link'
