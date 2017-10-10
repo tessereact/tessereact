@@ -30,7 +30,7 @@ class ScenarioContent extends React.Component {
     super(props, context)
     this.state = {
       resizing: false,
-      twoColumns: false
+      splitView: false
     }
   }
 
@@ -51,14 +51,14 @@ class ScenarioContent extends React.Component {
         <span>{name}</span>
       </div>
       <div>
-        <Button
-          selected={this.state.twoColumns}
-          onClick={() => this.setState({twoColumns: !this.state.twoColumns})}
+        {hasDiff && <Button
+          selected={this.state.splitView}
+          onClick={() => this.setState({splitView: !this.state.splitView})}
         >
-          2x
-        </Button>
+          Split view
+        </Button>}
         <a href={`/contexts/${context}/scenarios/${name}/view`} target='_blank'>
-          <Button>View</Button>
+          <Button>Open in a new tab</Button>
         </a>
         {hasDiff && <AcceptButton onClick={onAcceptSnapshot}>Accept & next</AcceptButton>}
       </div>
@@ -72,7 +72,7 @@ class ScenarioContent extends React.Component {
       </ComponentPreview>
     }
 
-    if (this.state.twoColumns) {
+    if (this.state.splitView) {
       return <PanelGroup
         onStartResizing={() => this.setState({resizing: true})}
         onStopResizing={() => this.setState({resizing: false})}
@@ -124,7 +124,7 @@ class ScenarioContent extends React.Component {
       case 'resizingComponent':
       case 'component':
       default:
-        return <div className={this.state.twoColumns ? 'component-iframe_container' : 'single_column-iframe_container'}>
+        return <div className={this.state.splitView ? 'split_view-iframe_container' : 'component-iframe_container'}>
           {tab === 'resizingComponent' && <div className='component-iframe_overlay' />}
           <ScenarioFrame className='component-iframe' context={scenario.context} name={scenario.name} />
         </div>
