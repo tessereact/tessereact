@@ -67,8 +67,24 @@ function writeBrowserData (snapshotsDir, browserData) {
     .then(() => fsp.writeFile(browserDataFileName, `${JSON.stringify(browserData, null, '  ')}\n`))
 }
 
+/**
+ * Read browserData from the file system.
+ *
+ * @param {String} snapshotsDir
+ * @returns {Promise<Object?>}
+ */
+function readBrowserData (snapshotsDir) {
+  const browserDataFileName = `${snapshotsDir}/lastAcceptedBrowserData.json`
+
+  return fsp
+    .readFile(browserDataFileName)
+    .catch(() => null)
+    .then(file => file == null ? null : JSON.parse(file.toString()))
+}
+
 module.exports = {
   readSnapshot,
   writeSnapshot,
-  writeBrowserData
+  writeBrowserData,
+  readBrowserData
 }

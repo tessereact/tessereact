@@ -28,6 +28,20 @@ export function getCSSDiff (scenario, options = {}) {
 }
 
 /**
+ * Get diff in text format from a scenario
+ *
+ * @param {ScenarioObject} scenario
+ * @returns {String} - diff in text format
+ */
+export function getTextDiff (scenario) {
+  const {snapshot, oldSnapshot, snapshotCSS, oldSnapshotCSS} = scenario
+  return [
+    diffSnapshots('HTML', oldSnapshot, snapshot),
+    diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS)
+  ].filter(x => x).join('\n\n')
+}
+
+/**
  * Build a diff patch from two snapshots.
  *
  * @param {String} name - name of the file

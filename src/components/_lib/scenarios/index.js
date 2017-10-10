@@ -3,6 +3,7 @@ import formatHTML from '../formatHTML'
 import buildScreenshotPage from '../buildScreenshotPage'
 import { chunk } from 'lodash'
 import { detect } from 'detect-browser'
+import { getTextDiff } from '../diff'
 
 const defaultScreenshotSizes = [
   {width: 320, height: 568, alias: 'iPhone SE'},
@@ -236,4 +237,30 @@ export function requestScenarioAcceptance (scenario) {
   }
 
   return payload
+}
+
+/**
+ * Create an object to send to the server in CI mode.
+ *
+ * @param {Array<ScenarioObject>} scenarios
+ * @returns {Object} CI report object
+ */
+export function prepareCIReport (scenarios) {
+  const failingScenarios = scenarios
+    .filter(({hasDiff}) => hasDiff)
+    .map(scenario => ({
+      name: scenario.name,
+      context: scenario.context,
+      diff: getTextDiff(scenario)
+    }))
+
+  if (failingScenarios.length > 0) {
+    return {
+      status: 'not OK',
+      scenarios: failingScenarios,
+      browserData: detect()
+    }
+  } else {
+    return { status: 'OK' }
+  }
 }
