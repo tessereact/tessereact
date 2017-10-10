@@ -52,7 +52,39 @@ function composeScenarioFileName (name, context, extension) {
   return fileName + (extension ? '.' + extension : '')
 }
 
+/**
+ * Write browserData to the file system as `${snapshotsDir}/lastAcceptedBrowserData.json`.
+ *
+ * @param {String} snapshotsDir
+ * @param {Object} browserData
+ * @returns {Promise}
+ */
+function writeBrowserData (snapshotsDir, browserData) {
+  const browserDataFileName = `${snapshotsDir}/lastAcceptedBrowserData.json`
+
+  return fsp
+    .ensureDir(snapshotsDir)
+    .then(() => fsp.writeFile(browserDataFileName, `${JSON.stringify(browserData, null, '  ')}\n`))
+}
+
+/**
+ * Read browserData from the file system.
+ *
+ * @param {String} snapshotsDir
+ * @returns {Promise<Object?>}
+ */
+function readBrowserData (snapshotsDir) {
+  const browserDataFileName = `${snapshotsDir}/lastAcceptedBrowserData.json`
+
+  return fsp
+    .readFile(browserDataFileName)
+    .catch(() => null)
+    .then(file => file == null ? null : JSON.parse(file.toString()))
+}
+
 module.exports = {
   readSnapshot,
-  writeSnapshot
+  writeSnapshot,
+  writeBrowserData,
+  readBrowserData
 }

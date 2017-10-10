@@ -7,6 +7,7 @@ import Button from '../../styled/Button'
 import SmallButton from '../../styled/SmallButton'
 import ScenarioFrame from './ScenarioFrame'
 import PanelGroup from './PanelGroup'
+import Diff from './Diff'
 import './style.css'
 
 let PropTypes
@@ -28,41 +29,24 @@ class ScenarioContent extends React.Component {
   constructor (props, context) {
     super(props, context)
     this.state = {
-      tab: 'component',
-      twoColumns: true,
       resizing: false
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (
-      this.props.scenario.name !== nextProps.scenario.name ||
-        this.props.scenario.context !== nextProps.scenario.context
-    ) {
-      this.setState({tab: 'component'})
     }
   }
 
   render () {
     const {scenario} = this.props
-    const {tab, twoColumns} = this.state
-
-    if (scenario.hasDiff && twoColumns) {
-      return this._renderTwoColumns(scenario)
-    } else {
-      return this._renderSingleColumn(scenario, tab)
-    }
+    return scenario.hasDiff
+      ? this._renderScenarioWithDiff(scenario)
+      : this._renderScenarioWithoutDiff(scenario)
   }
 
-  _renderTwoColumns (scenario) {
+  _renderScenarioWithDiff (scenario) {
     const {onAcceptSnapshot} = this.props
 
     return <StyledContent.Wrapper>
       <Header>
         <div>
           <span>{scenario.name}</span>
-          {/* TODO: enable single column mode */}
-          {/* scenario.hasDiff && <Button selected={true} onClick={this._toggleTwoColumns.bind(this)}>Single column mode</Button> */}
         </div>
         <div>
           <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
@@ -95,7 +79,7 @@ class ScenarioContent extends React.Component {
     </StyledContent.Wrapper>
   }
 
-  _renderSingleColumn (scenario, tab) {
+  _renderScenarioWithoutDiff (scenario) {
     const {onAcceptSnapshot} = this.props
 
     const {name, context, hasDiff, diff, diffCSS, screenshotData} = scenario
@@ -104,11 +88,6 @@ class ScenarioContent extends React.Component {
       <Header>
         <div>
           <span>{name}</span>
-          {hasDiff && <Button selected={false} onClick={this._toggleTwoColumns.bind(this)}>Two column mode</Button>}
-          {hasDiff && <Button selected={tab === 'component'} onClick={() => this.setState({tab: 'component'})}>Component</Button>}
-          {hasDiff && diff && <Button selected={tab === 'html'} onClick={() => this.setState({tab: 'html'})}>HTML</Button>}
-          {hasDiff && diffCSS && <Button selected={tab === 'css'} onClick={() => this.setState({tab: 'css'})}>CSS</Button>}
-          {screenshotData && <Button selected={tab === 'screenshot'} onClick={() => this.setState({tab: 'screenshot'})}>Screenshot</Button>}
         </div>
         <div>
           <a href={`/contexts/${context}/scenarios/${name}/view`} target='_blank'>
@@ -119,7 +98,7 @@ class ScenarioContent extends React.Component {
       </Header>
 
       <ComponentPreview>
-        {this._renderContent(scenario, this.state.tab)}
+        {this._renderContent(scenario, 'component')}
       </ComponentPreview>
     </StyledContent.Wrapper>
   }
@@ -136,9 +115,9 @@ class ScenarioContent extends React.Component {
 
     switch (tab) {
       case 'html':
-        return <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario.diff) }} />
+        return <Diff scenario={scenario} type='html' />
       case 'css':
-        return <div dangerouslySetInnerHTML={{ __html: this._renderDiff(scenario.diffCSS) }} />
+        return <Diff scenario={scenario} type='css' />
       case 'screenshot':
         return this._renderScreenshotData(scenario)
       case 'resizingComponent':
@@ -148,16 +127,6 @@ class ScenarioContent extends React.Component {
           {tab === 'resizingComponent' && <div className='component-iframe_overlay' />}
           <ScenarioFrame className='component-iframe' context={scenario.context} name={scenario.name} />
         </div>
-    }
-  }
-
-  /**
-   * Render diff if it not null.
-   * @param {String} diff
-   */
-  _renderDiff (diff) {
-    if (diff) {
-      return diff
     }
   }
 
@@ -222,10 +191,6 @@ class ScenarioContent extends React.Component {
     return <div className='d2h-screenshot-diff'>
       <img style={{height, width, minWidth: width}} src={savedScreenshots[index].url} />
     </div>
-  }
-
-  _toggleTwoColumns () {
-    this.setState({twoColumns: !this.state.twoColumns})
   }
 }
 

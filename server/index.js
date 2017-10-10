@@ -8,7 +8,9 @@ const getPort = require('get-port')
 const ejs = require('ejs')
 const {
   readSnapshot,
-  writeSnapshot
+  writeSnapshot,
+  writeBrowserData,
+  readBrowserData
 } = require('./_lib/snapshots')
 const {
   connectToBrowser,
@@ -114,18 +116,25 @@ module.exports = function server (cwd, config, callback) {
             wss.on('connection', (ws) => {
               console.log('Connected to WS')
               ws.on('message', (message) => {
-                console.log('Got a message from Tessereact runner')
+                console.log('Received a message from Tessereact runner')
                 kill()
 
-                if (message === 'OK') {
-                  console.log('All scenarios are passed')
-                  process.exit(0)
-                } else {
-                  const failingScenarios = JSON.parse(message)
-                  console.error('Failed scenarios:')
-                  failingScenarios.forEach(s => console.log(`- ${s.context}/${s.name}`))
-                  process.exit(1)
-                }
+                readBrowserData(snapshotsDir).then(lastAcceptedBrowserData => {
+                  const report = JSON.parse(message)
+
+                  if (report.status === 'OK') {
+                    console.log('All scenarios are passed')
+                    process.exit(0)
+                  } else {
+                    console.error('Failed scenarios:')
+                    report.scenarios.forEach(s => console.log(`- ${s.context}/${s.name}\n\n${s.diff}\n\n`))
+                    if (lastAcceptedBrowserData) {
+                      console.log(`Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}\n\n`)
+                    }
+                    console.log(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}\n`)
+                    process.exit(1)
+                  }
+                })
               })
             })
 
@@ -164,14 +173,18 @@ module.exports = function server (cwd, config, callback) {
 
   app.options('/write-snapshot', cors())
   app.post('/write-snapshot', async (req, res) => {
-    const {name, context, snapshot, snapshotCSS} = req.body
+    const {name, context, snapshot, snapshotCSS, browserData} = req.body
     if (snapshotCSS) {
       await Promise.all([
         writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
-        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css')
+        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css'),
+        writeBrowserData(snapshotsDir, browserData)
       ])
     } else {
-      await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
+      await Promise.all([
+        writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
+        writeBrowserData(snapshotsDir, browserData)
+      ])
     }
 
     res.send({status: 'OK'})

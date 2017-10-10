@@ -15,13 +15,15 @@ import {
   acceptScenario,
   resolveScenario,
   changeScenarioScreenshotData,
-  requestScenarioAcceptance
+  requestScenarioAcceptance,
+  prepareCIReport
 } from '../_lib/scenarios'
 import generateTreeNodes from '../_lib/generateTreeNodes'
 import {
   generateScenarioId,
   prepareStyles
 } from '../_lib/styles'
+import { detect } from 'detect-browser'
 
 // react components
 import Link from '../../lib/link'
@@ -124,17 +126,9 @@ class MainView extends React.Component {
 
         // Report to CI
         if (window.__tessereactWSURL) {
-          const failingScenarios = scenarios
-            .filter(({hasDiff}) => hasDiff)
-            .map(({context, name}) => ({context, name}))
-
           const ws = new window.WebSocket(window.__tessereactWSURL)
           ws.addEventListener('open', () => {
-            if (failingScenarios.length > 0) {
-              ws.send(JSON.stringify(failingScenarios))
-            } else {
-              ws.send('OK')
-            }
+            ws.send(JSON.stringify(prepareCIReport(scenarios)))
           })
         }
       })

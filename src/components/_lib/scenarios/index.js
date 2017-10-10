@@ -1,8 +1,9 @@
 import { generateScenarioId, buildSnapshotCSS } from '../styles'
 import formatHTML from '../formatHTML'
-import { diffSnapshots, diffToHTML } from '../diff'
 import buildScreenshotPage from '../buildScreenshotPage'
 import { chunk } from 'lodash'
+import { detect } from 'detect-browser'
+import { getTextDiff } from '../diff'
 
 const defaultScreenshotSizes = [
   {width: 320, height: 568, alias: 'iPhone SE'},
@@ -134,7 +135,6 @@ export function acceptScenario (scenarios, acceptedScenario) {
  * @returns {Array<ScenarioObject>} new scenario array
  */
 export function resolveScenario (scenarios, scenario, styles) {
-  let diffCSS
   let screenshotData
 
   const {name, context, snapshot: oldSnapshot, snapshotCSS: oldSnapshotCSS} = scenario
@@ -148,9 +148,10 @@ export function resolveScenario (scenarios, scenario, styles) {
   const storedScenario = scenarios[storedScenarioIndex]
 
   const element = storedScenario.getElement()
+  const options = storedScenario.options
 
   const snapshot = formatHTML(storedScenario.getSnapshot())
-  const snapshotCSS = storedScenario.options.css
+  const snapshotCSS = options.css
     ? buildSnapshotCSS(
         styles,
         document.getElementById(generateScenarioId(storedScenario)),
@@ -159,19 +160,15 @@ export function resolveScenario (scenarios, scenario, styles) {
       )
     : null
 
-  const diff = diffToHTML(diffSnapshots('HTML', oldSnapshot, snapshot))
+  const hasDiff = snapshot !== oldSnapshot || (options.css && snapshotCSS !== oldSnapshotCSS)
 
-  if (storedScenario.options.css) {
-    diffCSS = diffToHTML(diffSnapshots('CSS', oldSnapshotCSS, snapshotCSS))
-
-    if (storedScenario.options.screenshot && (diff || diffCSS)) {
-      screenshotData = {
-        before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
-        after: buildScreenshotPage(snapshot, snapshotCSS),
-        screenshotSizes:
-          (window.__tessereactConfig && window.__tessereactConfig.screenshotSizes) ||
-            defaultScreenshotSizes
-      }
+  if (options.screenshot && hasDiff) {
+    screenshotData = {
+      before: buildScreenshotPage(oldSnapshot, oldSnapshotCSS),
+      after: buildScreenshotPage(snapshot, snapshotCSS),
+      screenshotSizes:
+        (window.__tessereactConfig && window.__tessereactConfig.screenshotSizes) ||
+          defaultScreenshotSizes
     }
   }
 
@@ -180,13 +177,14 @@ export function resolveScenario (scenarios, scenario, styles) {
       name,
       context,
       element,
-      diff,
-      diffCSS,
-      hasDiff: diff || diffCSS,
+      hasDiff,
       snapshot,
       snapshotCSS,
+      oldSnapshot,
+      oldSnapshotCSS,
       status: 'resolved',
-      screenshotData
+      screenshotData,
+      options
     }
   })
 }
@@ -234,8 +232,35 @@ export function requestScenarioAcceptance (scenario) {
     context: scenario.context,
     snapshot: scenario.snapshot,
     snapshotCSS: scenario.snapshotCSS,
-    screenshotData: scenario.screenshotData
+    screenshotData: scenario.screenshotData,
+    browserData: detect()
   }
 
   return payload
+}
+
+/**
+ * Create an object to send to the server in CI mode.
+ *
+ * @param {Array<ScenarioObject>} scenarios
+ * @returns {Object} CI report object
+ */
+export function prepareCIReport (scenarios) {
+  const failingScenarios = scenarios
+    .filter(({hasDiff}) => hasDiff)
+    .map(scenario => ({
+      name: scenario.name,
+      context: scenario.context,
+      diff: getTextDiff(scenario)
+    }))
+
+  if (failingScenarios.length > 0) {
+    return {
+      status: 'not OK',
+      scenarios: failingScenarios,
+      browserData: detect()
+    }
+  } else {
+    return { status: 'OK' }
+  }
 }
