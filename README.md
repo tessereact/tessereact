@@ -57,12 +57,20 @@ context('Text', () => {
 })
 ```
 
+## CI Support
+
+Tessereact provides build in CI script
+
+```
+yarn tessereact-ci
+```
+
 ## Contributors
 
 [See here](https://github.com/tessereact/tessereact/graphs/contributors)
 
 Special thanks to:
-  - Team Portal Toptal Team
+  - [Lesha Koss](https://github.com/LeshaKoss)
   - [Aleksandar Djuric](https://dribbble.com/mnmalt)
   - [Nadya Tsech](https://twitter.com/n_tsech)
   - [Sasha Koss](https://github.com/kossnocorp)
