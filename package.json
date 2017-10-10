@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "description": "Presentational snapshot testing for React components.",
   "main": "./lib/index.js",
-  "author": "Eduard Tsech",
+  "author": "Lesha Koss, Eduard Tsech",
   "homepage": "https://github.com/tessereact/tessereact",
   "repository": {
     "type": "git",
