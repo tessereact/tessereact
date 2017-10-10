@@ -37,7 +37,7 @@ import Content from '../../styled/Content'
 import ComponentPreview from '../../styled/ComponentPreview'
 import ScenarioBlock from '../../styled/ScenarioBlock'
 import ScenarioBlockContent from '../../styled/ScenarioBlockContent'
-import Text from '../../styled/Text'
+import ScenarioBlockHeader from '../../styled/ScenarioBlockHeader'
 
 let PropTypes
 try {
@@ -219,27 +219,25 @@ class MainView extends React.Component {
       <ComponentPreview>
         {scenarios.map(s => {
           const params = {context: s.context || 'null', scenario: s.name}
-          return <Link key={s.name} name='scenario' params={params}>
-            <ScenarioBlock>
-              {this._renderSectionHeader(s)}
+          return <ScenarioBlock key={s.name}>
+            <Link
+              name='scenario'
+              params={params}
+              component={(props) =>
+                <ScenarioBlockHeader hasDiff={s.hasDiff} {...props} />
+              }
+            >
+              {s.name}
+            </Link>
+            <Link name='scenario' params={params} component='div'>
               <ScenarioBlockContent key={s.name}>
                 {s.snapshot ? <div dangerouslySetInnerHTML={{__html: s.snapshot}} /> : <div>Loading...</div>}
               </ScenarioBlockContent>
-            </ScenarioBlock>
-          </Link>
+            </Link>
+          </ScenarioBlock>
         })}
       </ComponentPreview>
     </Content.Wrapper>
-  }
-
-  /**
-   * Render scenario header inside the selected context.
-   * @param {ScenarioObject} scenario
-   */
-  _renderSectionHeader (s) {
-    return s.hasDiff
-      ? <Text color='#e91e63 !important' fontSize='14px'>{s.name}</Text>
-      : <Text color='#8f9297' fontSize='14px'>{s.name}</Text>
   }
 
   /**

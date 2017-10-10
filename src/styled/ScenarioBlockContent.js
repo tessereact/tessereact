@@ -5,6 +5,11 @@ const ScenarioBlockContent = styled.div`
   margin: 10px 0;
   padding: 10px;
   margin-bottom: 20px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #ccc;
+  }
 `
 
 export default ScenarioBlockContent
