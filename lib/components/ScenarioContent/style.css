@@ -1,4 +1,4 @@
-.--tessereact--, .component-iframe_container {
+.--tessereact--, .split_view-iframe_container {
   width: 100%;
   height: 100%;
 }
@@ -15,6 +15,11 @@
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.--tessereact--, .component-iframe_container {
+  width: 100%;
+  height: calc(100% - 95px);
 }
 
 .--tessereact--, .d2h-wrapper {
