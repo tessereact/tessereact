@@ -30,7 +30,7 @@ class ScenarioContent extends React.Component {
     super(props, context)
     this.state = {
       resizing: false,
-      splitView: false
+      splitView: window.localStorage.getItem('splitView') === 'true'
     }
   }
 
@@ -51,10 +51,7 @@ class ScenarioContent extends React.Component {
         <span>{name}</span>
       </div>
       <div>
-        {hasDiff && <Button
-          selected={this.state.splitView}
-          onClick={() => this.setState({splitView: !this.state.splitView})}
-        >
+        {hasDiff && <Button selected={this.state.splitView} onClick={() => this._toggleSplitView()}>
           Split view
         </Button>}
         <a href={`/contexts/${context}/scenarios/${name}/view`} target='_blank'>
@@ -192,6 +189,15 @@ class ScenarioContent extends React.Component {
     return <div className='d2h-screenshot-diff'>
       <img style={{height, width, minWidth: width}} src={savedScreenshots[index].url} />
     </div>
+  }
+
+  /**
+   * Change from split view mode to single column mode and vice versa.
+   */
+  _toggleSplitView () {
+    const splitView = !this.state.splitView
+    window.localStorage.setItem('splitView', splitView)
+    this.setState({ splitView })
   }
 }
 
