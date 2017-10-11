@@ -29,33 +29,48 @@ class ScenarioContent extends React.Component {
   constructor (props, context) {
     super(props, context)
     this.state = {
-      resizing: false
+      resizing: false,
+      splitView: window.localStorage.getItem('splitView') === 'true'
     }
   }
 
   render () {
     const {scenario} = this.props
-    return scenario.hasDiff
-      ? this._renderScenarioWithDiff(scenario)
-      : this._renderScenarioWithoutDiff(scenario)
+    return <StyledContent.Wrapper>
+      {this._renderScenarioHeader(scenario)}
+      {this._renderScenarioContent(scenario)}
+    </StyledContent.Wrapper>
   }
 
-  _renderScenarioWithDiff (scenario) {
+  _renderScenarioHeader (scenario) {
+    const {name, context, hasDiff} = scenario
     const {onAcceptSnapshot} = this.props
 
-    return <StyledContent.Wrapper>
-      <Header>
-        <div>
-          <span>{scenario.name}</span>
-        </div>
-        <div>
-          <a href={`/contexts/${scenario.context}/scenarios/${scenario.name}/view`} target='_blank'>
-            <Button>View</Button>
-          </a>
-          {scenario.hasDiff && <AcceptButton onClick={onAcceptSnapshot}>Accept & next</AcceptButton>}
-        </div>
-      </Header>
-      <PanelGroup
+    return <Header>
+      <div>
+        <span>{name}</span>
+      </div>
+      <div>
+        {hasDiff && <Button selected={this.state.splitView} onClick={() => this._toggleSplitView()}>
+          Split view
+        </Button>}
+        <a href={`/contexts/${context}/scenarios/${name}/view`} target='_blank'>
+          <Button>Open in a new tab</Button>
+        </a>
+        {hasDiff && <AcceptButton onClick={onAcceptSnapshot}>Accept & next</AcceptButton>}
+      </div>
+    </Header>
+  }
+
+  _renderScenarioContent (scenario) {
+    if (!scenario.hasDiff) {
+      return <ComponentPreview>
+        {this._renderContent(scenario, 'component')}
+      </ComponentPreview>
+    }
+
+    if (this.state.splitView) {
+      return <PanelGroup
         onStartResizing={() => this.setState({resizing: true})}
         onStopResizing={() => this.setState({resizing: false})}
         panelWidths={[
@@ -76,31 +91,14 @@ class ScenarioContent extends React.Component {
           </ComponentPreview>
         </ComponentPreview.RightPane>
       </PanelGroup>
-    </StyledContent.Wrapper>
-  }
+    }
 
-  _renderScenarioWithoutDiff (scenario) {
-    const {onAcceptSnapshot} = this.props
-
-    const {name, context, hasDiff, diff, diffCSS, screenshotData} = scenario
-
-    return <StyledContent.Wrapper>
-      <Header>
-        <div>
-          <span>{name}</span>
-        </div>
-        <div>
-          <a href={`/contexts/${context}/scenarios/${name}/view`} target='_blank'>
-            <Button>View</Button>
-          </a>
-          {hasDiff && <AcceptButton onClick={onAcceptSnapshot}>Accept & next</AcceptButton>}
-        </div>
-      </Header>
-
-      <ComponentPreview>
-        {this._renderContent(scenario, 'component')}
-      </ComponentPreview>
-    </StyledContent.Wrapper>
+    return <ComponentPreview>
+      {this._renderContent(scenario, 'component')}
+      {this._renderContent(scenario, 'screenshot')}
+      {this._renderContent(scenario, 'html')}
+      {this._renderContent(scenario, 'css')}
+    </ComponentPreview>
   }
 
   /**
@@ -123,7 +121,7 @@ class ScenarioContent extends React.Component {
       case 'resizingComponent':
       case 'component':
       default:
-        return <div className='component-iframe_container'>
+        return <div className={this.state.splitView ? 'split_view-iframe_container' : 'component-iframe_container'}>
           {tab === 'resizingComponent' && <div className='component-iframe_overlay' />}
           <ScenarioFrame className='component-iframe' context={scenario.context} name={scenario.name} />
         </div>
@@ -191,6 +189,15 @@ class ScenarioContent extends React.Component {
     return <div className='d2h-screenshot-diff'>
       <img style={{height, width, minWidth: width}} src={savedScreenshots[index].url} />
     </div>
+  }
+
+  /**
+   * Change from split view mode to single column mode and vice versa.
+   */
+  _toggleSplitView () {
+    const splitView = !this.state.splitView
+    window.localStorage.setItem('splitView', splitView)
+    this.setState({ splitView })
   }
 }
 

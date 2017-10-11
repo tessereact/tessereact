@@ -10,6 +10,7 @@ const Header = styled.div`
   text-align: left;
   font-weight: normal;
   min-height: 70px;
+  height: 70px;
   padding: 20px;
   background: #f5f6f8;
   border: 1px solid #e2e2e2;

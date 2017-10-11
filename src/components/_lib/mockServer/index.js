@@ -1,5 +1,3 @@
-import { get } from 'lodash'
-
 /**
  * Mock server for Tessereact demo mode.
  *
