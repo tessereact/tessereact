@@ -6,7 +6,7 @@ import { Diff2Html } from 'diff2html'
  *
  * @param {ScenarioObject} scenario
  * @param {Object} [options]
- * @param {Boolean} [options.twoColumns = false]
+ * @param {Boolean} [options.sideBySide = false]
  * @returns {String} - diff in HTML format
  */
 export function getHTMLDiff (scenario, options = {}) {
@@ -19,7 +19,7 @@ export function getHTMLDiff (scenario, options = {}) {
  *
  * @param {ScenarioObject} scenario
  * @param {Object} [options]
- * @param {Boolean} [options.twoColumns = false]
+ * @param {Boolean} [options.sideBySide = false]
  * @returns {String} - diff in HTML format
  */
 export function getCSSDiff (scenario, options = {}) {
@@ -66,7 +66,7 @@ function diffSnapshots (name, snapshotA, snapshotB) {
  *
  * @param {String} diff - patch file
  * @param {Object} [options]
- * @param {Boolean} [options.twoColumns = false]
+ * @param {Boolean} [options.sideBySide = false]
  * @returns {String} - diff in HTML format
  */
 function diffToHTML (diff, options = {}) {
@@ -76,7 +76,7 @@ function diffToHTML (diff, options = {}) {
 
   return Diff2Html.getPrettyHtml(
     diff, {
-      outputFormat: options.twoColumns ? 'side-by-side' : 'line-by-line'
+      outputFormat: options.sideBySide ? 'side-by-side' : 'line-by-line'
     }
   )
 }

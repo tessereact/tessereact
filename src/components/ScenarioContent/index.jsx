@@ -21,7 +21,7 @@ try {
  * UI element, which contains header, scenario and diffs.
  * Represents selected scenario.
  * @extends React.Component
- * @property {ScenarioObject} props.scenario - list of scenarios created by user
+ * @property {ScenarioObject} props.scenario
  * @property {Function} props.onAcceptSnapshot
  * @property {Function} props.onRequestScreenshot
  */
@@ -113,9 +113,9 @@ class ScenarioContent extends React.Component {
 
     switch (tab) {
       case 'html':
-        return <Diff scenario={scenario} type='html' />
+        return <Diff scenario={scenario} type='html' sideBySide={!this.state.splitView} />
       case 'css':
-        return <Diff scenario={scenario} type='css' />
+        return <Diff scenario={scenario} type='css' sideBySide={!this.state.splitView} />
       case 'screenshot':
         return this._renderScreenshotData(scenario)
       case 'resizingComponent':
