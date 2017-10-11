@@ -1,6 +1,20 @@
 import React from 'react'
 import { getHTMLDiff, getCSSDiff } from '../../_lib/diff'
 
+let PropTypes
+try {
+  PropTypes = require('prop-types')
+} catch (e) {
+  // Ignore optional peer dependency
+}
+
+/**
+ * Renders diff of a scenario.
+ * @extends React.Component
+ * @property {ScenarioObject} props.scenario
+ * @property {'html'|'css'} props.type
+ * @property {Boolean} [props.sideBySide]
+ */
 class Diff extends React.Component {
   shouldComponentUpdate (nextProps) {
     const { scenario, type } = this.props
@@ -12,17 +26,27 @@ class Diff extends React.Component {
   }
 
   render () {
-    const { scenario, type } = this.props
+    const { scenario, type, sideBySide } = this.props
+
+    const options = { sideBySide }
 
     const diff = type === 'css'
-      ? getCSSDiff(scenario)
-      : getHTMLDiff(scenario)
+      ? getCSSDiff(scenario, options)
+      : getHTMLDiff(scenario, options)
 
     if (!diff) {
       return null
     }
 
     return <div dangerouslySetInnerHTML={{ __html: diff }} />
+  }
+}
+
+if (PropTypes) {
+  Diff.propTypes = {
+    scenario: PropTypes.object.isRequired,
+    type: PropTypes.string.isRequired,
+    sideBySide: PropTypes.bool
   }
 }
 
