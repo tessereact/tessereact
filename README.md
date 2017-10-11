@@ -65,12 +65,16 @@ Tessereact provides build in CI script
 yarn tessereact-ci
 ```
 
+## Authors
+
+- [Lesha Koss](https://github.com/LeshaKoss)
+- [Eduard Tsech](https://github.com/edtsech)
+
 ## Contributors
 
-[See here](https://github.com/tessereact/tessereact/graphs/contributors)
+[Tessereact contributors](https://github.com/tessereact/tessereact/graphs/contributors)
 
-Special thanks to:
-  - [Lesha Koss](https://github.com/LeshaKoss)
+Special thanks to Testshot contributors:
   - [Aleksandar Djuric](https://dribbble.com/mnmalt)
   - [Nadya Tsech](https://twitter.com/n_tsech)
   - [Sasha Koss](https://github.com/kossnocorp)
