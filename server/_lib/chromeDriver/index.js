@@ -1,4 +1,4 @@
-const {execFile} = require('child_process')
+const { spawn } = require('child_process')
 const chromeDriverPath = require('chromedriver').path
 const fetch = require('node-fetch')
 
@@ -18,9 +18,14 @@ function startChromeDriver (userOptions = {}) {
   ]
 
   return new Promise((resolve, reject) => {
-    const chromeDriverInstance = execFile(chromeDriverPath, chromeArgs, err => {
-      if (err) reject(err)
-    })
+    const chromeDriverInstance = spawn(
+      chromeDriverPath,
+      chromeArgs,
+      { detached: true },
+      err => {
+        if (err) reject(err)
+      }
+    )
 
     var retries = 0
 
@@ -41,7 +46,7 @@ function startChromeDriver (userOptions = {}) {
         .then(({status}) => {
           if (status === 0) {
             resolve({
-              kill: () => chromeDriverInstance.kill(),
+              kill: () => process.kill(-chromeDriverInstance.pid, 'SIGINT'),
               open: (url) => {
                 return createSession(options.port)
                   .then(sessionId => open(options.port, sessionId, url))
