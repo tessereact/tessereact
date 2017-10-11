@@ -288,7 +288,7 @@ export function sortScenarios (scenarios) {
 export function sortNodes (nodes) {
   return sortBy(
     nodes,
-    [(node) => !Boolean(node.hasDiff), (node) => !Boolean(node.children), 'name'],
+    [(node) => !node.hasDiff, (node) => !node.children, 'name'],
     ['desc', 'desc', 'desc']
   )
 }

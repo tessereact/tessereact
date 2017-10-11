@@ -1,6 +1,5 @@
 import History from '../../../lib/router/history'
-import { findScenario } from '../scenarios'
-import { sortScenarios } from '../scenarios'
+import { findScenario, sortScenarios } from '../scenarios'
 
 /**
  * Check if scenario/context associated by given route doesn't exist.
