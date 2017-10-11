@@ -2,6 +2,7 @@ import React from 'react'
 import Context from '../Context'
 import Scenario from '../Scenario'
 import StyledList from '../../../styled/List'
+import { sortNodes } from '../../_lib/scenarios'
 
 let PropTypes
 try {
@@ -48,15 +49,7 @@ class List extends React.Component {
 
   render () {
     return <StyledList>
-      {
-        this.props.nodes
-          // Separate contexts and scenarios and then sort alphabetically by name
-          .sort((a, b) =>
-            (Boolean(a.children) === Boolean(b.children) ? 0 : a.children ? -1 : 1) ||
-              a.name.localeCompare(b.name)
-          )
-          .map(this._renderItem, this)
-      }
+      {sortNodes(this.props.nodes).map(this._renderItem, this)}
     </StyledList>
   }
 }

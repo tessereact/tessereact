@@ -1,6 +1,6 @@
 import History from '../../../lib/router/history'
 import { findScenario } from '../scenarios'
-import { sortBy } from 'lodash'
+import { sortScenarios } from '../scenarios'
 
 /**
  * Check if scenario/context associated by given route doesn't exist.
@@ -94,8 +94,4 @@ export function redirectToFirstFailingScenario (scenarios) {
 function redirectToScenario (scenario) {
   const { context, name } = scenario
   scenario && History.push(`/contexts/${context}/scenarios/${name}`)
-}
-
-function sortScenarios (scenarios) {
-  return sortBy(scenarios, ['context', 'name'], ['desc', 'desc'])
 }
