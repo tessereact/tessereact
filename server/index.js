@@ -133,12 +133,16 @@ module.exports = function server (cwd, config, callback) {
                     process.exit(0)
                   } else {
                     console.error('Failed scenarios:')
-                    report.scenarios.forEach(s => console.log(`- ${s.context}/${s.name}\n\n${s.diff}\n\n`))
-                    if (lastAcceptedBrowserData) {
-                      console.log(`Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}\n\n`)
-                    }
-                    console.log(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}\n`)
-                    process.exit(1)
+
+                    const logs = report.scenarios
+                      .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
+                      .concat(`Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
+                      .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
+                      .concat('\n')
+                      .filter(x => x)
+                      .join('\n\n')
+
+                    process.stdout.write(logs, () => process.exit(1))
                   }
                 })
               })
