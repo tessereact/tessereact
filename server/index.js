@@ -136,7 +136,7 @@ module.exports = function server (cwd, config, callback) {
 
                     const logs = report.scenarios
                       .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
-                      .concat(`Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
+                      .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
                       .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
                       .concat('\n')
                       .filter(x => x)
