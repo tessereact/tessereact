@@ -70,7 +70,10 @@ module.exports = function server (cwd, config, callback) {
     }
   }
 
-  const cleanup = () => chromedriver.stop()
+  const cleanup = () => {
+    chromedriver.stop()
+    process.exit()
+  }
   process.stdin.resume()
   // Catch closing
   process.on('exit', cleanup)
