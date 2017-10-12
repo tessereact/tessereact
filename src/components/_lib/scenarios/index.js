@@ -1,7 +1,7 @@
 import { generateScenarioId, buildSnapshotCSS } from '../styles'
 import formatHTML from '../formatHTML'
 import buildScreenshotPage from '../buildScreenshotPage'
-import { chunk } from 'lodash'
+import { chunk, sortBy } from 'lodash'
 import { detect } from 'detect-browser'
 import { getTextDiff } from '../diff'
 
@@ -263,4 +263,32 @@ export function prepareCIReport (scenarios) {
   } else {
     return { status: 'OK' }
   }
+}
+
+/**
+ * Sort an array of scenarios.
+ *
+ * @param {Array<ScenarioObject>} scenarios
+ * @returns {Array<ScenarioObject>} sorted scenarios
+ */
+export function sortScenarios (scenarios) {
+  return sortBy(
+    scenarios,
+    ['context', 'name'],
+    ['desc', 'desc']
+  )
+}
+
+/**
+ * Sort a tree of contexts and scenarios.
+ *
+ * @param {Array<ContextObject|ScenarioObject>} nodes
+ * @returns {Array<ContextObject|ScenarioObject>} sorted nodes
+ */
+export function sortNodes (nodes) {
+  return sortBy(
+    nodes,
+    [(node) => !node.hasDiff, (node) => !node.children, 'name'],
+    ['desc', 'desc', 'desc']
+  )
 }
