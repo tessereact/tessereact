@@ -28,7 +28,7 @@ const defaultScreenshotDiffExtension = 'gif'
 
 const defaultBeforeCommand = "$BEFORE -background '#FFE6E8' -pointsize 20 label:'Before' +swap -gravity Center -append"
 const defaultAfterCommand = "$AFTER -background '#D2FFDB' -pointsize 20 label:'After' +swap -gravity Center -append"
-const defaultScreenshotDiffCommand = `convert -delay 50 '(' ${defaultBeforeCommand} ')' '(' ${defaultAfterCommand} ')' -loop 0 $RESULT`
+const defaultScreenshotDiffCommand = `convert -delay 100 '(' ${defaultBeforeCommand} ')' '(' ${defaultAfterCommand} ')' -loop 0 $RESULT`
 
 /**
  * Start the server.
