@@ -184,10 +184,10 @@ class ScenarioContent extends React.Component {
       return <div className='d2h-screenshot-diff'>Loading...</div>
     }
 
-    const {height, width} = screenshotSizes[index]
+    const { width } = screenshotSizes[index]
 
     return <div className='d2h-screenshot-diff'>
-      <img style={{height, width, minWidth: width}} src={savedScreenshots[index].url} />
+      <img style={{width, minWidth: width}} src={savedScreenshots[index].url} />
     </div>
   }
 
