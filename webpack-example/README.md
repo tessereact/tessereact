@@ -9,4 +9,4 @@
 
 2. Open http://localhost:5001
 
-Check [Webpack integration guide](../docs/integration.md) to understand how to replicate this app.
+Check [Webpack integration guide](../docs/webpack-integration.md) to understand how to replicate this app.
