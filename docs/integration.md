@@ -98,15 +98,7 @@ Open `config/webpack.config.tessereact.js`
 - Change `output.filename` to `'static/js/tessereact.js'`.
 - Replace `paths.appIndexJs` with `paths.tessereact`.
 
-### 4. Adjust starting script of your app
-
-Open `scripts/start.js`
-
-Change config variable like that:
-
-`const config = require(process.env.TESSEREACT ? '../config/webpack.config.tessereact' : '../config/webpack.config.dev');`
-
-### 5. Add Tessereact config
+### 4. Add Tessereact config
 
 Add Tessereact config
 
@@ -126,13 +118,22 @@ with following content
 
 [Take a look here](config.md) for all available configuration options
 
+5. Add following scripts to `package.json`:
+
+```
+"scripts": {
+  "tessereact-webpack": "NODE_ENV='development' webpack-dev-server --config ./config/webpack.config.tessereact.js --port 5000",
+  "tessereact-server": "tessereact-server"
+}
+```
+
 ### Run
 
-Run your app
+Run Tessereact webpack server
 
-`TESSEREACT=true PORT=5000 yarn start`
+`yarn tessereact-webpack`
 
-Run Tessereact
+Run Tessereact server
 
 `yarn tessereact-server`
 
