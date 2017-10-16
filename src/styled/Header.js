@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import defaultMixin from './mixins/default'
 
 const Header = styled.div`
+  ${defaultMixin}
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -17,4 +18,4 @@ const Header = styled.div`
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 `
 
-export default defaultMixin(Header)
+export default Header

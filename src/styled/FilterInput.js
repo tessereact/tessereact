@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import defaultMixin from './mixins/default'
 
 const FilterInput = styled.input`
+  ${defaultMixin}
   font-size: 14px;
   width: 100%;
   height: 20px;
@@ -14,4 +15,4 @@ const FilterInput = styled.input`
   background: #52555c;
 `
 
-export default defaultMixin(FilterInput)
+export default FilterInput

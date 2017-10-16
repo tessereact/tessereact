@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import defaultMixin from './mixins/default'
 
 const ScenarioBlockHeader = styled.a`
+  ${defaultMixin}
   color: ${props => props.hasDiff ? '#e91e63 !important' : '#8f9297'};
   font-size: 14px;
   font-weight: 500;
@@ -12,4 +13,4 @@ const ScenarioBlockHeader = styled.a`
   }
 `
 
-export default defaultMixin(ScenarioBlockHeader)
+export default ScenarioBlockHeader
