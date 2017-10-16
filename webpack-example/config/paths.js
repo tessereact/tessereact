@@ -52,5 +52,5 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
-  tessereact: resolveApp('tessereact/scenarios.js')
+  tessereact: resolveApp('tessereact/init.js'),
 };

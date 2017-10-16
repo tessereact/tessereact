@@ -25,7 +25,7 @@ You can have a look on this [commit](https://github.com/tessereact/tessereact/co
 
 ### 1. Add Tessereact to your project
 
-`yarn add -D https://github.com/tessereact/tessereact.git`
+`yarn add -D tessereact`
 
 ### 2. Create Tessereact folder
 
@@ -44,13 +44,15 @@ with following content:
     <title>Tessereact</title>
   </head>
   <body>
-    <script type="text/javascript">
-      // Web Socket URL for communication with CI
+    <script>
       window.__tessereactWSURL = "<%= wsURL %>"
+      window.__tessereactServerPort = <%= tessereactServerPort %>
+      window.__tessereactConfig = <%- config %>
     </script>
-    <script type="text/javascript" src="<%= entryPath %>"></script>
+    <script src="<%= entryPath %>"></script>
   </body>
 </html>
+
 ```
 
 Second, we need to create Tessereact initialization script
@@ -81,7 +83,7 @@ Open `config/paths.js`
 Add following line to `module.exports`
 
 ```
-tessereact: resolveApp('tessreact/init.js'),
+tessereact: resolveApp('tessereact/init.js'),
 ```
 
 We need to create a separate Webpack config for Tessereact.
@@ -93,7 +95,7 @@ Let's copy it from the development one:
 
 Open `config/webpack.config.tessereact.js`
 
-- Change `output.filename` to `static/js/tessereact.js`.
+- Change `output.filename` to `'static/js/tessereact.js'`.
 - Replace `paths.appIndexJs` with `paths.tessereact`.
 
 ### 4. Adjust starting script of your app
@@ -116,8 +118,9 @@ with following content
 {
   "port": 5001,
   "snapshotsPath": "snapshots",
-  "entryURL": "http://localhost:5000/assets/js/init.js",
-  "templatePath": "tessereact/template.ejs"
+  "entryURL": "http://localhost:5000/static/js/init.js",
+  "templatePath": "tessereact/template.ejs",
+  "chromedriverPort": 5003
 }
 ```
 

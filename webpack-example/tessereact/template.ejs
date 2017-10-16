@@ -2,12 +2,12 @@
 <html>
   <head>
     <title>Tessereact</title>
-    <script src="https://use.typekit.net/tly5fnz.js"></script>
-    <script>try{Typekit.load({ async: true });}catch(e){}</script>
   </head>
   <body>
     <script>
       window.__tessereactWSURL = "<%= wsURL %>"
+      window.__tessereactServerPort = <%= tessereactServerPort %>
+      window.__tessereactConfig = <%- config %>
     </script>
     <script src="<%= entryPath %>"></script>
   </body>
