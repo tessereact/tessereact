@@ -1,12 +1,21 @@
 # How to integrate Tessereact with Webpack
 
-In this tutorial we are going to integrate Tessereact with [create-react-app](https://github.com/facebookincubator/create-react-app) what uses Webpack.
+In this tutorial we are going to integrate Tessereact with webpack,
+using an app created by [create-react-app](https://github.com/facebookincubator/create-react-app).
 
 ## Let's bootstrap an application
 
 NOTE: Skip this step if you are integrating Tessereact with your own Webpack application.
 
+Install `create-react-app` if you did not do that already:
+
+```sh
+npm install -g create-react-app
 ```
+
+Run `create-react-app` global script in console to bootstrap the application:
+
+```sh
 create-react-app react-app
 cd react-app
 ```
@@ -15,9 +24,13 @@ cd react-app
 
 By default all configs of `create-react-app` are hidden, including Webpack config.
 We need to get access to those config files and have them directly in our appliction.
-Luckily `create-react-app` provides command for that called `eject`.
+Luckily `create-react-app` provides a command for that called `eject`.
 
-`yarn eject`
+```sh
+yarn eject
+```
+
+To integrate your app without ejecting, check [create-react-app integration guide](../create-react-app-integration.md)
 
 ## Actual Integration
 
@@ -25,19 +38,25 @@ You can have a look on this [commit](https://github.com/tessereact/tessereact/co
 
 ### 1. Add Tessereact to your project
 
-`yarn add -D tessereact`
+```sh
+yarn add -D tessereact
+```
 
 ### 2. Create Tessereact folder
 
-`mkdir tessereact`
+```sh
+mkdir tessereact
+```
 
 First we need to add Tessereact HTML template
 
-`touch tessereact/template.ejs`
+```sh
+touch tessereact/template.ejs
+```
 
 with following content:
 
-```
+```html
 <!doctype html>
 <html>
   <head>
@@ -55,13 +74,15 @@ with following content:
 
 ```
 
-Second, we need to create Tessereact initialization script
+Second, we need to create Tessereact initialization script:
 
-`touch tessereact/init.js`
-
-with following content
-
+```sh
+touch tessereact/init.js
 ```
+
+with following content:
+
+```js
 // Path to CSS of your application
 require('../src/index.css')
 
@@ -73,40 +94,20 @@ scenariosContext.keys().forEach(scenariosContext)
 Tessereact.init({className: 'tessereact'})
 ```
 
+This file imports all styles and scenarios which will be running inside Tessereact,
+and also runs Tessereact itself.
 
-### 3. Create Webpack Tessereact config
-
-Let's add path to Tessereact init file:
-
-Open `config/paths.js`
-
-Add following line to `module.exports`
-
-```
-tessereact: resolveApp('tessereact/init.js'),
-```
-
-We need to create a separate Webpack config for Tessereact.
-Having a separate config for Tessereact you will be able to customize
-it in any way you need, mock different libraries in Tessereact environment and so on.
-Let's copy it from the development one:
-
-`cp config/webpack.config.dev.js config/webpack.config.tessereact.js`
-
-Open `config/webpack.config.tessereact.js`
-
-- Change `output.filename` to `'static/js/tessereact.js'`.
-- Replace `paths.appIndexJs` with `path.resolve(process.cwd(), './tessereact/init.js')`.
-
-### 4. Add Tessereact config
+### 3. Add Tessereact config
 
 Add Tessereact config
 
-`touch tessereact.config.json`
-
-with following content
-
+```sh
+touch tessereact.config.json
 ```
+
+with following content:
+
+```json
 {
   "port": 5001,
   "snapshotsPath": "snapshots",
@@ -116,30 +117,63 @@ with following content
 }
 ```
 
-[Take a look here](config.md) for all available configuration options
+[Look here](config.md) for all available configuration options.
 
-5. Add following scripts to `package.json`:
+### 4. Create Webpack Tessereact config
 
+We need to create a separate Webpack config for Tessereact.
+Having a separate config for Tessereact you will be able to customize
+it in any way you need, mock different libraries in Tessereact environment and so on.
+Let's copy it from the development one:
+
+```sh
+cp config/webpack.config.dev.js config/webpack.config.tessereact.js
 ```
-"scripts": {
-  "tessereact-webpack": "NODE_ENV='development' webpack-dev-server --config ./config/webpack.config.tessereact.js --port 5000",
-  "tessereact-server": "tessereact-server"
+
+Open `config/webpack.config.tessereact.js`
+
+- Change `output.filename` to `'static/js/tessereact.js'`.
+- Replace `paths.appIndexJs` with `path.resolve(process.cwd(), './tessereact/init.js')`.
+
+By that, we changed output script to the one listed in `tessereact.config.json` as `"entryURL"`,
+and also replaced the app's entry point, with Tessereact's one.
+
+### 5. Add package.json scripts
+
+Add following scripts to `package.json`:
+
+```js
+{
+  // ...
+  "scripts": {
+    // ...
+    "tessereact-webpack": "NODE_ENV='development' webpack-dev-server --config ./config/webpack.config.tessereact.js --port 5000",
+    "tessereact-server": "tessereact-server"
+  }
 }
 ```
+
+`"tessereact-webpack"` builds the front-end of Tessereact, and "`tessereact-server`" runs the back-end.
 
 ### Run
 
 Run Tessereact webpack server
 
-`yarn tessereact-webpack`
+```sh
+yarn tessereact-webpack
+```
 
 Run Tessereact server
 
-`yarn tessereact-server`
+```sh
+yarn tessereact-server
+```
 
 Open Tessereact
 
-`open localhost:5001`
+```sh
+open localhost:5001
+```
 
 If you see Tessereact welcome screen then it's time to [add your first Tessereact scenario].
 In case you have some issue with integration or some ideas how to improve this process feel free to [open an issue].
