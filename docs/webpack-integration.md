@@ -96,7 +96,7 @@ Let's copy it from the development one:
 Open `config/webpack.config.tessereact.js`
 
 - Change `output.filename` to `'static/js/tessereact.js'`.
-- Replace `paths.appIndexJs` with `paths.tessereact`.
+- Replace `paths.appIndexJs` with `path.resolve(process.cwd(), './tessereact/init.js')`.
 
 ### 4. Add Tessereact config
 
