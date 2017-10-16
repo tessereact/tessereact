@@ -16,8 +16,7 @@ cd react-app
 Install Tessereact packages:
 
 ```sh
-yarn add -D tessereact
-yarn add -D tessereact-scripts
+yarn add -D tessereact tessereact-scripts
 
 # or
 
