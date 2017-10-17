@@ -39,6 +39,8 @@ const defaultScreenshotDiffCommand = `convert -delay 100 '(' ${defaultBeforeComm
 module.exports = function server (cwd, config, callback) {
   let expressServer
 
+  const tessereactPort = config.port || defaultPort
+
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
 
@@ -60,7 +62,7 @@ module.exports = function server (cwd, config, callback) {
           : path.resolve(__dirname, './index.ejs')
         const locals = {
           entryPath: config.entryURL,
-          tessereactServerPort: config.port,
+          tessereactServerPort: tessereactPort,
           config: JSON.stringify(config)
         }
 
@@ -84,7 +86,7 @@ module.exports = function server (cwd, config, callback) {
           expressServer.close()
           process.exit(code)
         }
-        runCI(config.port, wsPort, snapshotsDir, exit).catch(rescue)
+        runCI(tessereactPort, wsPort, snapshotsDir, exit).catch(rescue)
       }
     })
 
@@ -156,7 +158,7 @@ module.exports = function server (cwd, config, callback) {
     })
   })
 
-  expressServer = app.listen(config.port || defaultPort, callback)
+  expressServer = app.listen(tessereactPort, callback)
 }
 
 function rescue (err) {
