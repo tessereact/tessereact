@@ -1,6 +1,5 @@
 const path = require('path')
 const express = require('express')
-const WebSocket = require('ws')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const getPort = require('get-port')
@@ -8,8 +7,7 @@ const ejs = require('ejs')
 const {
   readSnapshot,
   writeSnapshot,
-  writeBrowserData,
-  readBrowserData
+  writeBrowserData
 } = require('./_lib/snapshots')
 const {
   connectToBrowser,
@@ -19,8 +17,8 @@ const {
   deleteScreenshot,
   diffScreenshots
 } = require('./_lib/screenshots')
+const { runCI } = require('./_lib/ci')
 const chromedriver = require('chromedriver')
-const puppeteer = require('puppeteer')
 
 const defaultPort = 5001
 const defaultChromedriverPort = 5003
@@ -115,50 +113,7 @@ module.exports = function server (cwd, config, callback) {
       app.get('/', renderIndex)
 
       if (process.env.CI) {
-        const wss = new WebSocket.Server({port: wsPort})
-
-        let browser
-        puppeteer.launch()
-          .then(newBrowser => {
-            browser = newBrowser
-            return browser.newPage()
-          })
-          .then(page => {
-            return page.goto(`http://localhost:${config.port}`)
-          })
-          .then(() => {
-            wss.on('connection', (ws) => {
-              console.log('Connected to WS')
-              ws.on('message', (message) => {
-                console.log('Received a message from Tessereact runner')
-                browser.close()
-                  .then(() =>
-                    readBrowserData(snapshotsDir)
-                  )
-                  .then(lastAcceptedBrowserData => {
-                    const report = JSON.parse(message)
-
-                    if (report.status === 'OK') {
-                      console.log('All scenarios are passed')
-                      process.exit(0)
-                    } else {
-                      console.error('Failed scenarios:')
-
-                      const logs = report.scenarios
-                        .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
-                        .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
-                        .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
-                        .concat('\n')
-                        .filter(x => x)
-                        .join('\n\n')
-
-                      process.stdout.write(logs, () => process.exit(1))
-                    }
-                  })
-              })
-            })
-          })
-          .catch(rescue)
+        runCI(config.port, wsPort, snapshotsDir).catch(rescue)
       }
     })
 
