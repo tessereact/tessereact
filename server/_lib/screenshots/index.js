@@ -1,4 +1,4 @@
-const webdriverio = require('webdriverio')
+const puppeteer = require('puppeteer')
 const path = require('path')
 const fsp = require('fs-promise')
 const crypto = require('crypto')
@@ -7,21 +7,20 @@ const exec = require('child_process').exec
 /**
  * Connect to a browser using Chrome Debugging Protocol.
  *
- * @param {Object} options - webdriver options object
- * @returns {Promise<Client>} promise with webdriverio object
+ * @returns {Promise<Browser>} promise with browser object
  */
-function connectToBrowser (options) {
-  return webdriverio.remote(options).init()
+function connectToBrowser () {
+  return puppeteer.launch()
 }
 
 /**
  * Disconnect from a browser using Chrome Debugging Protocol.
  *
- * @param {Client} client - webdriverio object
+ * @param {Browser} browser
  * @returns {Promise} promise, resolved when browser is disconnected
  */
-function disconnectFromBrowser (client) {
-  return client.end()
+function disconnectFromBrowser (browser) {
+  return browser.close()
 }
 
 /**
@@ -38,28 +37,23 @@ function ensureScreenshotDir (screenshotsDir) {
  * Create a screenshot of a web-page on a specific URL.
  *
  * @param {String} screenshotsDir
- * @param {Client} client - webdriverio object
+ * @param {Page} page
  * @param {String} url
  * @param {Object} [options]
  * @param {Number} [options.width]
  * @param {Number} [options.height]
  * @returns {Promise<String>} promise with a screenshot path
  */
-function createScreenshot (screenshotsDir, client, url, {width = 1024, height = 768} = {}) {
+async function createScreenshot (screenshotsDir, page, url, {width = 1024, height = 768} = {}) {
   const filePath = path.join(
     screenshotsDir,
     `${crypto.createHash('md5').update(url).digest('hex')}.png`
   )
 
-  return new Promise((resolve, reject) => {
-    client
-      .url(url)
-      .setViewportSize({width, height})
-      .saveScreenshot(filePath)
-      .then(() => {
-        resolve(filePath)
-      })
-  })
+  await page.setViewport({ width, height })
+  await page.goto(url)
+  await page.screenshot({ path: filePath })
+  return filePath
 }
 
 /**

@@ -170,10 +170,11 @@ module.exports = function server (cwd, config, callback) {
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
 
     await ensureScreenshotDir(screenshotsDir)
-    const chrome = connectToBrowser(webdriverOptions)
-    const beforeScreenshotPath = await createScreenshot(screenshotsDir, chrome, beforeURL, size)
-    const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, size)
-    disconnectFromBrowser(chrome)
+    const browser = await connectToBrowser()
+    const page = await browser.newPage()
+    const beforeScreenshotPath = await createScreenshot(screenshotsDir, page, beforeURL, size)
+    const afterScreenshotPath = await createScreenshot(screenshotsDir, page, afterURL, size)
+    await disconnectFromBrowser(browser)
 
     const diffPath = await diffScreenshots(screenshotsDir, beforeScreenshotPath, afterScreenshotPath, screenshotDiffCommand, screenshotDiffExtension)
 
