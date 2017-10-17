@@ -75,6 +75,7 @@ module.exports = function server (cwd, config, callback) {
       app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
       app.get('/contexts/:context/scenarios/:scenario', renderIndex)
       app.get('/contexts/:context', renderIndex)
+      app.get('/fetch-css', renderIndex)
       app.get('/demo', renderIndex)
       app.get('/', renderIndex)
 

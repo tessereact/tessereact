@@ -6,6 +6,7 @@ import ReactDOMServer from 'react-dom/server'
 import WelcomeView from './components/WelcomeView'
 import MainView from './components/MainView'
 import ScenarioView from './components/ScenarioView'
+import FetchCSSView from './components/FetchCSSView'
 import routes from './routes'
 
 let PropTypes
@@ -81,6 +82,10 @@ export class UI extends React.Component {
         data,
         routeData: this.props.routeData
       })
+    }
+
+    if (this.props.routeData.route.name === 'fetchCSS') {
+      return React.createElement(FetchCSSView, { data })
     }
 
     return React.createElement(MainView, {

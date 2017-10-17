@@ -6,6 +6,10 @@ export default new Router([
     name: 'home',
     routes: [
       {
+        path: '/fetch-css',
+        name: 'fetchCSS'
+      },
+      {
         path: '/demo',
         name: 'demo'
       },
