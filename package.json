@@ -15,7 +15,6 @@
   "private": false,
   "dependencies": {
     "body-parser": "^1.15.2",
-    "chromedriver": "^2.31.0",
     "cors": "^2.8.1",
     "detect-browser": "^2.0.0",
     "diff2html": "^2.3.0",
@@ -30,7 +29,6 @@
     "node-fetch": "^1.6.3",
     "puppeteer": "^0.12.0",
     "styled-components": "^2.2.1",
-    "webdriverio": "^4.8.0",
     "ws": "^2.0.3"
   },
   "devDependencies": {

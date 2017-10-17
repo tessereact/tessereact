@@ -112,8 +112,7 @@ with following content:
   "port": 5001,
   "snapshotsPath": "snapshots",
   "entryURL": "http://localhost:5000/static/js/init.js",
-  "templatePath": "tessereact/template.ejs",
-  "chromedriverPort": 5003
+  "templatePath": "tessereact/template.ejs"
 }
 ```
 

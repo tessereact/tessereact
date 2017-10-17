@@ -18,10 +18,8 @@ const {
   diffScreenshots
 } = require('./_lib/screenshots')
 const { runCI } = require('./_lib/ci')
-const chromedriver = require('chromedriver')
 
 const defaultPort = 5001
-const defaultChromedriverPort = 5003
 const defaultScreenshotDiffExtension = 'gif'
 
 const defaultBeforeCommand = "$BEFORE -background '#FFE6E8' -pointsize 20 label:'Before' +swap -gravity Center -append"
@@ -48,40 +46,6 @@ module.exports = function server (cwd, config, callback) {
   app.use(cors({
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
   }))
-
-  const chromedriverPort = config.chromedriverPort || defaultChromedriverPort
-  chromedriver.start([
-    '--url-base=wd/hub',
-    `--port=${chromedriverPort}`
-  ])
-  const webdriverOptions = {
-    port: chromedriverPort,
-    desiredCapabilities: {
-      browserName: 'chrome',
-      chromeOptions: {
-        args: [
-          'headless',
-          'disable-gpu',
-          'hide-scrollbars'
-        ]
-      }
-    }
-  }
-
-  const cleanup = () => {
-    chromedriver.stop()
-    process.exit()
-  }
-  process.stdin.resume()
-  // Catch closing
-  process.on('exit', cleanup)
-  // Catch Ctrl+C
-  process.on('SIGINT', cleanup)
-  // Catch kill
-  process.on('SIGUSR1', cleanup)
-  process.on('SIGUSR2', cleanup)
-  // Catches uncaught exceptions
-  process.on('uncaughtException', cleanup)
 
   getPort()
     .then(wsPort => {
