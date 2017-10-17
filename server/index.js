@@ -21,6 +21,7 @@ const {
   diffScreenshots
 } = require('./_lib/screenshots')
 const chromedriver = require('chromedriver')
+const puppeteer = require('puppeteer')
 
 const defaultPort = 5001
 const defaultChromedriverPort = 5003
@@ -117,13 +118,21 @@ module.exports = function server (cwd, config, callback) {
       if (process.env.CI) {
         const wss = new WebSocket.Server({port: wsPort})
 
-        startChromeDriver()
-          .then(({kill, open}) => {
+        let browser
+        puppeteer.launch()
+          .then(newBrowser => {
+            browser = newBrowser
+            return browser.newPage()
+          })
+          .then(page => {
+            return page.goto(`http://localhost:${config.port}`)
+          })
+          .then(() => {
             wss.on('connection', (ws) => {
               console.log('Connected to WS')
               ws.on('message', (message) => {
                 console.log('Received a message from Tessereact runner')
-                kill()
+                browser.close()
 
                 readBrowserData(snapshotsDir).then(lastAcceptedBrowserData => {
                   const report = JSON.parse(message)
@@ -147,8 +156,6 @@ module.exports = function server (cwd, config, callback) {
                 })
               })
             })
-
-            return open(`http://localhost:${config.port}`)
           })
           .catch(rescue)
       }
