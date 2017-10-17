@@ -5,15 +5,18 @@ const cors = require('cors')
 const getPort = require('get-port')
 const ejs = require('ejs')
 const {
+  connectToBrowser,
+  getPage,
+  disconnectFromBrowser
+} = require('./_lib/browser')
+const {
   readSnapshot,
   writeSnapshot,
   writeBrowserData
 } = require('./_lib/snapshots')
 const {
-  connectToBrowser,
   ensureScreenshotDir,
   createScreenshot,
-  disconnectFromBrowser,
   deleteScreenshot,
   diffScreenshots
 } = require('./_lib/screenshots')
@@ -34,6 +37,8 @@ const defaultScreenshotDiffCommand = `convert -delay 100 '(' ${defaultBeforeComm
  * @param {Function} [callback] - called after server is started
  */
 module.exports = function server (cwd, config, callback) {
+  let expressServer
+
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
 
@@ -49,15 +54,12 @@ module.exports = function server (cwd, config, callback) {
 
   getPort()
     .then(wsPort => {
-      const wsURL = `ws://localhost:${wsPort}`
-
       const renderIndex = (req, res) => {
         const templatePath = config.templatePath
           ? path.resolve(cwd, config.templatePath)
           : path.resolve(__dirname, './index.ejs')
         const locals = {
           entryPath: config.entryURL,
-          wsURL: process.env.CI ? wsURL : '',
           tessereactServerPort: config.port,
           config: JSON.stringify(config)
         }
@@ -77,7 +79,11 @@ module.exports = function server (cwd, config, callback) {
       app.get('/', renderIndex)
 
       if (process.env.CI) {
-        runCI(config.port, wsPort, snapshotsDir).catch(rescue)
+        const exit = (code) => {
+          expressServer.close()
+          process.exit(code)
+        }
+        runCI(config.port, wsPort, snapshotsDir, exit).catch(rescue)
       }
     })
 
@@ -135,7 +141,7 @@ module.exports = function server (cwd, config, callback) {
 
     await ensureScreenshotDir(screenshotsDir)
     const browser = await connectToBrowser()
-    const page = await browser.newPage()
+    const page = await getPage(browser)
     const beforeScreenshotPath = await createScreenshot(screenshotsDir, page, beforeURL, size)
     const afterScreenshotPath = await createScreenshot(screenshotsDir, page, afterURL, size)
     await disconnectFromBrowser(browser)
@@ -149,7 +155,7 @@ module.exports = function server (cwd, config, callback) {
     })
   })
 
-  app.listen(config.port || defaultPort, callback)
+  expressServer = app.listen(config.port || defaultPort, callback)
 }
 
 function rescue (err) {

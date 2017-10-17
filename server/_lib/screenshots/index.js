@@ -1,27 +1,7 @@
-const puppeteer = require('puppeteer')
 const path = require('path')
 const fsp = require('fs-promise')
 const crypto = require('crypto')
 const exec = require('child_process').exec
-
-/**
- * Connect to a browser using Chrome Debugging Protocol.
- *
- * @returns {Promise<Browser>} promise with browser object
- */
-function connectToBrowser () {
-  return puppeteer.launch()
-}
-
-/**
- * Disconnect from a browser using Chrome Debugging Protocol.
- *
- * @param {Browser} browser
- * @returns {Promise} promise, resolved when browser is disconnected
- */
-function disconnectFromBrowser (browser) {
-  return browser.close()
-}
 
 /**
  * Create screenshotsDir if it doesn't exist.
@@ -97,10 +77,8 @@ function diffScreenshots (screenshotsDir, pathA, pathB, screenshotDiffCommand, s
 }
 
 module.exports = {
-  connectToBrowser,
   ensureScreenshotDir,
   createScreenshot,
-  disconnectFromBrowser,
   deleteScreenshot,
   diffScreenshots
 }

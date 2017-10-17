@@ -1,4 +1,5 @@
 import React from 'react'
+import queryString from 'qs'
 import Navigation from '../../components/Navigation'
 import { getJSON, postJSON, postJSONAndGetURL } from '../_lib/requests'
 import onLoad from '../_lib/onLoad'
@@ -115,19 +116,21 @@ class MainView extends React.Component {
 
         console.log(`Finished loading in ${Date.now() - startDate}`)
 
-        if (window.__tessereactDemoMode) {
-          checkForHomeRouteDemoMode(routeData)
-        } else {
-          checkForHomeRoute(routeData, scenarios)
-          checkIfRouteExists(routeData, scenarios)
-        }
-
+        const search = window.location.search.slice(1)
+        const { wsPort } = queryString.parse(search)
         // Report to CI
-        if (window.__tessereactWSURL) {
-          const ws = new window.WebSocket(window.__tessereactWSURL)
+        if (wsPort) {
+          const ws = new window.WebSocket(`ws://localhost:${wsPort}`)
           ws.addEventListener('open', () => {
             ws.send(JSON.stringify(prepareCIReport(scenarios)))
           })
+        } else {
+          if (window.__tessereactDemoMode) {
+            checkForHomeRouteDemoMode(routeData)
+          } else {
+            checkForHomeRoute(routeData, scenarios)
+            checkIfRouteExists(routeData, scenarios)
+          }
         }
       })
       .catch(e => {

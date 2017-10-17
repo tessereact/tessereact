@@ -1,5 +1,9 @@
-const WebSocket = require('ws')
-const puppeteer = require('puppeteer')
+const {
+  connectToBrowser,
+  getPage,
+  disconnectFromBrowser,
+  onMessageFromBrowser
+} = require('../browser')
 const { readBrowserData } = require('../snapshots')
 
 /**
@@ -9,40 +13,35 @@ const { readBrowserData } = require('../snapshots')
  * @param {Number} tessereactPort - port used for running Tessereact web app
  * @param {Number} wsPort - web socket port for communication with the web pacge
  * @param {String} snapshotsDir
+ * @param {Function<Number>} exit - callback called with exit code
  */
-async function runCI (tessereactPort, wsPort, snapshotsDir) {
-  const wss = new WebSocket.Server({port: wsPort})
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-  await page.goto(`http://localhost:${tessereactPort}`)
+async function runCI (tessereactPort, wsPort, snapshotsDir, exit) {
+  onMessageFromBrowser(wsPort, async (report) => {
+    console.log('Received a message from Tessereact runner')
+    await disconnectFromBrowser(browser)
+    const lastAcceptedBrowserData = await readBrowserData(snapshotsDir)
 
-  wss.on('connection', (ws) => {
-    console.log('Connected to WS')
-    ws.on('message', async (message) => {
-      const report = JSON.parse(message)
+    if (report.status === 'OK') {
+      console.log('All scenarios are passed')
+      exit(0)
+    } else {
+      console.error('Failed scenarios:')
 
-      console.log('Received a message from Tessereact runner')
-      await browser.close()
-      const lastAcceptedBrowserData = readBrowserData(snapshotsDir)
+      const logs = report.scenarios
+        .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
+        .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
+        .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
+        .concat('\n')
+        .filter(x => x)
+        .join('\n\n')
 
-      if (report.status === 'OK') {
-        console.log('All scenarios are passed')
-        process.exit(0)
-      } else {
-        console.error('Failed scenarios:')
-
-        const logs = report.scenarios
-          .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
-          .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
-          .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
-          .concat('\n')
-          .filter(x => x)
-          .join('\n\n')
-
-        process.stdout.write(logs, () => process.exit(1))
-      }
-    })
+      process.stdout.write(logs, () => exit(1))
+    }
   })
+
+  const browser = await connectToBrowser()
+  const page = await getPage(browser)
+  await page.goto(`http://localhost:${tessereactPort}/?wsPort=${wsPort}`)
 }
 
 module.exports = {
