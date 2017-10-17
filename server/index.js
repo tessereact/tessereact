@@ -133,27 +133,29 @@ module.exports = function server (cwd, config, callback) {
               ws.on('message', (message) => {
                 console.log('Received a message from Tessereact runner')
                 browser.close()
+                  .then(() =>
+                    readBrowserData(snapshotsDir)
+                  )
+                  .then(lastAcceptedBrowserData => {
+                    const report = JSON.parse(message)
 
-                readBrowserData(snapshotsDir).then(lastAcceptedBrowserData => {
-                  const report = JSON.parse(message)
+                    if (report.status === 'OK') {
+                      console.log('All scenarios are passed')
+                      process.exit(0)
+                    } else {
+                      console.error('Failed scenarios:')
 
-                  if (report.status === 'OK') {
-                    console.log('All scenarios are passed')
-                    process.exit(0)
-                  } else {
-                    console.error('Failed scenarios:')
+                      const logs = report.scenarios
+                        .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
+                        .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
+                        .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
+                        .concat('\n')
+                        .filter(x => x)
+                        .join('\n\n')
 
-                    const logs = report.scenarios
-                      .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
-                      .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
-                      .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
-                      .concat('\n')
-                      .filter(x => x)
-                      .join('\n\n')
-
-                    process.stdout.write(logs, () => process.exit(1))
-                  }
-                })
+                      process.stdout.write(logs, () => process.exit(1))
+                    }
+                  })
               })
             })
           })
