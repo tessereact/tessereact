@@ -1,4 +1,5 @@
 import React from 'react'
+import queryString from 'qs'
 import onLoad from '../_lib/onLoad'
 import {
   generateScenarioId,
@@ -36,7 +37,14 @@ class FetchCSSView extends React.Component {
           )
         }))
 
-        console.log({ scenarios })
+        const search = window.location.search.slice(1)
+        const { wsPort } = queryString.parse(search)
+        if (wsPort) {
+          const ws = new window.WebSocket(`ws://localhost:${wsPort}`)
+          ws.addEventListener('open', () => {
+            ws.send(JSON.stringify({ scenarios }))
+          })
+        }
       })
   }
 
