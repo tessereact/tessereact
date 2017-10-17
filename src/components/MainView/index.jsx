@@ -2,7 +2,6 @@ import React from 'react'
 import queryString from 'qs'
 import Navigation from '../../components/Navigation'
 import { getJSON, postJSON, postJSONAndGetURL } from '../_lib/requests'
-import onLoad from '../_lib/onLoad'
 import {
   checkIfRouteExists,
   checkForHomeRoute,
@@ -19,10 +18,6 @@ import {
   prepareCIReport
 } from '../_lib/scenarios'
 import generateTreeNodes from '../_lib/generateTreeNodes'
-import {
-  generateScenarioId,
-  prepareStyles
-} from '../_lib/styles'
 
 // react components
 import Link from '../../lib/link'
@@ -60,8 +55,7 @@ class MainView extends React.Component {
     super(props, context)
 
     this.state = {
-      scenarios: props.data,
-      cssLoaded: false
+      scenarios: props.data
     }
   }
 
@@ -69,40 +63,45 @@ class MainView extends React.Component {
    * Load snapshot diffs from the server
    */
   componentWillMount () {
+    let css
     const { routeData } = this.props
     const url = `//${this.props.host}:${this.props.port}/read-snapshots`
 
     const startDate = Date.now()
 
-    onLoad()
-      .then(() => {
-        // Get config from server if not supplied via ejs
-        if (!window.__tessereactConfig) {
-          return getJSON(`//${this.props.host}:${this.props.port}/config`)
-            .then(config => {
-              window.__tessereactConfig = config
-            })
-        }
-      })
-      .then(() => {
-        const styles = prepareStyles(document.styleSheets)
+    Promise
+      .all([
+        // Get config from server
+        window.__tessereactConfig
+          ? Promise.resolve(null)
+          : getJSON(`//${this.props.host}:${this.props.port}/config`)
+            .then(config => { window.__tessereactConfig = config }),
 
+        // Get CSS from server
+        this.props.data.some(({options: {css}}) => css)
+          ? getJSON(`//${this.props.host}:${this.props.port}/css`)
+            .then(({ scenarios }) => { css = scenarios })
+          : Promise.resolve(null)
+      ])
+      .then(() => {
         const chunksToLoad = getChunksToLoad(routeData, this.state.scenarios, SCENARIO_CHUNK_SIZE || Infinity)
           .map(chunk =>
-            chunk.map(scenario => {
-              return {
-                name: scenario.name,
-                context: scenario.context,
-                options: scenario.options
-              }
-            })
+            chunk.map(scenario => ({
+              name: scenario.name,
+              context: scenario.context,
+              options: scenario.options
+            }))
           )
 
+        // Get old snapshots from server
         return Promise.all(
           chunksToLoad.map(scenariosChunk =>
             postJSON(url, { scenarios: scenariosChunk })
-              .then(({scenarios: responseScenarios}) => {
-                const newScenarios = responseScenarios.reduce((acc, s) => resolveScenario(acc, s, styles), this.state.scenarios)
+              .then(({ scenarios: responseScenarios }) => {
+                const newScenarios = responseScenarios.reduce(
+                  (acc, s) => resolveScenario(acc, s, css),
+                  this.state.scenarios
+                )
                 this.setState({scenarios: newScenarios})
               })
               .catch(e => console.log('Snapshot server is not available!', e))
@@ -111,8 +110,6 @@ class MainView extends React.Component {
       })
       .then(() => {
         const { scenarios } = this.state
-
-        this.setState({cssLoaded: true})
 
         console.log(`Finished loading in ${Date.now() - startDate}`)
 
@@ -152,7 +149,6 @@ class MainView extends React.Component {
 
     return (
       <Container>
-        {this._renderFetchCSS()}
         <Navigation
           loadedScenariosCount={scenarios.filter(c => c.status === 'resolved').length}
           failedScenariosCount={scenarios.filter(c => c.hasDiff).length}
@@ -167,28 +163,6 @@ class MainView extends React.Component {
         </Content>
       </Container>
     )
-  }
-
-  /**
-   * Render UI element, which contains all of the scenarios with option `css`=true.
-   * From it we will fetch the css snapshots
-   */
-  _renderFetchCSS () {
-    if (this.state.cssLoaded) {
-      return null
-    }
-
-    const scenarios = this.props.data.filter(({options: {css}}) => css)
-    return <div style={{display: 'none'}}>
-      {
-        scenarios.map((scenario, index) =>
-          <div
-            id={generateScenarioId(scenario)}
-            key={index}
-            dangerouslySetInnerHTML={{ __html: scenario.getSnapshot() }}
-          />)
-      }
-    </div>
   }
 
   /**
