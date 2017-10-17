@@ -7,7 +7,8 @@ const ejs = require('ejs')
 const {
   connectToBrowser,
   getPage,
-  disconnectFromBrowser
+  disconnectFromBrowser,
+  onMessageFromBrowser
 } = require('./_lib/browser')
 const {
   readSnapshot,
@@ -156,6 +157,19 @@ module.exports = function server (cwd, config, callback) {
       deleteScreenshot(afterScreenshotPath)
       deleteScreenshot(diffPath)
     })
+  })
+
+  app.options('/css', cors())
+  app.get('/css', async (req, res) => {
+    const wsPort = await getPort()
+    onMessageFromBrowser(wsPort, async (message) => {
+      await disconnectFromBrowser(browser)
+      res.send(message)
+    })
+
+    const browser = await connectToBrowser()
+    const page = await getPage(browser)
+    await page.goto(`http://localhost:${tessereactPort}/fetch-css?wsPort=${wsPort}`)
   })
 
   expressServer = app.listen(tessereactPort, callback)
