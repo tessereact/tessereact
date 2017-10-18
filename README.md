@@ -35,7 +35,9 @@ yarn start-tessereact
 yarn add -D https://github.com/tessereact/tessereact.git
 ```
 
-[Configuring Webpack](docs/integration.md)
+See [Webpack integration guide](docs/webpack-integration.md)
+or [create-react-app integration guide](docs/create-react-app-integration.md)
+for the subsequent installation instructions.
 
 ## Basic Usage
 
