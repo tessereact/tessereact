@@ -12,8 +12,7 @@ const {
 } = require('./_lib/browser')
 const {
   readSnapshot,
-  writeSnapshot,
-  writeBrowserData
+  writeSnapshot
 } = require('./_lib/snapshots')
 const {
   ensureScreenshotDir,
@@ -120,18 +119,14 @@ module.exports = function server (cwd, config, callback) {
 
   app.options('/write-snapshot', cors())
   app.post('/write-snapshot', async (req, res) => {
-    const {name, context, snapshot, snapshotCSS, browserData} = req.body
+    const { name, context, snapshot, snapshotCSS } = req.body
     if (snapshotCSS) {
       await Promise.all([
         writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
-        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css'),
-        writeBrowserData(snapshotsDir, browserData)
+        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css')
       ])
     } else {
-      await Promise.all([
-        writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
-        writeBrowserData(snapshotsDir, browserData)
-      ])
+      await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
     }
 
     res.send({status: 'OK'})
