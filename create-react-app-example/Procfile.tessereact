@@ -1,2 +1,0 @@
-webpack: TESSEREACT=true PORT=5000 yarn start
-Tessereact: node node_modules/.bin/tessereact-server

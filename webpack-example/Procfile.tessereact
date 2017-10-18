@@ -1,0 +1,2 @@
+webpack: NODE_ENV='development' webpack-dev-server --config ./config/webpack.config.tessereact.js --port 5000
+tessereact: tessereact-server

@@ -99,7 +99,7 @@
     "parser": "babel-eslint",
     "ignore": [
       "/lib/",
-      "/create-react-app-example/"
+      "/webpack-example/"
     ]
   }
 }
