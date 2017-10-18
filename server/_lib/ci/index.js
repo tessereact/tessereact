@@ -4,7 +4,6 @@ const {
   disconnectFromBrowser,
   onMessageFromBrowser
 } = require('../browser')
-const { readBrowserData } = require('../snapshots')
 
 /**
  * Start Chromium, open Tessereact in it, wait for a message from the web page.
@@ -19,7 +18,6 @@ async function runCI (tessereactPort, wsPort, snapshotsDir, exit) {
   onMessageFromBrowser(wsPort, async (report) => {
     console.log('Received a message from Tessereact runner')
     await disconnectFromBrowser(browser)
-    const lastAcceptedBrowserData = await readBrowserData(snapshotsDir)
 
     if (report.status === 'OK') {
       console.log('All scenarios are passed')
@@ -28,12 +26,8 @@ async function runCI (tessereactPort, wsPort, snapshotsDir, exit) {
       console.error('Failed scenarios:')
 
       const logs = report.scenarios
-        .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
-        .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
-        .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
-        .concat('\n')
-        .filter(x => x)
-        .join('\n\n')
+        .map(s => `- ${s.context}/${s.name}\n\n${s.diff}\n`)
+        .join('\n')
 
       process.stdout.write(logs, () => exit(1))
     }
