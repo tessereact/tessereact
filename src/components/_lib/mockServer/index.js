@@ -26,7 +26,9 @@ export default function mockServer (url, { method, body }) {
       }))
     }
   } else if (method === 'POST' && url.match(/\/write-snapshot\/?$/)) {
-    return {status: 'OK'}
+    return { status: 'OK' }
+  } else if (method === 'GET' && url.match(/\/css\/?$/)) {
+    return { scenarios: data.css }
   } else {
     return (data.screenshots && data.screenshots[getScreenshotId(body.context, body.name, body.sizeIndex)]) ||
       data.defaultScreenshotURL

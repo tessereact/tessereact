@@ -1,13 +1,13 @@
 {
   "port": 5001,
   "snapshotsPath": "example/snapshots",
+  "entryURL": "http://localhost:5000/assets/dev.js",
   "screenshotSizes": [
     {"width": 320, "height": 568, "alias": "iPhone SE"},
     {"width": 640, "height": 480},
     {"width": 800, "height": 600},
     {"width": 1024, "height": 768}
   ],
-  "chromedriverPort": 5003,
   "screenshotDiff": {
     "command": "magick compare $BEFORE $AFTER $RESULT",
     "resultExtension": "png"

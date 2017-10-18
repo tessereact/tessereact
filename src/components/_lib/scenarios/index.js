@@ -1,4 +1,3 @@
-import { generateScenarioId, buildSnapshotCSS } from '../styles'
 import formatHTML from '../formatHTML'
 import buildScreenshotPage from '../buildScreenshotPage'
 import { chunk, sortBy } from 'lodash'
@@ -131,10 +130,10 @@ export function acceptScenario (scenarios, acceptedScenario) {
  *
  * @param {Array<ScenarioObject>} scenarios
  * @param {ScenarioObject} scenario - scenario sent by the server
- * @param {Array<StyleObject>} styles - scenario sent by the server
+ * @param {Array<ScenarioObject>} css - array of CSS snapshots
  * @returns {Array<ScenarioObject>} new scenario array
  */
-export function resolveScenario (scenarios, scenario, styles) {
+export function resolveScenario (scenarios, scenario, css) {
   let screenshotData
 
   const {name, context, snapshot: oldSnapshot, snapshotCSS: oldSnapshotCSS} = scenario
@@ -152,12 +151,7 @@ export function resolveScenario (scenarios, scenario, styles) {
 
   const snapshot = formatHTML(storedScenario.getSnapshot())
   const snapshotCSS = options.css
-    ? buildSnapshotCSS(
-        styles,
-        document.getElementById(generateScenarioId(storedScenario)),
-        document.documentElement,
-        document.body
-      )
+    ? findScenario(css, context, name).snapshotCSS
     : null
 
   const hasDiff = snapshot !== oldSnapshot || (options.css && snapshotCSS !== oldSnapshotCSS)

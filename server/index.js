@@ -1,29 +1,29 @@
 const path = require('path')
 const express = require('express')
-const WebSocket = require('ws')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const {startChromeDriver} = require('./_lib/chromeDriver')
 const getPort = require('get-port')
 const ejs = require('ejs')
 const {
+  connectToBrowser,
+  getPage,
+  disconnectFromBrowser,
+  onMessageFromBrowser
+} = require('./_lib/browser')
+const {
   readSnapshot,
   writeSnapshot,
-  writeBrowserData,
-  readBrowserData
+  writeBrowserData
 } = require('./_lib/snapshots')
 const {
-  connectToBrowser,
   ensureScreenshotDir,
   createScreenshot,
-  disconnectFromBrowser,
   deleteScreenshot,
   diffScreenshots
 } = require('./_lib/screenshots')
-const chromedriver = require('chromedriver')
+const { runCI } = require('./_lib/ci')
 
 const defaultPort = 5001
-const defaultChromedriverPort = 5003
 const defaultScreenshotDiffExtension = 'gif'
 
 const defaultBeforeCommand = "$BEFORE -background '#FFE6E8' -pointsize 20 label:'Before' +swap -gravity Center -append"
@@ -38,6 +38,10 @@ const defaultScreenshotDiffCommand = `convert -delay 100 '(' ${defaultBeforeComm
  * @param {Function} [callback] - called after server is started
  */
 module.exports = function server (cwd, config, callback) {
+  let expressServer
+
+  const tessereactPort = config.port || defaultPort
+
   const screenshotsDir = path.resolve(cwd, 'tmp')
   const snapshotsDir = path.resolve(cwd, config.snapshotsPath)
 
@@ -51,52 +55,15 @@ module.exports = function server (cwd, config, callback) {
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
   }))
 
-  const chromedriverPort = config.chromedriverPort || defaultChromedriverPort
-  chromedriver.start([
-    '--url-base=wd/hub',
-    `--port=${chromedriverPort}`
-  ])
-  const webdriverOptions = {
-    port: chromedriverPort,
-    desiredCapabilities: {
-      browserName: 'chrome',
-      chromeOptions: {
-        args: [
-          'headless',
-          'disable-gpu',
-          'hide-scrollbars'
-        ]
-      }
-    }
-  }
-
-  const cleanup = () => {
-    chromedriver.stop()
-    process.exit()
-  }
-  process.stdin.resume()
-  // Catch closing
-  process.on('exit', cleanup)
-  // Catch Ctrl+C
-  process.on('SIGINT', cleanup)
-  // Catch kill
-  process.on('SIGUSR1', cleanup)
-  process.on('SIGUSR2', cleanup)
-  // Catches uncaught exceptions
-  process.on('uncaughtException', cleanup)
-
   getPort()
     .then(wsPort => {
-      const wsURL = `ws://localhost:${wsPort}`
-
       const renderIndex = (req, res) => {
         const templatePath = config.templatePath
           ? path.resolve(cwd, config.templatePath)
           : path.resolve(__dirname, './index.ejs')
         const locals = {
           entryPath: config.entryURL,
-          wsURL: process.env.CI ? wsURL : '',
-          tessereactServerPort: config.port,
+          tessereactServerPort: tessereactPort,
           config: JSON.stringify(config)
         }
 
@@ -111,46 +78,16 @@ module.exports = function server (cwd, config, callback) {
       app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
       app.get('/contexts/:context/scenarios/:scenario', renderIndex)
       app.get('/contexts/:context', renderIndex)
+      app.get('/fetch-css', renderIndex)
       app.get('/demo', renderIndex)
       app.get('/', renderIndex)
 
       if (process.env.CI) {
-        const wss = new WebSocket.Server({port: wsPort})
-
-        startChromeDriver()
-          .then(({kill, open}) => {
-            wss.on('connection', (ws) => {
-              console.log('Connected to WS')
-              ws.on('message', (message) => {
-                console.log('Received a message from Tessereact runner')
-                kill()
-
-                readBrowserData(snapshotsDir).then(lastAcceptedBrowserData => {
-                  const report = JSON.parse(message)
-
-                  if (report.status === 'OK') {
-                    console.log('All scenarios are passed')
-                    process.exit(0)
-                  } else {
-                    console.error('Failed scenarios:')
-
-                    const logs = report.scenarios
-                      .map(s => `- ${s.context}/${s.name}\n\n${s.diff}`)
-                      .concat(lastAcceptedBrowserData && `Last accepted browser: ${JSON.stringify(lastAcceptedBrowserData, null, '  ')}`)
-                      .concat(`Current browser: ${JSON.stringify(report.browserData, null, '  ')}`)
-                      .concat('\n')
-                      .filter(x => x)
-                      .join('\n\n')
-
-                    process.stdout.write(logs, () => process.exit(1))
-                  }
-                })
-              })
-            })
-
-            return open(`http://localhost:${config.port}`)
-          })
-          .catch(rescue)
+        const exit = (code) => {
+          expressServer.close()
+          process.exit(code)
+        }
+        runCI(tessereactPort, wsPort, snapshotsDir, exit).catch(rescue)
       }
     })
 
@@ -207,10 +144,11 @@ module.exports = function server (cwd, config, callback) {
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
 
     await ensureScreenshotDir(screenshotsDir)
-    const chrome = connectToBrowser(webdriverOptions)
-    const beforeScreenshotPath = await createScreenshot(screenshotsDir, chrome, beforeURL, size)
-    const afterScreenshotPath = await createScreenshot(screenshotsDir, chrome, afterURL, size)
-    disconnectFromBrowser(chrome)
+    const browser = await connectToBrowser()
+    const page = await getPage(browser)
+    const beforeScreenshotPath = await createScreenshot(screenshotsDir, page, beforeURL, size)
+    const afterScreenshotPath = await createScreenshot(screenshotsDir, page, afterURL, size)
+    await disconnectFromBrowser(browser)
 
     const diffPath = await diffScreenshots(screenshotsDir, beforeScreenshotPath, afterScreenshotPath, screenshotDiffCommand, screenshotDiffExtension)
 
@@ -221,7 +159,20 @@ module.exports = function server (cwd, config, callback) {
     })
   })
 
-  app.listen(config.port || defaultPort, callback)
+  app.options('/css', cors())
+  app.get('/css', async (req, res) => {
+    const wsPort = await getPort()
+    onMessageFromBrowser(wsPort, async (message) => {
+      await disconnectFromBrowser(browser)
+      res.send(message)
+    })
+
+    const browser = await connectToBrowser()
+    const page = await getPage(browser)
+    await page.goto(`http://localhost:${tessereactPort}/fetch-css?wsPort=${wsPort}`)
+  })
+
+  expressServer = app.listen(tessereactPort, callback)
 }
 
 function rescue (err) {
