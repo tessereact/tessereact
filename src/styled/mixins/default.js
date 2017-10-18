@@ -1,6 +1,4 @@
-import createMixin from 'styled-mixin'
-
-const defaultMixin = createMixin`
+const defaultMixin = `
   box-sizing: border-box;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
 `

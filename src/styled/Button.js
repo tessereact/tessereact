@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import defaultMixin from './mixins/default'
 
 const Button = styled.button`
+  ${defaultMixin}
   background-color: ${props => props.selected ? '#1abc9c' : '#bcbcbc'};
   color: #fff;
   padding: 10px 15px;
@@ -14,4 +15,4 @@ const Button = styled.button`
   margin-left: 10px;
 `
 
-export default defaultMixin(Button)
+export default Button

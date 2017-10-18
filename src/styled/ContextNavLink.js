@@ -3,8 +3,9 @@ import defaultMixin from './mixins/default'
 import Link from '../lib/link'
 
 const ContextNavLink = styled(Link)`
+  ${defaultMixin}
   color: ${props => props.active ? '#fefefe' : '#c7c7c7'};
-  background: ${props => props.active && '#278db5'}
+  background: ${props => props.active ? '#278db5' : 'inherit'};
   overflow: hidden;
   cursor: pointer;
   text-decoration: none;
@@ -17,4 +18,4 @@ const ContextNavLink = styled(Link)`
   padding: 7px 20px;
 `
 
-export default defaultMixin(ContextNavLink)
+export default ContextNavLink
