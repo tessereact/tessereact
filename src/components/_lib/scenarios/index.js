@@ -1,7 +1,6 @@
 import formatHTML from '../formatHTML'
 import buildScreenshotPage from '../buildScreenshotPage'
 import { chunk, sortBy } from 'lodash'
-import { detect } from 'detect-browser'
 import { getTextDiff } from '../diff'
 
 const defaultScreenshotSizes = [
@@ -226,8 +225,7 @@ export function requestScenarioAcceptance (scenario) {
     context: scenario.context,
     snapshot: scenario.snapshot,
     snapshotCSS: scenario.snapshotCSS,
-    screenshotData: scenario.screenshotData,
-    browserData: detect()
+    screenshotData: scenario.screenshotData
   }
 
   return payload
@@ -251,8 +249,7 @@ export function prepareCIReport (scenarios) {
   if (failingScenarios.length > 0) {
     return {
       status: 'not OK',
-      scenarios: failingScenarios,
-      browserData: detect()
+      scenarios: failingScenarios
     }
   } else {
     return { status: 'OK' }
