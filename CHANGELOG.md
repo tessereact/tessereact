@@ -10,11 +10,16 @@ This change log follows the format documented in [Keep a CHANGELOG].
 
 ## Unreleased
 
+## 0.3.1 - 2017-10-20
+
 ## Fixed
 
 - Fix a couple of bugs, caused by opening an URL of scenario which doesn't exist.
   ([#42](https://github.com/tessereact/tessereact/pull/42),
   [#44](https://github.com/tessereact/tessereact/pull/44))
+
+- Improve visual diff render style.
+  ([#45](https://github.com/tessereact/tessereact/pull/45))
 
 ## 0.3.0 - 2017-10-18
 
