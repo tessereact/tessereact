@@ -175,19 +175,10 @@ class MainView extends React.Component {
       params: { context, scenario: name }
     } = this.props.routeData
 
-    // Fallbacks if scenario is not found
-    const onAcceptSnapshot = scenario
-      ? () => this._acceptSnapshot(scenario)
-      : () => null
-
-    const onRequestScreenshot = scenario
-      ? (sizeIndex) => this._requestScreenshot(scenario, sizeIndex)
-      : () => null
-
     return <ScenarioContent
       scenario={scenario || { name, context }}
-      onAcceptSnapshot={onAcceptSnapshot}
-      onRequestScreenshot={onRequestScreenshot}
+      onAcceptSnapshot={scenario ? () => this._acceptSnapshot(scenario) : null}
+      onRequestScreenshot={scenario ? (sizeIndex) => this._requestScreenshot(scenario, sizeIndex) : null}
     />
   }
 
