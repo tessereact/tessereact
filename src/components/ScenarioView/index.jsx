@@ -35,6 +35,11 @@ class ScenarioView extends React.Component {
     const scenarios = this.props.data
     const context = contextName === 'null' ? null : contextName
     const scenario = find(scenarios, { name, context })
+
+    if (!scenario) {
+      return <div>This scenario does not exist.</div>
+    }
+
     const element = scenario.getElement()
     return element
   }

@@ -13,7 +13,8 @@ This change log follows the format documented in [Keep a CHANGELOG].
 ## Fixed
 
 - Fix a couple of bugs, caused by opening an URL of scenario which doesn't exist.
-  ([#42](https://github.com/tessereact/tessereact/pull/42))
+  ([#42](https://github.com/tessereact/tessereact/pull/42),
+  [#44](https://github.com/tessereact/tessereact/pull/44))
 
 ## 0.3.0 - 2017-10-18
 
