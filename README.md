@@ -2,9 +2,10 @@
 
 Presentational snapshot testing for React components.
 
-Tessereact is ![Testshot](https://github.com/toptal/testshot) fork which supports CSS and screen snapshots based on resolutions you choose.
+Tessereact is [Testshot](https://github.com/toptal/testshot) fork which supports CSS snapshots
+and screenshot diffs based on resolutions you choose.
 
-![Screenshot](https://github.com/toptal/testshot/blob/master/docs/images/failing_context.png?raw=true)
+![Screenshot](https://github.com/tessereact/tessereact/blob/master/docs/images/failing_scenario.png?raw=true)
 
 [Check usage guide for more screenshots](docs/usage.md).
 
@@ -20,12 +21,13 @@ yarn dev
 yarn dev-server
 ```
 
-Then open [`localhost:5000`](http://localhost:5000) in a browser.
+Then open [`localhost:5001`](http://localhost:5001) in a browser.
 
-### create-react-app example
+### Webpack example
 
 ```
-cd create-react-app-example
+cd webpack-example
+yarn install
 yarn start-tessereact
 ```
 
@@ -55,16 +57,16 @@ context('Text', () => {
 
   scenario('Purple', () => (
     <Text color='purple'>Purple text</Text>
-  ))
+  ), {css: true, screenshot: true})
 })
 ```
 
 ## CI Support
 
-Tessereact provides build in CI script
+Tessereact provides built-in CI support. Start Tessereact with enviroment variable `CI=true`.
 
 ```
-yarn tessereact-ci
+env CI=true yarn start-tessereact
 ```
 
 ## Authors
