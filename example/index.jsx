@@ -1,5 +1,4 @@
 import React from 'react'
-import {range} from 'lodash'
 
 import './index.css'
 import {init, scenario, context} from 'src/index'
@@ -99,12 +98,6 @@ scenario('Single scenario', () => {
 
 scenario('Empty component', () => {
   return null
-})
-
-range(0, 700).forEach(i => {
-  scenario('Single scenario ' + i, () => {
-    return <Service name={'MacBook Pro ' + i} price={i} />
-  })
 })
 
 document.addEventListener('DOMContentLoaded', () => {
