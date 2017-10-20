@@ -1,6 +1,6 @@
 {
   "name": "tessereact",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Presentational snapshot testing for React components.",
   "main": "./lib/index.js",
   "author": "Lesha Koss, Eduard Tsech",
