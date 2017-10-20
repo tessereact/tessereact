@@ -181,7 +181,11 @@ class ScenarioContent extends React.Component {
     }
 
     if (!savedScreenshots || !savedScreenshots[index] || savedScreenshots[index].status === 'loading') {
-      return <div className='d2h-screenshot-diff'>Loading...</div>
+      return <div
+        className='d2h-screenshot-diff d2h-screenshot-loading'
+      >
+        Loading...
+      </div>
     }
 
     const { width } = screenshotSizes[index]
