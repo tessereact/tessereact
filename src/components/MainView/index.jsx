@@ -171,10 +171,14 @@ class MainView extends React.Component {
    * @param {ScenarioObject} scenario
    */
   _renderScenario (scenario) {
+    const {
+      params: { context, scenario: name }
+    } = this.props.routeData
+
     return <ScenarioContent
-      scenario={scenario}
-      onAcceptSnapshot={() => this._acceptSnapshot(scenario)}
-      onRequestScreenshot={(sizeIndex) => this._requestScreenshot(scenario, sizeIndex)}
+      scenario={scenario || { name, context }}
+      onAcceptSnapshot={scenario ? () => this._acceptSnapshot(scenario) : null}
+      onRequestScreenshot={scenario ? (sizeIndex) => this._requestScreenshot(scenario, sizeIndex) : null}
     />
   }
 

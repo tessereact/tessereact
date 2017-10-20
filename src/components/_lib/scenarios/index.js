@@ -66,7 +66,7 @@ function shiftScenario (scenarios, contextName, scenarioName, chunkSize) {
   const scenario = findScenario(scenarios, contextName, scenarioName)
 
   if (!scenario) {
-    return scenarios
+    return chunk(scenarios, chunkSize)
   }
 
   return [
