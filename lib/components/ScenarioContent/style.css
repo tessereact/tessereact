@@ -106,11 +106,17 @@
 
 .--tessereact--, .d2h-screenshot-diff {
   display: flex;
-  justify-content: start;
-  padding: 20px;
   width: 100%;
   min-width: 100%;
   overflow-x: auto;
+}
+
+.--tessereact--, .d2h-screenshot-diff img {
+  border-right: 1px solid #f1f1f1;
+}
+
+.--tessereact--, .d2h-screenshot-loading {
+  padding: 20px;
 }
 
 .--tessereact--, .d2h-files-diff, .d2h-screenshot-diff {
