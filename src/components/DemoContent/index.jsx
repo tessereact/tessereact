@@ -20,12 +20,12 @@ class DemoContent extends React.Component {
     return <StyledContent.Wrapper>
       <Header>
         <div>
-          <span>Welcome to Tessereact demo!</span>
+          <span>{window.__tessereactDemoMode.title}</span>
         </div>
       </Header>
 
       <ComponentPreview>
-        <div dangerouslySetInnerHTML={{__html: window.__tessereactDemoMode.description}} />
+        {window.__tessereactDemoMode.description}
       </ComponentPreview>
     </StyledContent.Wrapper>
   }
