@@ -10,6 +10,13 @@ This change log follows the format documented in [Keep a CHANGELOG].
 
 ## Unreleased
 
+## 0.3.2 - 2017-10-24
+
+## Fixed
+
+- Slightly improve performance by optimizing internal function `resolveScenario`.
+  ([#46](https://github.com/tessereact/tessereact/pull/46))
+
 ## 0.3.1 - 2017-10-20
 
 ## Fixed
