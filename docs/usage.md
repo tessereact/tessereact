@@ -34,7 +34,7 @@ scenario('Default', () => (
 
 When you open Tessereact you are going to see the following screen.
 
-![screen](images/failing_scenario.png)
+![screen](images/usage_1.png)
 
 You can specify these options as the third argument of `scenario` function:
 
@@ -60,7 +60,7 @@ scenario('Default', () => (
 If you click "Accept & next" button current snapshot will be stored and override the previous one.
            https://www.evernote.com/shard/s17/sh/aa171897-f7d2-4d80-aa46-63702b6bbcff/17fb167e4f595cb6/res/4b613454-df24-4631-8737-3f317e9444ce/skitch.png
 
-![Example](images/scenario.png)
+![Example](images/usage_2.png)
 
 You can change the component and repeat acceptance process.
 
@@ -89,4 +89,4 @@ context('Text', () => {
 
 It's going to look like this.
 
-![context](images/failing_context.png)
+![context](images/usage_3.png)

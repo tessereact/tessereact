@@ -5,7 +5,7 @@ Presentational snapshot testing for React components.
 Tessereact is [Testshot](https://github.com/toptal/testshot) fork which supports CSS snapshots
 and screenshot diffs based on resolutions you choose.
 
-![Screenshot](https://github.com/tessereact/tessereact/blob/master/docs/images/failing_scenario.png?raw=true)
+![Screenshot](https://github.com/tessereact/tessereact/blob/master/docs/images/readme_example.png?raw=true)
 
 [Check usage guide for more screenshots](docs/usage.md).
 
