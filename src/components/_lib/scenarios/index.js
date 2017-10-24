@@ -144,8 +144,6 @@ export function resolveScenario (scenarios, scenario, css) {
   )
 
   const storedScenario = scenarios[storedScenarioIndex]
-
-  const element = storedScenario.getElement()
   const options = storedScenario.options
 
   const snapshot = formatHTML(storedScenario.getSnapshot())
@@ -165,21 +163,20 @@ export function resolveScenario (scenarios, scenario, css) {
     }
   }
 
-  return Object.assign([], scenarios, {
-    [storedScenarioIndex]: {
-      name,
-      context,
-      element,
-      hasDiff,
-      snapshot,
-      snapshotCSS,
-      oldSnapshot,
-      oldSnapshotCSS,
-      status: 'resolved',
-      screenshotData,
-      options
-    }
-  })
+  scenarios[storedScenarioIndex] = {
+    name,
+    context,
+    hasDiff,
+    snapshot,
+    snapshotCSS,
+    oldSnapshot,
+    oldSnapshotCSS,
+    status: 'resolved',
+    screenshotData,
+    options
+  }
+
+  return scenarios
 }
 
 /**
