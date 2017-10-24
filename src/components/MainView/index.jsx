@@ -161,6 +161,7 @@ class MainView extends React.Component {
           {routeName === 'scenario' && this._renderScenario(findScenario(scenarios, context, scenario))}
           {routeName === 'demo' && <DemoContent />}
         </Content>
+        {window.__tessereactDemoMode && window.__tessereactDemoMode.ribbon}
       </Container>
     )
   }

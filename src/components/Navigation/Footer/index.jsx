@@ -19,7 +19,7 @@ class Footer extends React.Component {
           name='demo'
           active={this.props.selectedRoute.name === 'demo'}
         >
-          About demo mode
+          {window.__tessereactDemoMode.link}
         </ScenarioNavLink>
       </Sidebar.ListItem>
     </Sidebar.Footer>
