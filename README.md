@@ -7,7 +7,7 @@ and screenshot diffs based on resolutions you choose.
 
 ![Screenshot](https://github.com/tessereact/tessereact/blob/master/docs/images/readme_example.png?raw=true)
 
-[Check usage guide for more screenshots](docs/usage.md).
+[Check usage guide for more screenshots](https://github.com/tessereact/tessereact/blob/master/docs/usage.md).
 
 ## Demo & Examples
 
@@ -37,13 +37,13 @@ yarn start-tessereact
 yarn add -D https://github.com/tessereact/tessereact.git
 ```
 
-See [Webpack integration guide](docs/webpack-integration.md)
-or [create-react-app integration guide](docs/create-react-app-integration.md)
+See [Webpack integration guide](https://github.com/tessereact/tessereact/blob/master/docs/webpack-integration.md)
+or [create-react-app integration guide](https://github.com/tessereact/tessereact/blob/master/docs/create-react-app-integration.md)
 for the subsequent installation instructions.
 
 ## Basic Usage
 
-For the complete usage guide take a look [here](docs/usage.md).
+For the complete usage guide take a look [here](https://github.com/tessereact/tessereact/blob/master/docs/usage.md).
 
 ``` js
 import React from 'react'
