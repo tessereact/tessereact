@@ -10,6 +10,12 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 
 `entryURL` — an URL to Tessereact Webpack entry
 
+`staticURL` — if specified, redirects 404 to this URL.
+  Useful if the site contains static files linked by relative path.
+  For example, if the server is running on 5001 port, and `staticURL` is 'http://localhost:5000',
+  then 'http://localhost:5001/static/image.png' redirects to 'http://localhost:5000/static/image.png'
+  (note ports)
+
 `templatePath` — a path to Tessereact template
 
 `screenshotSizes` — a list of sizes for screenshot diff

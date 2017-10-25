@@ -2,5 +2,6 @@
   "port": 5001,
   "snapshotsPath": "snapshots",
   "entryURL": "http://localhost:5000/static/js/tessereact.js",
+  "staticURL": "http://localhost:5000",
   "templatePath": "tessereact/template.ejs"
 }
