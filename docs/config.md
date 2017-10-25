@@ -1,6 +1,7 @@
 # Tessereact configuration
 
-Tessereact config should be named as `tessereact.config.json` and located in root directory of your app.
+Tessereact config should be named as `tessereact.config.json` and located in root directory of your app
+(or on the path specified by `TESSEREACT_CONFIG` environment variable).
 
 ## Configuration options
 
@@ -12,7 +13,16 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 
 `templatePath` — a path to Tessereact template
 
-`screenshotSizes` — a list of sizes for screenshot diff
+`screenshotSizes` — a list of sizes for screenshot diff.
+  Example:
+  ```json
+  "screenshotSizes": [
+    {"width": 320, "height": 568, "alias": "iPhone SE"},
+    {"width": 640, "height": 480},
+    {"width": 800, "height": 600},
+    {"width": 1024, "height": 768}
+  ]
+  ```
 
 `screenshotDiff` — options for visual diffs:
 
