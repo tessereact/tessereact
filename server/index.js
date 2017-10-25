@@ -102,7 +102,7 @@ module.exports = function server (cwd, config, callback) {
       scenarios.map(({ name, context, options = {} }) => new Promise(async resolve => {
         const [snapshot, snapshotCSS] = await Promise.all([
           readSnapshot(snapshotsDir, name, context, 'html'),
-          readSnapshot(snapshotsDir, name, context, 'css')
+          options.css && readSnapshot(snapshotsDir, name, context, 'css')
         ])
 
         return resolve({
@@ -119,14 +119,11 @@ module.exports = function server (cwd, config, callback) {
   app.options('/api/write-snapshot', cors())
   app.post('/api/write-snapshot', async (req, res) => {
     const { name, context, snapshot, snapshotCSS } = req.body
-    if (snapshotCSS) {
-      await Promise.all([
-        writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
-        writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css')
-      ])
-    } else {
-      await writeSnapshot(snapshotsDir, snapshot, name, context, 'html')
-    }
+
+    await Promise.all([
+      writeSnapshot(snapshotsDir, snapshot, name, context, 'html'),
+      snapshotCSS && writeSnapshot(snapshotsDir, snapshotCSS, name, context, 'css')
+    ])
 
     res.send({status: 'OK'})
   })
