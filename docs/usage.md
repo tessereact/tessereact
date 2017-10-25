@@ -7,13 +7,14 @@ Let's write a Tessereact scenario for this dummy `Text` component.
 
 import React, {Component} from 'react'
 
-export default class Text extends Component {
-  render() {
-    return (
-      <span style={{color: this.props.color}}>
-        {this.props.children}
-      </span>
-    );
+export default class Text extends React.Component {
+  render () {
+    const {color, children} = this.props
+    const style = color ? {color} : {}
+
+    return <span style={style}>
+      {this.props.children}
+    </span>
   }
 }
 ```
@@ -90,3 +91,88 @@ context('Text', () => {
 It's going to look like this.
 
 ![context](images/usage_3.png)
+
+### Using CSS diff
+
+Add CSS file:
+
+```css
+/* src/Text/index.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.text {
+  font: 14px normal Arial, sans-serif;
+  color: #222;
+}
+```
+
+Modify the component to make use of CSS. Import the CSS.
+
+``` js
+// src/Text/index.jsx
+
+import React from 'react'
+import './index.css'
+
+export default class Text extends React.Component {
+  render () {
+    const {color, children} = this.props
+    const style = color ? {color} : {}
+
+    return <span className='text' style={style}>
+      {this.props.children}
+    </span>
+  }
+}
+```
+
+Enable `css` option on scenarios:
+
+``` js
+// src/Text/scenarios.jsx
+
+import React from 'react'
+import {context, scenario} from 'tessereact'
+import Text from '.'
+
+context('Text', () => {
+  scenario('Default', () => (
+    <Text>Text</Text>
+  ), {css: true})
+
+  scenario('Purple', () => (
+    <Text color='purple'>Purple text</Text>
+  ), {css: true})
+})
+```
+
+![context](images/usage_4.png)
+
+### Using visual diff
+
+Let's accept the snapshots before the next step.
+
+Enable `screenshot option` on scenarios and change them:
+
+```js
+context('Text', () => {
+  scenario('Default', () => (
+    <Text>TEXT</Text>
+  ), {css: true, screenshot: true})
+
+  scenario('Purple', () => (
+    <Text color='purple'>PURPLE TEXT</Text>
+  ), {css: true, screenshot: true})
+})
+```
+
+![context](images/usage_5.png)
+
+The exact appearance of the visual diff and the sizes are configurable.
+Check [Tessereact configuration guide](./usage.md) for the list of options.
