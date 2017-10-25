@@ -16,12 +16,18 @@ export function checkIfRouteExists (routeData, scenarios) {
 
   switch (routeName) {
     case 'scenario':
-      !findScenario(scenarios, context, scenario) &&
-        History.push(`/contexts/${context}`)
+      if (!findScenario(scenarios, context, scenario)) {
+        if (!findContext(scenarios, context)) {
+          History.push('/')
+        } else {
+          History.push(`/contexts/${context}`)
+        }
+      }
       break
     case 'context':
-      !scenarios.find((s) => { return s.context === context }) &&
+      if (!findContext(scenarios, context)) {
         History.push('/')
+      }
       break
     case 'home':
     case 'demo':
@@ -29,6 +35,10 @@ export function checkIfRouteExists (routeData, scenarios) {
     default:
       History.push('/')
   }
+}
+
+function findContext (scenarios, context) {
+  return scenarios.find((s) => { return s.context === context })
 }
 
 /**
