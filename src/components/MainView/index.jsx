@@ -65,7 +65,7 @@ class MainView extends React.Component {
   componentWillMount () {
     let css
     const { routeData } = this.props
-    const url = `//${this.props.host}:${this.props.port}/read-snapshots`
+    const url = `//${this.props.host}:${this.props.port}/api/read-snapshots`
 
     const startDate = Date.now()
 
@@ -74,12 +74,12 @@ class MainView extends React.Component {
         // Get config from server
         window.__tessereactConfig
           ? Promise.resolve(null)
-          : getJSON(`//${this.props.host}:${this.props.port}/config`)
+          : getJSON(`//${this.props.host}:${this.props.port}/api/config`)
             .then(config => { window.__tessereactConfig = config }),
 
         // Get CSS from server
         this.props.data.some(({options: {css}}) => css)
-          ? getJSON(`//${this.props.host}:${this.props.port}/css`)
+          ? getJSON(`//${this.props.host}:${this.props.port}/api/css`)
             .then(({ scenarios }) => { css = scenarios })
           : Promise.resolve(null)
       ])
@@ -228,7 +228,7 @@ class MainView extends React.Component {
    */
   _acceptSnapshot (scenario) {
     const {host, port} = this.props
-    const url = `//${host}:${port}/write-snapshot`
+    const url = `//${host}:${port}/api/write-snapshot`
 
     postJSON(url, requestScenarioAcceptance(scenario)).then(() => {
       const scenarios = acceptScenario(this.state.scenarios, scenario)
@@ -245,7 +245,7 @@ class MainView extends React.Component {
    */
   _requestScreenshot (scenario, screenshotSizeIndex) {
     const {host, port} = this.props
-    const url = `//${host}:${port}/screenshot`
+    const url = `//${host}:${port}/api/screenshot`
     const {name, context} = scenario
     const {before, after, screenshotSizes, savedScreenshots} = scenario.screenshotData
 

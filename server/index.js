@@ -54,49 +54,48 @@ module.exports = function server (cwd, config, callback) {
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS'
   }))
 
-  getPort()
-    .then(wsPort => {
-      const renderIndex = (req, res) => {
-        const templatePath = config.templatePath
-          ? path.resolve(cwd, config.templatePath)
-          : path.resolve(__dirname, './index.ejs')
-        const locals = {
-          entryPath: config.entryURL,
-          tessereactServerPort: tessereactPort,
-          config: JSON.stringify(config)
-        }
-
-        ejs.renderFile(templatePath, locals, {}, (err, templateHTML) => {
-          if (err) {
-            throw err
-          }
-          res.send(templateHTML)
-        })
+  if (process.env.CI) {
+    getPort().then(wsPort => {
+      const exit = (code) => {
+        expressServer.close()
+        process.exit(code)
       }
-
-      app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
-      app.get('/contexts/:context/scenarios/:scenario', renderIndex)
-      app.get('/contexts/:context', renderIndex)
-      app.get('/fetch-css', renderIndex)
-      app.get('/demo', renderIndex)
-      app.get('/', renderIndex)
-
-      if (process.env.CI) {
-        const exit = (code) => {
-          expressServer.close()
-          process.exit(code)
-        }
-        runCI(tessereactPort, wsPort, snapshotsDir, exit).catch(rescue)
-      }
+      runCI(tessereactPort, wsPort, snapshotsDir, exit).catch(rescue)
     })
+  }
 
-  app.options('/config', cors())
-  app.get('/config', async (req, res) => {
+  const renderIndex = (req, res) => {
+    const templatePath = config.templatePath
+      ? path.resolve(cwd, config.templatePath)
+      : path.resolve(__dirname, './index.ejs')
+    const locals = {
+      entryPath: config.entryURL,
+      tessereactServerPort: tessereactPort,
+      config: JSON.stringify(config)
+    }
+
+    ejs.renderFile(templatePath, locals, {}, (err, templateHTML) => {
+      if (err) {
+        throw err
+      }
+      res.send(templateHTML)
+    })
+  }
+
+  app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
+  app.get('/contexts/:context/scenarios/:scenario', renderIndex)
+  app.get('/contexts/:context', renderIndex)
+  app.get('/fetch-css', renderIndex)
+  app.get('/demo', renderIndex)
+  app.get('/', renderIndex)
+
+  app.options('/api/config', cors())
+  app.get('/api/config', async (req, res) => {
     res.send(config)
   })
 
-  app.options('/read-snapshots', cors())
-  app.post('/read-snapshots', async (req, res) => {
+  app.options('/api/read-snapshots', cors())
+  app.post('/api/read-snapshots', async (req, res) => {
     const {scenarios} = req.body
 
     const payload = await Promise.all(
@@ -117,8 +116,8 @@ module.exports = function server (cwd, config, callback) {
     res.send({scenarios: payload})
   })
 
-  app.options('/write-snapshot', cors())
-  app.post('/write-snapshot', async (req, res) => {
+  app.options('/api/write-snapshot', cors())
+  app.post('/api/write-snapshot', async (req, res) => {
     const { name, context, snapshot, snapshotCSS } = req.body
     if (snapshotCSS) {
       await Promise.all([
@@ -132,8 +131,8 @@ module.exports = function server (cwd, config, callback) {
     res.send({status: 'OK'})
   })
 
-  app.options('/screenshot', cors())
-  app.post('/screenshot', async (req, res) => {
+  app.options('/api/screenshot', cors())
+  app.post('/api/screenshot', async (req, res) => {
     const {before, after, size} = req.body
     const beforeURL = `data:text/html;charset=utf-8,${encodeURIComponent(before)}`
     const afterURL = `data:text/html;charset=utf-8,${encodeURIComponent(after)}`
@@ -154,8 +153,8 @@ module.exports = function server (cwd, config, callback) {
     })
   })
 
-  app.options('/css', cors())
-  app.get('/css', async (req, res) => {
+  app.options('/api/css', cors())
+  app.get('/api/css', async (req, res) => {
     const wsPort = await getPort()
     onMessageFromBrowser(wsPort, async (message) => {
       await disconnectFromBrowser(browser)
