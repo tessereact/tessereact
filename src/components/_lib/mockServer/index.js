@@ -14,9 +14,9 @@ export default function mockServer (url, { method, body }) {
     throw new Error('window.__tessereactDemoMode must be an object with `snapshots` property')
   }
 
-  if (method === 'GET' && url.match(/\/config\/?$/)) {
+  if (method === 'GET' && url.match(/\/api\/config\/?$/)) {
     return {}
-  } else if (method === 'POST' && url.match(/\/read-snapshots\/?$/)) {
+  } else if (method === 'POST' && url.match(/\/api\/read-snapshots\/?$/)) {
     return {
       scenarios: body.scenarios.map(({name, context}) => ({
         name,
@@ -25,13 +25,15 @@ export default function mockServer (url, { method, body }) {
         snapshotCSS: data.snapshots[getSnapshotFileName(context, name, 'css')]
       }))
     }
-  } else if (method === 'POST' && url.match(/\/write-snapshot\/?$/)) {
+  } else if (method === 'POST' && url.match(/\/api\/write-snapshot\/?$/)) {
     return { status: 'OK' }
-  } else if (method === 'GET' && url.match(/\/css\/?$/)) {
+  } else if (method === 'GET' && url.match(/\/api\/css\/?$/)) {
     return { scenarios: data.css }
-  } else {
+  } else if (method === 'POST' && url.match(/\/api\/screenshot\/?$/)) {
     return (data.screenshots && data.screenshots[getScreenshotId(body.context, body.name, body.sizeIndex)]) ||
       data.defaultScreenshotURL
+  } else {
+    throw new Error(`Request is invalid: ${method} ${url} ${body}`)
   }
 }
 
