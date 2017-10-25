@@ -126,8 +126,8 @@ class MainView extends React.Component {
             checkForHomeRouteDemoMode(routeData)
           } else {
             checkForHomeRoute(routeData, scenarios)
-            checkIfRouteExists(routeData, scenarios)
           }
+          checkIfRouteExists(routeData, scenarios)
         }
       })
       .catch(e => {
