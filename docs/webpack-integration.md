@@ -32,9 +32,10 @@ yarn eject
 
 To integrate your app without ejecting, check [create-react-app integration guide](../create-react-app-integration.md)
 
-## Actual Integration
+## Integration
 
-You can have a look on this [commit](https://github.com/tessereact/tessereact/commit/118575ba8a5e95530b2fe5f169fc69131e22addd) or continue reading this document.
+In this guide we will assume that the Tessereact front-end will be running on port 5000
+and back-end on port 5001.
 
 ### 1. Add Tessereact to your project
 
@@ -42,53 +43,23 @@ You can have a look on this [commit](https://github.com/tessereact/tessereact/co
 yarn add -D tessereact
 ```
 
-### 2. Create Tessereact folder
+### 2. Create Tessereact initialization script
+
+Create a file:
 
 ```sh
-mkdir tessereact
-```
-
-First we need to add Tessereact HTML template
-
-```sh
-touch tessereact/template.ejs
-```
-
-with following content:
-
-```html
-<!doctype html>
-<html>
-  <head>
-    <title>Tessereact</title>
-  </head>
-  <body>
-    <script>
-      window.__tessereactWSURL = "<%= wsURL %>"
-      window.__tessereactServerPort = <%= tessereactServerPort %>
-      window.__tessereactConfig = <%- config %>
-    </script>
-    <script src="<%= entryPath %>"></script>
-  </body>
-</html>
-
-```
-
-Second, we need to create Tessereact initialization script:
-
-```sh
-touch tessereact/init.js
+touch tessereact.js
 ```
 
 with following content:
 
 ```js
 // Path to CSS of your application
-require('../src/index.css')
+require('./src/index.css')
 
 const Tessereact = require('tessereact')
 
-const scenariosContext = require.context('../src', true, /\/scenarios\.jsx?$/)
+const scenariosContext = require.context('./src', true, /\/scenarios\.jsx?$/)
 scenariosContext.keys().forEach(scenariosContext)
 
 Tessereact.init({className: 'tessereact'})
@@ -111,8 +82,7 @@ with following content:
 {
   "port": 5001,
   "snapshotsPath": "snapshots",
-  "entryURL": "http://localhost:5000/static/js/init.js",
-  "templatePath": "tessereact/template.ejs"
+  "appURL": "http://localhost:5000/"
 }
 ```
 
@@ -131,11 +101,25 @@ cp config/webpack.config.dev.js config/webpack.config.tessereact.js
 
 Open `config/webpack.config.tessereact.js`
 
-- Change `output.filename` to `'static/js/tessereact.js'`.
-- Replace `paths.appIndexJs` with `path.resolve(process.cwd(), './tessereact/init.js')`.
+Replace `paths.appIndexJs` with `path.resolve(process.cwd(), './tessereact.js')`.
+By that, we replaced the app's entry point with Tessereact's one.
 
-By that, we changed output script to the one listed in `tessereact.config.json` as `"entryURL"`,
-and also replaced the app's entry point, with Tessereact's one.
+Also add the following to the config object:
+
+```js
+{
+  // ...
+  devServer: {
+    port: 5000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5001/',
+        secure: false
+      }
+    }
+  }
+}
+```
 
 ### 5. Add package.json scripts
 
@@ -146,7 +130,7 @@ Add following scripts to `package.json`:
   // ...
   "scripts": {
     // ...
-    "tessereact-webpack": "NODE_ENV='development' webpack-dev-server --config ./config/webpack.config.tessereact.js --port 5000",
+    "tessereact-webpack": "NODE_ENV='development' webpack-dev-server --config ./config/webpack.config.tessereact.js",
     "tessereact-server": "tessereact-server"
   }
 }
@@ -171,10 +155,10 @@ yarn tessereact-server
 Open Tessereact
 
 ```sh
-open localhost:5001
+open localhost:5000
 ```
 
-If you see Tessereact welcome screen then it's time to [add your first Tessereact scenario].
+If you see Tessereact welcome screen then it's time to [add your first Tessereact scenario](./usage.md).
 In case you have some issue with integration or some ideas how to improve this process feel free to [open an issue].
 
 This integration does look a little bit verbose, but it provides you full flexibility and understanding of what is going on under the hood.
