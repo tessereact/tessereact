@@ -46,8 +46,6 @@ const SCENARIO_CHUNK_SIZE = Infinity
  * UI of main Tessereact window.
  * @extends React.Component
  * @property {Array<ScenarioObject>} props.data - list of scenarios created by user
- * @property {String} props.host - host of the Tessereact server
- * @property {String} props.port - port of the Tessereact server
  * @property {RouteData} props.routeData
  */
 class MainView extends React.Component {
@@ -65,8 +63,7 @@ class MainView extends React.Component {
   componentWillMount () {
     let css
     const { routeData } = this.props
-    const url = `//${this.props.host}:${this.props.port}/api/read-snapshots`
-
+    const url = '/api/read-snapshots'
     const startDate = Date.now()
 
     Promise
@@ -74,12 +71,12 @@ class MainView extends React.Component {
         // Get config from server
         window.__tessereactConfig
           ? Promise.resolve(null)
-          : getJSON(`//${this.props.host}:${this.props.port}/api/config`)
+          : getJSON('/api/config')
             .then(config => { window.__tessereactConfig = config }),
 
         // Get CSS from server
         this.props.data.some(({options: {css}}) => css)
-          ? getJSON(`//${this.props.host}:${this.props.port}/api/css`)
+          ? getJSON('/api/css')
             .then(({ scenarios }) => { css = scenarios })
           : Promise.resolve(null)
       ])
@@ -227,9 +224,7 @@ class MainView extends React.Component {
    * @param {ScenarioObject} scenario
    */
   _acceptSnapshot (scenario) {
-    const {host, port} = this.props
-    const url = `//${host}:${port}/api/write-snapshot`
-
+    const url = '/api/write-snapshot'
     postJSON(url, requestScenarioAcceptance(scenario)).then(() => {
       const scenarios = acceptScenario(this.state.scenarios, scenario)
       this.setState({scenarios})
@@ -244,8 +239,7 @@ class MainView extends React.Component {
    * @param {Number} screenshotSizeIndex
    */
   _requestScreenshot (scenario, screenshotSizeIndex) {
-    const {host, port} = this.props
-    const url = `//${host}:${port}/api/screenshot`
+    const url = '/api/screenshot'
     const {name, context} = scenario
     const {before, after, screenshotSizes, savedScreenshots} = scenario.screenshotData
 
@@ -297,8 +291,6 @@ class MainView extends React.Component {
 if (PropTypes) {
   MainView.propTypes = {
     data: PropTypes.array.isRequired,
-    host: PropTypes.string.isRequired,
-    port: PropTypes.string.isRequired,
     routeData: PropTypes.object.isRequired
   }
 }
