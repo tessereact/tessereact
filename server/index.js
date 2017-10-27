@@ -1,3 +1,4 @@
+const url = require('url')
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -161,6 +162,16 @@ module.exports = function server (cwd, config, callback) {
     const browser = await connectToBrowser()
     const page = await getPage(browser)
     await page.goto(`http://localhost:${tessereactPort}/fetch-css?wsPort=${wsPort}`)
+  })
+
+  // Route not found
+  app.use((req, res) => {
+    if (config.staticURL) {
+      // Redirect all unmatched routes to site specified in staticURL
+      res.redirect(url.resolve(config.staticURL, req.originalUrl))
+    } else {
+      res.status(404).send('Not Found')
+    }
   })
 
   expressServer = app.listen(tessereactPort, callback)
