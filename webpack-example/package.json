@@ -36,7 +36,7 @@
     "react-dom": "^16.0.0",
     "style-loader": "0.18.2",
     "sw-precache-webpack-plugin": "0.11.4",
-    "tessereact": "^0.2.1",
+    "tessereact": "git+https://github.com/tessereact/tessereact.git",
     "url-loader": "0.5.9",
     "webpack": "3.5.1",
     "webpack-dev-server": "2.8.2",

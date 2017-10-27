@@ -47,7 +47,7 @@ module.exports = {
     // require.resolve('webpack/hot/dev-server'),
     require.resolve('react-dev-utils/webpackHotDevClient'),
     // Finally, this is your app's code:
-    path.resolve(process.cwd(), './tessereact/init.js'),
+    path.resolve(process.cwd(), './tessereact.js'),
     // We include the app code last so that if there is a runtime error during
     // initialization, it doesn't blow up the WebpackDevServer client, and
     // changing JS code would still trigger a refresh.
@@ -60,7 +60,7 @@ module.exports = {
     // This does not produce a real file. It's just the virtual path that is
     // served by WebpackDevServer in development. This is the JS bundle
     // containing code from all our entry points, and the Webpack runtime.
-    filename: 'static/js/tessereact.js',
+    filename: 'static/js/bundle.js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: 'static/js/[name].chunk.js',
     // This is the URL that app is served from. We use "/" in development.
@@ -260,5 +260,13 @@ module.exports = {
   // cumbersome.
   performance: {
     hints: false,
+  },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5001/',
+        secure: false
+      }
+    }
   },
 };
