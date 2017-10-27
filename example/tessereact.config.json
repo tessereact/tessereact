@@ -1,7 +1,7 @@
 {
   "port": 5001,
   "snapshotsPath": "example/snapshots",
-  "entryURL": "http://localhost:5000/assets/dev.js",
+  "appURL": "http://localhost:5000/",
   "screenshotSizes": [
     {"width": 320, "height": 568, "alias": "iPhone SE"},
     {"width": 640, "height": 480},

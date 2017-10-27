@@ -21,7 +21,7 @@ yarn dev
 yarn dev-server
 ```
 
-Then open [`localhost:5001`](http://localhost:5001) in a browser.
+Then open [`localhost:5000`](http://localhost:5000) in a browser.
 
 ### Webpack example
 
