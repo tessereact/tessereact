@@ -18,7 +18,6 @@
     "cors": "^2.8.1",
     "diff2html": "^2.3.0",
     "difflib": "^0.2.4",
-    "ejs": "^2.5.5",
     "express": "^4.14.0",
     "fs-promise": "^2.0.3",
     "get-port": "^2.1.0",
