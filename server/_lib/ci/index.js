@@ -1,3 +1,4 @@
+const url = require('url')
 const {
   connectToBrowser,
   getPage,
@@ -9,12 +10,12 @@ const {
  * Start Chromium, open Tessereact in it, wait for a message from the web page.
  * Report the message and end the process.
  *
- * @param {Number} tessereactPort - port used for running Tessereact web app
+ * @param {String} appURL - URL of the running Tessereact web app
  * @param {Number} wsPort - web socket port for communication with the web pacge
  * @param {String} snapshotsDir
  * @param {Function<Number>} exit - callback called with exit code
  */
-async function runCI (tessereactPort, wsPort, snapshotsDir, exit) {
+async function runCI (appURL, wsPort, snapshotsDir, exit) {
   onMessageFromBrowser(wsPort, async (report) => {
     console.log('Received a message from Tessereact runner')
     await disconnectFromBrowser(browser)
@@ -35,7 +36,7 @@ async function runCI (tessereactPort, wsPort, snapshotsDir, exit) {
 
   const browser = await connectToBrowser()
   const page = await getPage(browser)
-  await page.goto(`http://localhost:${tessereactPort}/?wsPort=${wsPort}`)
+  await page.goto(url.resolve(appURL, `/?wsPort=${wsPort}`))
 }
 
 module.exports = {
