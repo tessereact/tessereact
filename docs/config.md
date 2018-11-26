@@ -9,11 +9,9 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
 
 `snapshotsPath` — a path to directory where Tessereact is going to store snapshots
 
-`entryURL` — an URL to Tessereact Webpack entry
+`appURL` — Tessereact webpack-dev-server URL
 
-`templatePath` — a path to Tessereact template
-
-`screenshotSizes` — a list of sizes for screenshot diff.
+`screenshotSizes` (optional) — a list of sizes for screenshot diff.
   Example:
   ```json
   "screenshotSizes": [
@@ -24,12 +22,16 @@ Tessereact config should be named as `tessereact.config.json` and located in roo
   ]
   ```
 
-`screenshotDiff` — options for visual diffs:
+`screenshotDiff` (optional) — options for visual diffs:
 
 - `screenshotDiff.command` — a command used to create a visual diff.
     Default: "convert -delay 50 $BEFORE $AFTER -loop 0 $RESULT".
     Use $BEFORE, $AFTER and $RESULT variables instead of the respective file names.
     Example:
-      "convert '(' $BEFORE -flatten -grayscale Rec709Luminance ')' '(' $AFTER -flatten -grayscale Rec709Luminance ')' '(' -clone 0-1 -compose darken -composite ')' -channel RGB -combine $RESULT"
+    ```json
+    "screenshotDiff": {
+      "command": "convert '(' $BEFORE -flatten -grayscale Rec709Luminance ')' '(' $AFTER -flatten -grayscale Rec709Luminance ')' '(' -clone 0-1 -compose darken -composite ')' -channel RGB -combine $RESULT"
+    }
+    ```  
 
 - `screenshotDiff.resultExtension` - file name extension of the result file. Default: "gif"

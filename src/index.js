@@ -89,8 +89,6 @@ export class UI extends React.Component {
     }
 
     return React.createElement(MainView, {
-      host: this.props.server.host,
-      port: this.props.server.port,
       data,
       routeData: this.props.routeData
     })
@@ -99,30 +97,20 @@ export class UI extends React.Component {
 
 if (PropTypes) {
   UI.propTypes = {
-    server: PropTypes.shape({
-      host: PropTypes.string.isRequired,
-      port: PropTypes.string.isRequired
-    }),
     routeData: PropTypes.object.isRequired
   }
 }
 
 /**
  * Run Tessereact UI.
- * @param {Object} [userOptions]
- * @param {String} [userOptions.className] - CSS class of Tessereact UI wrapper elemtn
+ * @param {Object} [options]
+ * @param {String} [options.className] - CSS class of Tessereact UI wrapper elemtn
  */
-export function init (userOptions = {}) {
-  const options = Object.assign({
-    server: {
-      host: 'localhost',
-      port: window.__tessereactServerPort ? String(window.__tessereactServerPort) : '5001'
-    }
-  }, userOptions)
+export function init (options = {}) {
   const wrapperElement = document.createElement('div')
 
-  if (userOptions.className) {
-    wrapperElement.classList.add(userOptions.className)
+  if (options.className) {
+    wrapperElement.classList.add(options.className)
   }
   document.body.appendChild(wrapperElement)
 

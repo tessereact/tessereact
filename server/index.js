@@ -1,9 +1,9 @@
+const url = require('url')
 const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const getPort = require('get-port')
-const ejs = require('ejs')
 const {
   connectToBrowser,
   getPage,
@@ -60,34 +60,9 @@ module.exports = function server (cwd, config, callback) {
         expressServer.close()
         process.exit(code)
       }
-      runCI(tessereactPort, wsPort, snapshotsDir, exit).catch(rescue)
+      runCI(config.appURL, wsPort, snapshotsDir, exit).catch(rescue)
     })
   }
-
-  const renderIndex = (req, res) => {
-    const templatePath = config.templatePath
-      ? path.resolve(cwd, config.templatePath)
-      : path.resolve(__dirname, './index.ejs')
-    const locals = {
-      entryPath: config.entryURL,
-      tessereactServerPort: tessereactPort,
-      config: JSON.stringify(config)
-    }
-
-    ejs.renderFile(templatePath, locals, {}, (err, templateHTML) => {
-      if (err) {
-        throw err
-      }
-      res.send(templateHTML)
-    })
-  }
-
-  app.get('/contexts/:context/scenarios/:scenario/view', renderIndex)
-  app.get('/contexts/:context/scenarios/:scenario', renderIndex)
-  app.get('/contexts/:context', renderIndex)
-  app.get('/fetch-css', renderIndex)
-  app.get('/demo', renderIndex)
-  app.get('/', renderIndex)
 
   app.options('/api/config', cors())
   app.get('/api/config', async (req, res) => {
@@ -160,7 +135,7 @@ module.exports = function server (cwd, config, callback) {
 
     const browser = await connectToBrowser()
     const page = await getPage(browser)
-    await page.goto(`http://localhost:${tessereactPort}/fetch-css?wsPort=${wsPort}`)
+    await page.goto(url.resolve(config.appURL, `/fetch-css?wsPort=${wsPort}`))
   })
 
   expressServer = app.listen(tessereactPort, callback)
